@@ -106,14 +106,14 @@ public:
 
   ShaderManager mShader;
 
-  vector<ComPtr<ID3D12DescriptorHeap>> mConstDescHeap;
-  vector<ComPtr<ID3D12Resource>> mConstBufferUploadHeap;
+  ComPtr<ID3D12DescriptorHeap> mConstDescHeap;
+  ComPtr<ID3D12Resource> mConstBufferUploadHeap;
 
   vector<D3D12_ROOT_PARAMETER> mRootParams;
   D3D12_DESCRIPTOR_RANGE mDescTableRanges[1];
 
   ConstantBuffer mCbColorMultiplierData;
-  vector<UINT8*> mCbColorMultiplierAddr;
+  UINT8* mCbColorMultiplierAddr;
 };
 
 

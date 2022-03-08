@@ -123,7 +123,7 @@ void BaseApp::Update()
   }
 
   // copy our ConstantBuffer instance to the mapped constant buffer resource
-  memcpy(mCbColorMultiplierAddr[mFrameIdx], &mCbColorMultiplierData, sizeof(mCbColorMultiplierData));
+  memcpy(mCbColorMultiplierAddr, &mCbColorMultiplierData, sizeof(mCbColorMultiplierData));
 
 }
 
@@ -156,10 +156,9 @@ void BaseApp::Render()
   D3D12_CPU_DESCRIPTOR_HANDLE dsv = DepthBufferView();
   mCommandList->OMSetRenderTargets(1, &rtv, false, &dsv);
 
-  ID3D12DescriptorHeap* descriptorHeaps[] = { mConstDescHeap[mFrameIdx].Get() };
+  ID3D12DescriptorHeap* descriptorHeaps[] = { mConstDescHeap.Get() };
   mCommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
-  mCommandList->SetGraphicsRootDescriptorTable(0, mConstDescHeap[mFrameIdx]->GetGPUDescriptorHandleForHeapStart());
-
+  mCommandList->SetGraphicsRootDescriptorTable(0, mConstDescHeap->GetGPUDescriptorHandleForHeapStart());
 
   for (auto& geo: mGeos)
   {
@@ -246,48 +245,34 @@ void BaseApp::InitConstBuffer()
   heapDesc.NumDescriptors = 1;
   heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
   heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-
-  for (int i = 0; i < mFrameCnt; ++i)
+    
+  HRESULT hr = mDevice->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(mConstDescHeap.GetAddressOf()));
+  if (FAILED(hr))
   {
-    mConstDescHeap.emplace_back();
-    mConstBufferUploadHeap.emplace_back();
-    mCbColorMultiplierAddr.emplace_back();
+    mIsRunning = false;
   }
+    
+  auto hprop = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+  auto rdesc = CD3DX12_RESOURCE_DESC::Buffer(1024 * 64);
+  hr = mDevice->CreateCommittedResource(
+    &hprop, // this heap will be used to upload the constant buffer data
+    D3D12_HEAP_FLAG_NONE, // no flags
+    &rdesc, // size of the resource heap. Must be a multiple of 64KB for single-textures and constant buffers
+    D3D12_RESOURCE_STATE_GENERIC_READ, // will be data that is read from so we keep it in the generic read state
+    nullptr, // we do not have use an optimized clear value for constant buffers
+    IID_PPV_ARGS(mConstBufferUploadHeap.GetAddressOf()));
+  mConstBufferUploadHeap->SetName(L"Constant Buffer Upload Resource Heap");
+
+  D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
+  cbvDesc.BufferLocation = mConstBufferUploadHeap->GetGPUVirtualAddress();
+  cbvDesc.SizeInBytes = (sizeof(ConstantBuffer) + 255) & ~255;    // CB size is required to be 256-byte aligned.
+  mDevice->CreateConstantBufferView(&cbvDesc, mConstDescHeap->GetCPUDescriptorHandleForHeapStart());
+
+  CD3DX12_RANGE readRange(0, 0);    // We do not intend to read from this resource on the CPU. (End is less than or equal to begin)
+  hr = mConstBufferUploadHeap->Map(0, &readRange, reinterpret_cast<void**>(&mCbColorMultiplierAddr));
 
   ZeroMemory(&mCbColorMultiplierData, sizeof(mCbColorMultiplierData));
-
-  for (int i = 0; i < mFrameCnt; ++i)
-  {
-    
-    HRESULT hr = mDevice->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(mConstDescHeap[i].GetAddressOf()));
-    if (FAILED(hr))
-    {
-      mIsRunning = false;
-    }
-
-    
-    auto hprop = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
-    auto rdesc = CD3DX12_RESOURCE_DESC::Buffer(1024 * 64);
-    hr = mDevice->CreateCommittedResource(
-      &hprop, // this heap will be used to upload the constant buffer data
-      D3D12_HEAP_FLAG_NONE, // no flags
-      &rdesc, // size of the resource heap. Must be a multiple of 64KB for single-textures and constant buffers
-      D3D12_RESOURCE_STATE_GENERIC_READ, // will be data that is read from so we keep it in the generic read state
-      nullptr, // we do not have use an optimized clear value for constant buffers
-      IID_PPV_ARGS(mConstBufferUploadHeap[i].GetAddressOf()));
-    mConstBufferUploadHeap[i]->SetName(L"Constant Buffer Upload Resource Heap");
-
-    D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
-    cbvDesc.BufferLocation = mConstBufferUploadHeap[i]->GetGPUVirtualAddress();
-    cbvDesc.SizeInBytes = (sizeof(ConstantBuffer) + 255) & ~255;    // CB size is required to be 256-byte aligned.
-    mDevice->CreateConstantBufferView(&cbvDesc, mConstDescHeap[i]->GetCPUDescriptorHandleForHeapStart());
-
-    CD3DX12_RANGE readRange(0, 0);    // We do not intend to read from this resource on the CPU. (End is less than or equal to begin)
-    hr = mConstBufferUploadHeap[i]->Map(0, &readRange, reinterpret_cast<void**>(&mCbColorMultiplierAddr[i]));
-    memcpy(mCbColorMultiplierAddr[i], &mCbColorMultiplierData, sizeof(mCbColorMultiplierData));
-  }
-
-  
+  memcpy(mCbColorMultiplierAddr, &mCbColorMultiplierData, sizeof(mCbColorMultiplierData));
 }
 
 void BaseApp::InitView()
