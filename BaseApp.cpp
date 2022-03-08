@@ -37,6 +37,8 @@ BaseApp::BaseApp(HINSTANCE hInstance)
     debugController->EnableDebugLayer();
   }
 #endif
+  mTimer = clock();
+
   // Initialize the objects required for dumping in Shader, Geometry, etc.
   InitWindow(hInstance);
   InitDevice();
@@ -44,12 +46,14 @@ BaseApp::BaseApp(HINSTANCE hInstance)
   InitFence();
   InitSwapChain();
   InitView();
+  InitDepth();
+  InitRTV();
 }
 
 void BaseApp::Init(HINSTANCE hInstance)
 {
   // Invoke after dumping in Shader, Geometry, etc.
-  InitRTV();
+  InitConstBuffer();
   InitRootSig();
   InitInputLayout();
   InitPSO();
@@ -84,8 +88,43 @@ void BaseApp::Run()
       DispatchMessage(&msg);
     }
 
+    mTimeDelta = float(clock() - mTimer) / CLOCKS_PER_SEC;
+    mTimer = clock();
+    Update();
     Render();
   }
+}
+
+void BaseApp::Update()
+{
+  // update app logic, such as moving the camera or figuring out what objects are in view
+  static float rIncrement = 0.02f * mTimeDelta;
+  static float gIncrement = 0.04f * mTimeDelta;
+  static float bIncrement = 0.08f * mTimeDelta;
+
+  mCbColorMultiplierData.colorMultiplier.x += rIncrement;
+  mCbColorMultiplierData.colorMultiplier.y += gIncrement;
+  mCbColorMultiplierData.colorMultiplier.z += bIncrement;
+
+  if (mCbColorMultiplierData.colorMultiplier.x >= 1.0 || mCbColorMultiplierData.colorMultiplier.x <= 0.0)
+  {
+    mCbColorMultiplierData.colorMultiplier.x = mCbColorMultiplierData.colorMultiplier.x >= 1.0f ? 1.0f : 0.0f;
+    rIncrement = -rIncrement;
+  }
+  if (mCbColorMultiplierData.colorMultiplier.y >= 1.0 || mCbColorMultiplierData.colorMultiplier.y <= 0.0)
+  {
+    mCbColorMultiplierData.colorMultiplier.y = mCbColorMultiplierData.colorMultiplier.y >= 1.0f ? 1.0f : 0.0f;
+    gIncrement = -gIncrement;
+  }
+  if (mCbColorMultiplierData.colorMultiplier.z >= 1.0 || mCbColorMultiplierData.colorMultiplier.z <= 0.0)
+  {
+    mCbColorMultiplierData.colorMultiplier.z = mCbColorMultiplierData.colorMultiplier.z >= 1.0f ? 1.0f : 0.0f;
+    bIncrement = -bIncrement;
+  }
+
+  // copy our ConstantBuffer instance to the mapped constant buffer resource
+  memcpy(mCbColorMultiplierAddr[mFrameIdx], &mCbColorMultiplierData, sizeof(mCbColorMultiplierData));
+
 }
 
 void BaseApp::Render()
@@ -110,16 +149,16 @@ void BaseApp::Render()
   // Clear the back buffer and depth buffer.
   const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
   mCommandList->ClearRenderTargetView(CurrentBackBufferView(), clearColor, 0, nullptr);
-  //mCommandList->ClearDepthStencilView(DepthStencilView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+  mCommandList->ClearDepthStencilView(DepthBufferView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
   //// Specify the buffers we are going to render to.
   D3D12_CPU_DESCRIPTOR_HANDLE rtv = CurrentBackBufferView();
-  mCommandList->OMSetRenderTargets(1, &rtv, false, nullptr);
+  D3D12_CPU_DESCRIPTOR_HANDLE dsv = DepthBufferView();
+  mCommandList->OMSetRenderTargets(1, &rtv, false, &dsv);
 
-  //ID3D12DescriptorHeap* descriptorHeaps[] = { mCbvHeap.Get() };
-  //mCommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
-
-  //mCommandList->SetGraphicsRootDescriptorTable(0, mCbvHeap->GetGPUDescriptorHandleForHeapStart());
+  ID3D12DescriptorHeap* descriptorHeaps[] = { mConstDescHeap[mFrameIdx].Get() };
+  mCommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
+  mCommandList->SetGraphicsRootDescriptorTable(0, mConstDescHeap[mFrameIdx]->GetGPUDescriptorHandleForHeapStart());
 
 
   for (auto& geo: mGeos)
@@ -132,24 +171,10 @@ void BaseApp::Render()
     mCommandList->IASetIndexBuffer(&ibView);
 
     mCommandList->DrawIndexedInstanced(
-      3,
+      geo.mNumIndex,
       1, 0, 0, 0
     );
   }
-
-  //for (auto& vbView : mVBuffViews)
-  //{
-  //  mCommandList->IASetVertexBuffers(0, 1, &vbView);
-  //  //mCommandList->IASetIndexBuffer(&mBoxGeo->IndexBufferView());
-  //  mCommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-  //  //// The draw call here
-  //  //mCommandList->DrawIndexedInstanced(
-  //  //  mBoxGeo->DrawArgs["box"].IndexCount,
-  //  //  1, 0, 0, 0
-  //  //);
-  //  mCommandList->DrawInstanced(3, 1, 0, 0);
-  //}  
 
   // Indicate a state transition on the resource usage.
   trans = CD3DX12_RESOURCE_BARRIER::Transition(
@@ -194,6 +219,77 @@ void BaseApp::ResetCommandList()
   }
 }
 
+void BaseApp::InitConstBuffer()
+{
+  // create a descriptor range (descriptor table) and fill it out
+  // this is a range of descriptors inside a descriptor heap
+  mDescTableRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV; // this is a range of constant buffer views (descriptors)
+  mDescTableRanges[0].NumDescriptors = 1; // we only have one constant buffer, so the range is only 1
+  mDescTableRanges[0].BaseShaderRegister = 0; // start index of the shader registers in the range
+  mDescTableRanges[0].RegisterSpace = 0; // space 0. can usually be zero
+  mDescTableRanges[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // this appends the range to the end of the root signature descriptor tables
+
+  // create a descriptor table
+  D3D12_ROOT_DESCRIPTOR_TABLE descriptorTable;
+  descriptorTable.NumDescriptorRanges = _countof(mDescTableRanges); // we only have one range
+  descriptorTable.pDescriptorRanges = &mDescTableRanges[0]; // the pointer to the beginning of our ranges array
+
+
+  // create a root parameter and fill it out
+  mRootParams.emplace_back();
+  mRootParams[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; // this is a descriptor table
+  mRootParams[0].DescriptorTable = descriptorTable; // this is our descriptor table for this root parameter
+  mRootParams[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX; // our pixel shader will be the only shader accessing this parameter for now
+
+
+  D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
+  heapDesc.NumDescriptors = 1;
+  heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+  heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+
+  for (int i = 0; i < mFrameCnt; ++i)
+  {
+    mConstDescHeap.emplace_back();
+    mConstBufferUploadHeap.emplace_back();
+    mCbColorMultiplierAddr.emplace_back();
+  }
+
+  ZeroMemory(&mCbColorMultiplierData, sizeof(mCbColorMultiplierData));
+
+  for (int i = 0; i < mFrameCnt; ++i)
+  {
+    
+    HRESULT hr = mDevice->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(mConstDescHeap[i].GetAddressOf()));
+    if (FAILED(hr))
+    {
+      mIsRunning = false;
+    }
+
+    
+    auto hprop = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+    auto rdesc = CD3DX12_RESOURCE_DESC::Buffer(1024 * 64);
+    hr = mDevice->CreateCommittedResource(
+      &hprop, // this heap will be used to upload the constant buffer data
+      D3D12_HEAP_FLAG_NONE, // no flags
+      &rdesc, // size of the resource heap. Must be a multiple of 64KB for single-textures and constant buffers
+      D3D12_RESOURCE_STATE_GENERIC_READ, // will be data that is read from so we keep it in the generic read state
+      nullptr, // we do not have use an optimized clear value for constant buffers
+      IID_PPV_ARGS(mConstBufferUploadHeap[i].GetAddressOf()));
+    mConstBufferUploadHeap[i]->SetName(L"Constant Buffer Upload Resource Heap");
+
+    D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
+    cbvDesc.BufferLocation = mConstBufferUploadHeap[i]->GetGPUVirtualAddress();
+    cbvDesc.SizeInBytes = (sizeof(ConstantBuffer) + 255) & ~255;    // CB size is required to be 256-byte aligned.
+    mDevice->CreateConstantBufferView(&cbvDesc, mConstDescHeap[i]->GetCPUDescriptorHandleForHeapStart());
+
+    CD3DX12_RANGE readRange(0, 0);    // We do not intend to read from this resource on the CPU. (End is less than or equal to begin)
+    hr = mConstBufferUploadHeap[i]->Map(0, &readRange, reinterpret_cast<void**>(&mCbColorMultiplierAddr[i]));
+    memcpy(mCbColorMultiplierAddr[i], &mCbColorMultiplierData, sizeof(mCbColorMultiplierData));
+  }
+
+  
+}
+
 void BaseApp::InitView()
 {
   // Fill out the Viewport
@@ -228,23 +324,23 @@ void BaseApp::InitPSO()
   DXGI_SAMPLE_DESC sampleDesc = {};
   sampleDesc.Count = 1;
 
-
   D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};   // a structure to define a pso
   psoDesc.InputLayout = mInputLayoutDesc;            // the structure describing our input layout
   psoDesc.pRootSignature = mRootSig.Get();           // the root signature that describes the input data this pso needs
   psoDesc.VS = mShader.VertexShaderByteCode();               // structure describing where to find the vertex shader bytecode and how large it is
   psoDesc.PS = mShader.PixelShaderByteCode();                // same as VS but for pixel shader
   psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE; // type of topology we are drawing
-  psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM; // format of the render target
-  psoDesc.SampleDesc = sampleDesc; // must be the same sample description as the swapchain and depth/stencil buffer
-  psoDesc.SampleMask = 0xffffffff; // sample mask has to do with multi-sampling. 0xffffffff means point sampling is done
+  psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;        // format of the render target
+  psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
+  psoDesc.SampleDesc = sampleDesc;                           // must be the same sample description as the swapchain and depth/stencil buffer
+  psoDesc.SampleMask = 0xffffffff;                           // sample mask has to do with multi-sampling. 0xffffffff means point sampling is done
   psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT); // a default rasterizer state.
   psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT); // a default blent state.
   psoDesc.NumRenderTargets = 1; // we are only binding one render target
+  psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT); // a default depth stencil state
 
   // create the PSO
   HRESULT hr = mDevice->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(mPSO.GetAddressOf()));
-  
   ThrowIfFailed(hr);
 
 }
@@ -473,8 +569,9 @@ void BaseApp::InitSwapChain()
 
 void BaseApp::InitRootSig()
 {
+
   CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc;
-  rootSigDesc.Init(0, nullptr, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+  rootSigDesc.Init(mRootParams.size(), mRootParams.data(), 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
   ComPtr<ID3DBlob> signature;
   HRESULT hr = D3D12SerializeRootSignature(
@@ -501,3 +598,51 @@ void BaseApp::InitRootSig()
 
 }
 
+void BaseApp::InitDepth()
+{
+  // Create a depth stencil descriptor heap so we can get a pointer to the depth stencil buffer
+  D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = {};
+  dsvHeapDesc.NumDescriptors = 1;
+  dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+  dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+  HRESULT hr = mDevice->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(mDsDescriptorHeap.GetAddressOf()));
+  if (FAILED(hr))
+  {
+    mIsRunning = false;
+    return;
+  }
+
+  D3D12_DEPTH_STENCIL_VIEW_DESC depthStencilDesc = {};
+  depthStencilDesc.Format = DXGI_FORMAT_D32_FLOAT;
+  depthStencilDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+  depthStencilDesc.Flags = D3D12_DSV_FLAG_NONE;
+
+  D3D12_CLEAR_VALUE depthOptimizedClearValue = {};
+  depthOptimizedClearValue.Format = DXGI_FORMAT_D32_FLOAT;
+  depthOptimizedClearValue.DepthStencil.Depth = 1.0f;
+  depthOptimizedClearValue.DepthStencil.Stencil = 0;
+
+  auto hprop = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+  auto rdesc = CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_D32_FLOAT, mWidth, mHeight, 1, 0, 1, 0, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
+  mDevice->CreateCommittedResource(
+    &hprop,
+    D3D12_HEAP_FLAG_NONE,
+    &rdesc,
+    D3D12_RESOURCE_STATE_DEPTH_WRITE,
+    &depthOptimizedClearValue,
+    IID_PPV_ARGS(mDepthStencilBuffer.GetAddressOf())
+  );
+  mDsDescriptorHeap->SetName(L"Depth/Stencil Resource Heap");
+
+  mDevice->CreateDepthStencilView(
+    mDepthStencilBuffer.Get(), 
+    &depthStencilDesc, 
+    mDsDescriptorHeap->GetCPUDescriptorHandleForHeapStart()
+  );
+}
+
+D3D12_CPU_DESCRIPTOR_HANDLE BaseApp::DepthBufferView() const
+{
+  CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(mDsDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
+  return dsvHandle;
+}

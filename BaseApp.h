@@ -12,6 +12,7 @@
 #include "ShaderManager.h"
 #include "DebugOut.h"
 #include "Geometry.h"
+#include <time.h>
 
 using namespace DirectX;
 using namespace DirectX::PackedVector;
@@ -19,19 +20,23 @@ using namespace DirectX::PackedVector;
 using Microsoft::WRL::ComPtr;
 using namespace std;
 
+struct ConstantBuffer {
+  XMFLOAT4 colorMultiplier;
+};
+
 class BaseApp
 {
 public:
   BaseApp(HINSTANCE hInstance);
   ~BaseApp();
   void Run();
+  void Update();
   virtual void Render();
   void Flush();
 
   static LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
   void ResetCommandList();
-
   void Init(HINSTANCE hInstance);
 
   void InitWindow(HINSTANCE hInstance);
@@ -39,14 +44,17 @@ public:
   void InitCommandQueue();
   void InitFence();
   void InitSwapChain();
+
   void InitRTV();
+  void InitDepth();
+  void InitConstBuffer();
+
   void InitRootSig();
-
   void InitInputLayout();
-
   void InitPSO();
 
   D3D12_CPU_DESCRIPTOR_HANDLE CurrentBackBufferView() const;
+  D3D12_CPU_DESCRIPTOR_HANDLE DepthBufferView() const;
 
   int mFrameCnt = 3;
   int mFrameIdx = 0;
@@ -55,6 +63,9 @@ public:
   int mWidth = 800;
   int mHeight = 600;
   HWND mHwnd;
+
+  clock_t mTimer;
+  float mTimeDelta;
 
   D3D12_VIEWPORT mViewport; // area that output from rasterizer will be stretched to.
   D3D12_RECT mScissorRect; // the area to draw in. pixels outside that area will not be drawn onto
@@ -90,8 +101,19 @@ public:
   ComPtr<ID3D12PipelineState> mPSO;
   ComPtr<ID3D12RootSignature> mRootSig;
 
+  ComPtr<ID3D12Resource> mDepthStencilBuffer;
+  ComPtr<ID3D12DescriptorHeap> mDsDescriptorHeap;
+
   ShaderManager mShader;
 
+  vector<ComPtr<ID3D12DescriptorHeap>> mConstDescHeap;
+  vector<ComPtr<ID3D12Resource>> mConstBufferUploadHeap;
+
+  vector<D3D12_ROOT_PARAMETER> mRootParams;
+  D3D12_DESCRIPTOR_RANGE mDescTableRanges[1];
+
+  ConstantBuffer mCbColorMultiplierData;
+  vector<UINT8*> mCbColorMultiplierAddr;
 };
 
 

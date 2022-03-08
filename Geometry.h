@@ -6,6 +6,8 @@
 #include <windows.h>
 #include "d3dx12.h"
 #include <wrl.h>
+#include <string>
+#include "DebugOut.h"
 
 
 using namespace DirectX;
@@ -18,13 +20,16 @@ public:
   D3D12_VERTEX_BUFFER_VIEW* mVertexBufferView;
   D3D12_INDEX_BUFFER_VIEW* mIndexBufferView;
 
-  int numIndex;
+  int mNumIndex;
 };
 
 template <class T>
 class Geometry
 {
 public:
+  // name
+  std::string mName = "Geo";
+
   vector<T> mVertices;
   vector<DWORD> mIndices;
 
@@ -51,7 +56,7 @@ GeometryView Geometry<T>::GetGeoView() {
 
   ret.mVertexBufferView = &mVertexBufferView;
   ret.mIndexBufferView = &mIndexBufferView;
-  ret.numIndex = mIndices.size();
+  ret.mNumIndex = mIndices.size();
 
   return ret;
 }
@@ -78,7 +83,9 @@ void Geometry<T>::UploadVertex(ComPtr<ID3D12Device>& device, ComPtr<ID3D12Graphi
   );
 
   // we can give resource heaps a name so when we debug with the graphics debugger we know what resource we are looking at
-  //mVertexBuffer->SetName(L"Vertex Buffer Resource Heap");
+  string name = dout::string_format("%s %s", mName.c_str(), "Vertex Buffer Resource Heap");
+  std::wstring stemp = std::wstring(name.begin(), name.end());
+  mVertexBuffer->SetName(stemp.c_str());
 
   // create upload heap
   // upload heaps are used to upload data to the GPU. CPU can write to it, GPU can read from it
@@ -93,7 +100,9 @@ void Geometry<T>::UploadVertex(ComPtr<ID3D12Device>& device, ComPtr<ID3D12Graphi
     nullptr,
     IID_PPV_ARGS(mvBufferUploadHeap.GetAddressOf())
   );
-  //mvBufferUploadHeap->SetName(L"Vertex Buffer Upload Resource Heap");
+  name = dout::string_format("%s %s", mName.c_str(), " Vertex Buffer Upload Resource Heap");
+  stemp = std::wstring(name.begin(), name.end());
+  mvBufferUploadHeap->SetName(stemp.c_str());
 
   // store vertex buffer in upload heap
   D3D12_SUBRESOURCE_DATA vertexData = {};
@@ -138,8 +147,10 @@ void Geometry<T>::UploadIndex(ComPtr<ID3D12Device>& device, ComPtr<ID3D12Graphic
     nullptr, // optimized clear value must be null for this type of resource
     IID_PPV_ARGS(mIndexBuffer.GetAddressOf()));
 
-  //// we can give resource heaps a name so when we debug with the graphics debugger we know what resource we are looking at
-  //vertexBuffer->SetName(L"Index Buffer Resource Heap");
+  // we can give resource heaps a name so when we debug with the graphics debugger we know what resource we are looking at
+  string name = dout::string_format("%s %s", mName.c_str(), " Index Buffer Resource Heap");
+  wstring stemp = std::wstring(name.begin(), name.end());
+  mIndexBuffer->SetName(stemp.c_str());
 
   // create upload heap to upload index buffer
   hprop = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
@@ -152,7 +163,9 @@ void Geometry<T>::UploadIndex(ComPtr<ID3D12Device>& device, ComPtr<ID3D12Graphic
     nullptr,
     IID_PPV_ARGS(miBufferUploadHeap.GetAddressOf())
   );
-  //vBufferUploadHeap->SetName(L"Index Buffer Upload Resource Heap");
+  name = dout::string_format("%s %s", mName.c_str(), "Index Buffer Upload Resource Heap");
+  stemp = std::wstring(name.begin(), name.end());
+  miBufferUploadHeap->SetName(stemp.c_str());
 
   // store vertex buffer in upload heap
   D3D12_SUBRESOURCE_DATA indexData = {};
