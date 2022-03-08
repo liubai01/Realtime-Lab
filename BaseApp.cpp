@@ -121,21 +121,35 @@ void BaseApp::Render()
 
   //mCommandList->SetGraphicsRootDescriptorTable(0, mCbvHeap->GetGPUDescriptorHandleForHeapStart());
 
-  for (auto& vbView : mVBuffViews)
-  {
-    mCommandList->IASetVertexBuffers(0, 1, &vbView);
-    //mCommandList->IASetIndexBuffer(&mBoxGeo->IndexBufferView());
-    mCommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-    //// The draw call here
-    //mCommandList->DrawIndexedInstanced(
-    //  mBoxGeo->DrawArgs["box"].IndexCount,
-    //  1, 0, 0, 0
-    //);
-    mCommandList->DrawInstanced(3, 1, 0, 0);
+  for (auto& geo: mGeos)
+  {
+    D3D12_INDEX_BUFFER_VIEW ibView = *geo.mIndexBufferView;
+    D3D12_VERTEX_BUFFER_VIEW vbView = *geo.mVertexBufferView;
+
+    mCommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    mCommandList->IASetVertexBuffers(0, 1, &vbView);
+    mCommandList->IASetIndexBuffer(&ibView);
+
+    mCommandList->DrawIndexedInstanced(
+      3,
+      1, 0, 0, 0
+    );
   }
 
-  
+  //for (auto& vbView : mVBuffViews)
+  //{
+  //  mCommandList->IASetVertexBuffers(0, 1, &vbView);
+  //  //mCommandList->IASetIndexBuffer(&mBoxGeo->IndexBufferView());
+  //  mCommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+  //  //// The draw call here
+  //  //mCommandList->DrawIndexedInstanced(
+  //  //  mBoxGeo->DrawArgs["box"].IndexCount,
+  //  //  1, 0, 0, 0
+  //  //);
+  //  mCommandList->DrawInstanced(3, 1, 0, 0);
+  //}  
 
   // Indicate a state transition on the resource usage.
   trans = CD3DX12_RESOURCE_BARRIER::Transition(

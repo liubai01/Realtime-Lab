@@ -48,11 +48,17 @@ public:
         { { 0.5f, -0.5f, 0.5f }, {1.0f, 0.0f, 0.0f, 1.0f} },
         { { -0.5f, -0.5f, 0.5f }, {1.0f, 0.0f, 0.0f, 1.0f} }
     };
+    mGeos[0].mIndices = {
+      {0, 1, 2}
+    };
     mGeos.emplace_back();
     mGeos[1].mVertices = {
         { { -0.1f, 0.5f, 0.5f }, {0.0f, 1.0f, 0.0f, 1.0f} },
         { { 0.4f, -0.5f, 0.5f }, {0.0f, 1.0f, 0.0f, 1.0f} },
         { { -0.6f, -0.5f, 0.5f }, {0.0f, 1.0f, 0.0f, 1.0f} }
+    };
+    mGeos[1].mIndices = {
+      {0, 1, 2}
     };
 
     RegisterGeo(mGeos[1]);
