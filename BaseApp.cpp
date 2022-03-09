@@ -97,33 +97,44 @@ void BaseApp::Run()
 
 void BaseApp::Update()
 {
-  // update app logic, such as moving the camera or figuring out what objects are in view
-  static float rIncrement = 0.02f * mTimeDelta;
-  static float gIncrement = 0.04f * mTimeDelta;
-  static float bIncrement = 0.08f * mTimeDelta;
+  XMFLOAT4X4 mWorld = Identity4x4();
+  XMFLOAT4X4 mView = Identity4x4();
+  XMFLOAT4X4 mProj = Identity4x4();
 
-  mCbColorMultiplierData.colorMultiplier.x += rIncrement;
-  mCbColorMultiplierData.colorMultiplier.y += gIncrement;
-  mCbColorMultiplierData.colorMultiplier.z += bIncrement;
+  XMMATRIX P = XMMatrixPerspectiveFovLH(0.25f * 3.1415926535f, static_cast<float>(mWidth) / mHeight, 1.0f, 1000.0f);
+  XMStoreFloat4x4(&mProj, P);
 
-  if (mCbColorMultiplierData.colorMultiplier.x >= 1.0 || mCbColorMultiplierData.colorMultiplier.x <= 0.0)
-  {
-    mCbColorMultiplierData.colorMultiplier.x = mCbColorMultiplierData.colorMultiplier.x >= 1.0f ? 1.0f : 0.0f;
-    rIncrement = -rIncrement;
-  }
-  if (mCbColorMultiplierData.colorMultiplier.y >= 1.0 || mCbColorMultiplierData.colorMultiplier.y <= 0.0)
-  {
-    mCbColorMultiplierData.colorMultiplier.y = mCbColorMultiplierData.colorMultiplier.y >= 1.0f ? 1.0f : 0.0f;
-    gIncrement = -gIncrement;
-  }
-  if (mCbColorMultiplierData.colorMultiplier.z >= 1.0 || mCbColorMultiplierData.colorMultiplier.z <= 0.0)
-  {
-    mCbColorMultiplierData.colorMultiplier.z = mCbColorMultiplierData.colorMultiplier.z >= 1.0f ? 1.0f : 0.0f;
-    bIncrement = -bIncrement;
-  }
+  static float mTheta = 1.5f * XM_PI;
+  float mPhi = XM_PIDIV4;
+  float mRadius = 5.0f;
+
+  mTheta += XM_PI * mTimeDelta * 0.1f;
+
+  // Convert Spherical to Cartesian coordinates.
+  float x = mRadius * sinf(mPhi) * cosf(mTheta);
+  float z = mRadius * sinf(mPhi) * sinf(mTheta);
+  float y = mRadius * cosf(mPhi);
+
+  XMVECTOR view_dir = XMVectorSet(x, y, z, 0);
+  view_dir = XMVector3Normalize(view_dir);
+
+  // Build the view matrix.
+  XMVECTOR pos = XMVectorSet(x, y, z, 1.0f);
+  XMVECTOR target = XMVectorZero();
+  XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+
+  XMMATRIX view = XMMatrixLookAtLH(pos, target, up);
+  XMStoreFloat4x4(&mView, view);
+
+  XMMATRIX world = XMLoadFloat4x4(&mWorld);
+  XMMATRIX proj = XMLoadFloat4x4(&mProj);
+  XMMATRIX worldViewProj = world * view * proj;
+
+  // Update the constant buffer with the latest worldViewProj matrix.
+  XMStoreFloat4x4(&mCb.WorldViewProj, XMMatrixTranspose(worldViewProj));
 
   // copy our ConstantBuffer instance to the mapped constant buffer resource
-  memcpy(mCbColorMultiplierAddr, &mCbColorMultiplierData, sizeof(mCbColorMultiplierData));
+  memcpy(mCbAddr, &mCb, sizeof(mCb));
 
 }
 
@@ -160,17 +171,17 @@ void BaseApp::Render()
   mCommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
   mCommandList->SetGraphicsRootDescriptorTable(0, mConstDescHeap->GetGPUDescriptorHandleForHeapStart());
 
-  for (auto& geo: mGeos)
+  for (auto& obj: mObjs)
   {
-    D3D12_INDEX_BUFFER_VIEW ibView = *geo.mIndexBufferView;
-    D3D12_VERTEX_BUFFER_VIEW vbView = *geo.mVertexBufferView;
+    D3D12_INDEX_BUFFER_VIEW ibView = obj.mIndexBufferView;
+    D3D12_VERTEX_BUFFER_VIEW vbView = obj.mVertexBufferView;
 
     mCommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     mCommandList->IASetVertexBuffers(0, 1, &vbView);
     mCommandList->IASetIndexBuffer(&ibView);
 
     mCommandList->DrawIndexedInstanced(
-      geo.mNumIndex,
+      obj.mNumIndex,
       1, 0, 0, 0
     );
   }
@@ -242,7 +253,7 @@ void BaseApp::InitConstBuffer()
 
 
   D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
-  heapDesc.NumDescriptors = 1;
+  heapDesc.NumDescriptors = 1; // only one CBV here
   heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
   heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
     
@@ -253,7 +264,7 @@ void BaseApp::InitConstBuffer()
   }
     
   auto hprop = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
-  auto rdesc = CD3DX12_RESOURCE_DESC::Buffer(1024 * 64);
+  auto rdesc = CD3DX12_RESOURCE_DESC::Buffer(256);
   hr = mDevice->CreateCommittedResource(
     &hprop, // this heap will be used to upload the constant buffer data
     D3D12_HEAP_FLAG_NONE, // no flags
@@ -269,10 +280,10 @@ void BaseApp::InitConstBuffer()
   mDevice->CreateConstantBufferView(&cbvDesc, mConstDescHeap->GetCPUDescriptorHandleForHeapStart());
 
   CD3DX12_RANGE readRange(0, 0);    // We do not intend to read from this resource on the CPU. (End is less than or equal to begin)
-  hr = mConstBufferUploadHeap->Map(0, &readRange, reinterpret_cast<void**>(&mCbColorMultiplierAddr));
+  hr = mConstBufferUploadHeap->Map(0, &readRange, reinterpret_cast<void**>(&mCbAddr));
 
-  ZeroMemory(&mCbColorMultiplierData, sizeof(mCbColorMultiplierData));
-  memcpy(mCbColorMultiplierAddr, &mCbColorMultiplierData, sizeof(mCbColorMultiplierData));
+  ZeroMemory(&mCb, sizeof(mCb));
+  memcpy(mCbAddr, &mCb, sizeof(mCb));
 }
 
 void BaseApp::InitView()

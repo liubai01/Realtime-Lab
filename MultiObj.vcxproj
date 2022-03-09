@@ -140,16 +140,18 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BaseApp.cpp" />
+    <ClCompile Include="BaseRenderingObj.cpp" />
     <ClCompile Include="DebugOut.cpp" />
-    <ClCompile Include="Geometry.cpp" />
+    <ClCompile Include="BaseGeometry.cpp" />
     <ClCompile Include="MultiObj.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BaseApp.h" />
+    <ClInclude Include="BaseRenderingObj.h" />
     <ClInclude Include="d3dx12.h" />
     <ClInclude Include="DebugOut.h" />
-    <ClInclude Include="Geometry.h" />
+    <ClInclude Include="BaseGeometry.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="ShaderManager.h" />
   </ItemGroup>

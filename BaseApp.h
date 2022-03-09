@@ -11,7 +11,8 @@
 #include <DirectXPackedVector.h>
 #include "ShaderManager.h"
 #include "DebugOut.h"
-#include "Geometry.h"
+#include "BaseGeometry.h"
+#include "BaseRenderingObj.h"
 #include <time.h>
 
 using namespace DirectX;
@@ -20,8 +21,19 @@ using namespace DirectX::PackedVector;
 using Microsoft::WRL::ComPtr;
 using namespace std;
 
+static XMFLOAT4X4 Identity4x4()
+{
+  static XMFLOAT4X4 I(
+    1.0f, 0.0f, 0.0f, 0.0f,
+    0.0f, 1.0f, 0.0f, 0.0f,
+    0.0f, 0.0f, 1.0f, 0.0f,
+    0.0f, 0.0f, 0.0f, 1.0f);
+
+  return I;
+}
+
 struct ConstantBuffer {
-  XMFLOAT4 colorMultiplier;
+  XMFLOAT4X4 WorldViewProj = Identity4x4();
 };
 
 class BaseApp
@@ -73,10 +85,10 @@ public:
 
   //vector<D3D12_VERTEX_BUFFER_VIEW> mVBuffViews;
   //vector<D3D12_INDEX_BUFFER_VIEW> mIBuffViews;
-  vector<GeometryView> mGeos;
+  vector<BaseRenderingObj> mObjs;
 
   template<typename V>
-  void RegisterGeo(Geometry<V>& geo);
+  void RegisterGeo(BaseGeometry<V>& geo);
 
   vector<D3D12_INPUT_ELEMENT_DESC> mInputLayout;
   D3D12_INPUT_LAYOUT_DESC mInputLayoutDesc;
@@ -112,21 +124,19 @@ public:
   vector<D3D12_ROOT_PARAMETER> mRootParams;
   D3D12_DESCRIPTOR_RANGE mDescTableRanges[1];
 
-  ConstantBuffer mCbColorMultiplierData;
-  UINT8* mCbColorMultiplierAddr;
+  ConstantBuffer mCb;
+  UINT8* mCbAddr;
 };
 
 
 template<typename V>
-void BaseApp::RegisterGeo(Geometry<V>& geo) {
+void BaseApp::RegisterGeo(BaseGeometry<V>& geo) {
   ResetCommandList();
 
-  geo.UploadVertex(mDevice, mCommandList);
-  geo.UploadIndex(mDevice, mCommandList);
+  mObjs.emplace_back();
+  auto& obj = mObjs.back();
 
-  //mVBuffViews.push_back(geo.mVertexBufferView);
-  //mIBuffViews.push_back(geo.mIndexBufferView);
-  mGeos.push_back(geo.GetGeoView());
+  obj.UploadGeo(geo, mDevice, mCommandList);
 
   // Now we execute the command list to upload the initial assets (triangle data)
   mCommandList->Close();
@@ -134,7 +144,7 @@ void BaseApp::RegisterGeo(Geometry<V>& geo) {
   mCommandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 
   // increment the fence value now, otherwise the buffer might not be uploaded by the time we start drawing
-  // but we only have one commitlist ( sadly :( )
+  // because we only have one commitlist ( sadly :( )
   ++mExpectedFenceValue[mFrameIdx];
   HRESULT hr = mCommandQueue->Signal(mFence[mFrameIdx].Get(), mExpectedFenceValue[mFrameIdx]);
   if (FAILED(hr))

@@ -33,7 +33,10 @@
     <ClCompile Include="ShaderManager.cpp">
       <Filter>Source Files\Base</Filter>
     </ClCompile>
-    <ClCompile Include="Geometry.cpp">
+    <ClCompile Include="BaseGeometry.cpp">
+      <Filter>Source Files\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseRenderingObj.cpp">
       <Filter>Source Files\Base</Filter>
     </ClCompile>
   </ItemGroup>
@@ -53,7 +56,10 @@
     <ClInclude Include="ShaderManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Geometry.h">
+    <ClInclude Include="BaseGeometry.h">
+      <Filter>Header Files\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseRenderingObj.h">
       <Filter>Header Files\Base</Filter>
     </ClInclude>
   </ItemGroup>
