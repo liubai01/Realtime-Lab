@@ -99,14 +99,10 @@ void BaseApp::Update()
 {
   XMFLOAT4X4 mWorld = Identity4x4();
   XMFLOAT4X4 mView = Identity4x4();
-  XMFLOAT4X4 mProj = Identity4x4();
-
-  XMMATRIX P = XMMatrixPerspectiveFovLH(0.25f * 3.1415926535f, static_cast<float>(mWidth) / mHeight, 1.0f, 1000.0f);
-  XMStoreFloat4x4(&mProj, P);
 
   static float mTheta = 1.5f * XM_PI;
   float mPhi = XM_PIDIV4;
-  float mRadius = 5.0f;
+  float mRadius = 10.0f;
 
   mTheta += XM_PI * mTimeDelta * 0.1f;
 
@@ -126,6 +122,11 @@ void BaseApp::Update()
   XMMATRIX view = XMMatrixLookAtLH(pos, target, up);
   XMStoreFloat4x4(&mView, view);
 
+  XMFLOAT4 cube1Position = XMFLOAT4(2.0f, 2.0f, 0.0f, 0.0f); // set cube 1's position
+  XMVECTOR posVec = XMLoadFloat4(&cube1Position); // create xmvector for cube1's position
+  XMMATRIX tmpMat = XMMatrixTranslationFromVector(posVec); // create translation matrix from cube1's position vector
+
+
   XMMATRIX world = XMLoadFloat4x4(&mWorld);
   XMMATRIX proj = XMLoadFloat4x4(&mProj);
   XMMATRIX worldViewProj = world * view * proj;
@@ -134,7 +135,16 @@ void BaseApp::Update()
   XMStoreFloat4x4(&mCb.WorldViewProj, XMMatrixTranspose(worldViewProj));
 
   // copy our ConstantBuffer instance to the mapped constant buffer resource
-  memcpy(mCbAddr, &mCb, sizeof(mCb));
+  for (int i = 0; i < mObjs.size(); ++i)
+  {
+    if (i > 0)
+    {
+      worldViewProj = tmpMat * worldViewProj;
+      XMStoreFloat4x4(&mCb.WorldViewProj, XMMatrixTranspose(worldViewProj));
+    }
+    memcpy(mCbAddr + i * mAlignSize, &mCb, sizeof(mCb));
+  }
+  
 
 }
 
@@ -169,13 +179,21 @@ void BaseApp::Render()
 
   ID3D12DescriptorHeap* descriptorHeaps[] = { mConstDescHeap.Get() };
   mCommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
-  mCommandList->SetGraphicsRootDescriptorTable(0, mConstDescHeap->GetGPUDescriptorHandleForHeapStart());
 
+  //mCommandList->SetGraphicsRootDescriptorTable(0, mConstDescHeap->GetGPUDescriptorHandleForHeapStart());
+
+
+  auto cbvHandle = CD3DX12_GPU_DESCRIPTOR_HANDLE(mConstDescHeap->GetGPUDescriptorHandleForHeapStart());
   for (auto& obj: mObjs)
   {
     D3D12_INDEX_BUFFER_VIEW ibView = obj.mIndexBufferView;
     D3D12_VERTEX_BUFFER_VIEW vbView = obj.mVertexBufferView;
 
+    //mCommandList->SetGraphicsRootConstantBufferView(0,
+    //  mConstBufferUploadHeap->GetGPUVirtualAddress() + static_cast<UINT64>(mAlignSize) * cnt
+    //);
+
+    mCommandList->SetGraphicsRootDescriptorTable(0, cbvHandle);
     mCommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     mCommandList->IASetVertexBuffers(0, 1, &vbView);
     mCommandList->IASetIndexBuffer(&ibView);
@@ -184,6 +202,8 @@ void BaseApp::Render()
       obj.mNumIndex,
       1, 0, 0, 0
     );
+
+    cbvHandle.Offset(1, mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
   }
 
   // Indicate a state transition on the resource usage.
@@ -253,7 +273,7 @@ void BaseApp::InitConstBuffer()
 
 
   D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
-  heapDesc.NumDescriptors = 1; // only one CBV here
+  heapDesc.NumDescriptors = mObjs.size(); 
   heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
   heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
     
@@ -264,7 +284,7 @@ void BaseApp::InitConstBuffer()
   }
     
   auto hprop = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
-  auto rdesc = CD3DX12_RESOURCE_DESC::Buffer(256);
+  auto rdesc = CD3DX12_RESOURCE_DESC::Buffer(256 * 64); // now we allocate a fixed large enough space
   hr = mDevice->CreateCommittedResource(
     &hprop, // this heap will be used to upload the constant buffer data
     D3D12_HEAP_FLAG_NONE, // no flags
@@ -274,16 +294,23 @@ void BaseApp::InitConstBuffer()
     IID_PPV_ARGS(mConstBufferUploadHeap.GetAddressOf()));
   mConstBufferUploadHeap->SetName(L"Constant Buffer Upload Resource Heap");
 
-  D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
-  cbvDesc.BufferLocation = mConstBufferUploadHeap->GetGPUVirtualAddress();
-  cbvDesc.SizeInBytes = (sizeof(ConstantBuffer) + 255) & ~255;    // CB size is required to be 256-byte aligned.
-  mDevice->CreateConstantBufferView(&cbvDesc, mConstDescHeap->GetCPUDescriptorHandleForHeapStart());
+  mAlignSize = (sizeof(ConstantBuffer) + 255) & ~255;
+  for (UINT i = 0; i < mObjs.size(); ++i)
+  {
+    auto handle = CD3DX12_CPU_DESCRIPTOR_HANDLE(mConstDescHeap->GetCPUDescriptorHandleForHeapStart());
+    handle.Offset(i, mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
+
+    D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
+    cbvDesc.BufferLocation = mConstBufferUploadHeap->GetGPUVirtualAddress() + i * mAlignSize;
+    cbvDesc.SizeInBytes = mAlignSize;    // CB size is required to be 256-byte aligned.
+    mDevice->CreateConstantBufferView(&cbvDesc, handle);
+  }
 
   CD3DX12_RANGE readRange(0, 0);    // We do not intend to read from this resource on the CPU. (End is less than or equal to begin)
   hr = mConstBufferUploadHeap->Map(0, &readRange, reinterpret_cast<void**>(&mCbAddr));
 
-  ZeroMemory(&mCb, sizeof(mCb));
-  memcpy(mCbAddr, &mCb, sizeof(mCb));
+  //ZeroMemory(&mCb, sizeof(mCb));
+  //memcpy(mCbAddr, &mCb, sizeof(mCb));
 }
 
 void BaseApp::InitView()
@@ -301,6 +328,9 @@ void BaseApp::InitView()
   mScissorRect.top = 0;
   mScissorRect.right = mWidth;
   mScissorRect.bottom = mHeight;
+
+  XMMATRIX P = XMMatrixPerspectiveFovLH(0.25f * 3.1415926535f, static_cast<float>(mWidth) / mHeight, 1.0f, 1000.0f);
+  XMStoreFloat4x4(&mProj, P);
 }
 
 void BaseApp::InitPSO()

@@ -13,6 +13,7 @@
 #include "DebugOut.h"
 #include "BaseGeometry.h"
 #include "BaseRenderingObj.h"
+#include "MathUtils.h"
 #include <time.h>
 
 using namespace DirectX;
@@ -20,17 +21,6 @@ using namespace DirectX::PackedVector;
 
 using Microsoft::WRL::ComPtr;
 using namespace std;
-
-static XMFLOAT4X4 Identity4x4()
-{
-  static XMFLOAT4X4 I(
-    1.0f, 0.0f, 0.0f, 0.0f,
-    0.0f, 1.0f, 0.0f, 0.0f,
-    0.0f, 0.0f, 1.0f, 0.0f,
-    0.0f, 0.0f, 0.0f, 1.0f);
-
-  return I;
-}
 
 struct ConstantBuffer {
   XMFLOAT4X4 WorldViewProj = Identity4x4();
@@ -71,6 +61,11 @@ public:
   int mFrameCnt = 3;
   int mFrameIdx = 0;
   bool mIsRunning = true;
+  vector<ComPtr<ID3D12Fence>> mFence;
+  vector<UINT64> mExpectedFenceValue;
+
+  ComPtr<ID3D12DescriptorHeap> mRtvDescriptorHeap;
+  vector<ComPtr<ID3D12Resource>> mRenderTargets;
 
   int mWidth = 800;
   int mHeight = 600;
@@ -81,12 +76,12 @@ public:
 
   D3D12_VIEWPORT mViewport; // area that output from rasterizer will be stretched to.
   D3D12_RECT mScissorRect; // the area to draw in. pixels outside that area will not be drawn onto
+
+  XMFLOAT4X4 mProj = Identity4x4();
+
   void InitView();
 
-  //vector<D3D12_VERTEX_BUFFER_VIEW> mVBuffViews;
-  //vector<D3D12_INDEX_BUFFER_VIEW> mIBuffViews;
   vector<BaseRenderingObj> mObjs;
-
   template<typename V>
   void RegisterGeo(BaseGeometry<V>& geo);
 
@@ -104,12 +99,6 @@ public:
   ComPtr<ID3D12CommandAllocator> mCommandAlloc;
   ComPtr<ID3D12GraphicsCommandList> mCommandList;
 
-  vector<ComPtr<ID3D12Fence>> mFence;
-  vector<UINT64> mExpectedFenceValue;
-
-  ComPtr<ID3D12DescriptorHeap> mRtvDescriptorHeap;
-  vector<ComPtr<ID3D12Resource>> mRenderTargets;
-
   ComPtr<ID3D12PipelineState> mPSO;
   ComPtr<ID3D12RootSignature> mRootSig;
 
@@ -117,6 +106,8 @@ public:
   ComPtr<ID3D12DescriptorHeap> mDsDescriptorHeap;
 
   ShaderManager mShader;
+
+#pragma region [Constant Buffer]
 
   ComPtr<ID3D12DescriptorHeap> mConstDescHeap;
   ComPtr<ID3D12Resource> mConstBufferUploadHeap;
@@ -126,6 +117,9 @@ public:
 
   ConstantBuffer mCb;
   UINT8* mCbAddr;
+  int mAlignSize;
+
+#pragma endregion
 };
 
 

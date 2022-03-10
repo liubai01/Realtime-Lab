@@ -43,7 +43,7 @@ public:
   MyApp(HINSTANCE hInstance) : BaseApp(hInstance) {
     // Set data
     mGeos.emplace_back();
-    mGeos[0].mName = "Triangle Red";
+    mGeos[0].mName = "Cube 1";
     XMFLOAT4 color = { 1.0f, 0.0f, 0.0f, 1.0f };
     mGeos[0].mVertices = {
         { { -1.0f, -1.0f, -1.0f }, color },
@@ -82,6 +82,48 @@ public:
     };
 
     RegisterGeo(mGeos[0]);
+
+    // Set data
+    mGeos.emplace_back();
+    mGeos[1].mName = "Cube 2";
+    color = { 0.0f, 1.0f, 0.0f, 1.0f };
+    mGeos[1].mVertices = {
+        { { -1.0f, -1.0f, -1.0f }, color },
+        { { -1.0f, +1.0f, -1.0f }, color },
+        { { +1.0f, +1.0f, -1.0f }, color },
+        { { +1.0f, -1.0f, -1.0f }, color },
+        { { -1.0f, -1.0f, +1.0f }, color },
+        { { -1.0f, +1.0f, +1.0f }, color },
+        { { +1.0f, +1.0f, +1.0f }, color },
+        { { +1.0f, -1.0f, +1.0f }, color },
+    };
+    mGeos[1].mIndices = {
+      // front face
+      0, 1, 2,
+      0, 2, 3,
+
+      // back face
+      4, 6, 5,
+      4, 7, 6,
+
+      // left face
+      4, 5, 1,
+      4, 1, 0,
+
+      // right face
+      3, 2, 6,
+      3, 6, 7,
+
+      // top face
+      1, 5, 6,
+      1, 6, 2,
+
+      // bottom face
+      4, 0, 3,
+      4, 3, 7
+    };
+
+    RegisterGeo(mGeos[1]);
 
     //mGeos.emplace_back();
     //mGeos[0].mName = "Quad Red";

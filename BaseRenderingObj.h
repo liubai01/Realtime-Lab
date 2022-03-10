@@ -38,8 +38,8 @@ private:
 template <class T>
 void BaseRenderingObj::UploadGeo(BaseGeometry<T>& geo, ComPtr<ID3D12Device>& device, ComPtr <ID3D12GraphicsCommandList>& commandList)
 {
-  UploadVertex(geo, device, commandlist);
-  UploadIndex(geo, device, commandlist);
+  UploadVertex(geo, device, commandList);
+  UploadIndex(geo, device, commandList);
 }
 
 template <class T>

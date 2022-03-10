@@ -62,6 +62,9 @@
     <ClInclude Include="BaseRenderingObj.h">
       <Filter>Header Files\Base</Filter>
     </ClInclude>
+    <ClInclude Include="MathUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="VertexShader.hlsl">
