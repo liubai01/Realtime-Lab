@@ -83,7 +83,7 @@ public:
 
   vector<BaseRenderingObj> mObjs;
   template<typename V>
-  void RegisterGeo(BaseGeometry<V>& geo);
+  BaseRenderingObj* RegisterGeo(BaseGeometry<V>& geo);
 
   vector<D3D12_INPUT_ELEMENT_DESC> mInputLayout;
   D3D12_INPUT_LAYOUT_DESC mInputLayoutDesc;
@@ -124,7 +124,7 @@ public:
 
 
 template<typename V>
-void BaseApp::RegisterGeo(BaseGeometry<V>& geo) {
+BaseRenderingObj* BaseApp::RegisterGeo(BaseGeometry<V>& geo) {
   ResetCommandList();
 
   mObjs.emplace_back();
@@ -153,10 +153,11 @@ void BaseApp::RegisterGeo(BaseGeometry<V>& geo) {
     if (FAILED(hr))
     {
       mIsRunning = false;
-      return;
+      return nullptr;
     }
 
     WaitForSingleObject(mFenceEvent, INFINITE);
   }
   
+  return &obj;
 }

@@ -97,12 +97,12 @@ void BaseApp::Run()
 
 void BaseApp::Update()
 {
-  XMFLOAT4X4 mWorld = Identity4x4();
+  //XMFLOAT4X4 mWorld = Identity4x4();
   XMFLOAT4X4 mView = Identity4x4();
 
   static float mTheta = 1.5f * XM_PI;
   float mPhi = XM_PIDIV4;
-  float mRadius = 10.0f;
+  float mRadius = 15.0f;
 
   mTheta += XM_PI * mTimeDelta * 0.1f;
 
@@ -122,26 +122,16 @@ void BaseApp::Update()
   XMMATRIX view = XMMatrixLookAtLH(pos, target, up);
   XMStoreFloat4x4(&mView, view);
 
-  XMFLOAT4 cube1Position = XMFLOAT4(2.0f, 2.0f, 0.0f, 0.0f); // set cube 1's position
-  XMVECTOR posVec = XMLoadFloat4(&cube1Position); // create xmvector for cube1's position
-  XMMATRIX tmpMat = XMMatrixTranslationFromVector(posVec); // create translation matrix from cube1's position vector
-
-
-  XMMATRIX world = XMLoadFloat4x4(&mWorld);
+  //XMMATRIX world = XMLoadFloat4x4(&mWorld);
   XMMATRIX proj = XMLoadFloat4x4(&mProj);
-  XMMATRIX worldViewProj = world * view * proj;
-
-  // Update the constant buffer with the latest worldViewProj matrix.
-  XMStoreFloat4x4(&mCb.WorldViewProj, XMMatrixTranspose(worldViewProj));
 
   // copy our ConstantBuffer instance to the mapped constant buffer resource
-  for (int i = 0; i < mObjs.size(); ++i)
+  for (size_t i = 0; i < mObjs.size(); ++i)
   {
-    if (i > 0)
-    {
-      worldViewProj = tmpMat * worldViewProj;
-      XMStoreFloat4x4(&mCb.WorldViewProj, XMMatrixTranspose(worldViewProj));
-    }
+    XMMATRIX worldViewProj = mObjs[i].GetWorldMatrix() * view * proj;
+    // Update the constant buffer with the latest worldViewProj matrix.
+    XMStoreFloat4x4(&mCb.WorldViewProj, XMMatrixTranspose(worldViewProj));
+
     memcpy(mCbAddr + i * mAlignSize, &mCb, sizeof(mCb));
   }
   
@@ -301,7 +291,7 @@ void BaseApp::InitConstBuffer()
     handle.Offset(i, mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
 
     D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
-    cbvDesc.BufferLocation = mConstBufferUploadHeap->GetGPUVirtualAddress() + i * mAlignSize;
+    cbvDesc.BufferLocation = mConstBufferUploadHeap->GetGPUVirtualAddress() + static_cast<D3D12_GPU_VIRTUAL_ADDRESS>(i) * mAlignSize;
     cbvDesc.SizeInBytes = mAlignSize;    // CB size is required to be 256-byte aligned.
     mDevice->CreateConstantBufferView(&cbvDesc, handle);
   }

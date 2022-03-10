@@ -35,6 +35,45 @@ struct Vertex {
   XMFLOAT4 color;
 };
 
+void SetCubeGeo(BaseGeometry<Vertex>& geo, XMFLOAT4& color)
+{
+  geo.mVertices = {
+          { { -1.0f, -1.0f, -1.0f }, color },
+          { { -1.0f, +1.0f, -1.0f }, color },
+          { { +1.0f, +1.0f, -1.0f }, color },
+          { { +1.0f, -1.0f, -1.0f }, color },
+          { { -1.0f, -1.0f, +1.0f }, color },
+          { { -1.0f, +1.0f, +1.0f }, color },
+          { { +1.0f, +1.0f, +1.0f }, color },
+          { { +1.0f, -1.0f, +1.0f }, color },
+  };
+  geo.mIndices = {
+    // front face
+    0, 1, 2,
+    0, 2, 3,
+
+    // back face
+    4, 6, 5,
+    4, 7, 6,
+
+    // left face
+    4, 5, 1,
+    4, 1, 0,
+
+    // right face
+    3, 2, 6,
+    3, 6, 7,
+
+    // top face
+    1, 5, 6,
+    1, 6, 2,
+
+    // bottom face
+    4, 0, 3,
+    4, 3, 7
+  };
+}
+
 class MyApp : public BaseApp {
 public:
   vector<Vertex> mvList;
@@ -43,103 +82,29 @@ public:
   MyApp(HINSTANCE hInstance) : BaseApp(hInstance) {
     // Set data
     mGeos.emplace_back();
-    mGeos[0].mName = "Cube 1";
+    mGeos[0].mName = "Cube Red";
     XMFLOAT4 color = { 1.0f, 0.0f, 0.0f, 1.0f };
-    mGeos[0].mVertices = {
-        { { -1.0f, -1.0f, -1.0f }, color },
-        { { -1.0f, +1.0f, -1.0f }, color },
-        { { +1.0f, +1.0f, -1.0f }, color },
-        { { +1.0f, -1.0f, -1.0f }, color },
-        { { -1.0f, -1.0f, +1.0f }, color },
-        { { -1.0f, +1.0f, +1.0f }, color },
-        { { +1.0f, +1.0f, +1.0f }, color },
-        { { +1.0f, -1.0f, +1.0f }, color },
-    };
-    mGeos[0].mIndices = {
-      // front face
-      0, 1, 2,
-      0, 2, 3,
+    SetCubeGeo(mGeos[0], color);
+    
+    BaseRenderingObj* obj = RegisterGeo(mGeos[0]);
+    obj->SetPos(0.0f, 2.0f, 2.0f);
 
-      // back face
-      4, 6, 5,
-      4, 7, 6,
-
-      // left face
-      4, 5, 1,
-      4, 1, 0,
-
-      // right face
-      3, 2, 6,
-      3, 6, 7,
-
-      // top face
-      1, 5, 6,
-      1, 6, 2,
-
-      // bottom face
-      4, 0, 3,
-      4, 3, 7
-    };
-
-    RegisterGeo(mGeos[0]);
-
-    // Set data
     mGeos.emplace_back();
-    mGeos[1].mName = "Cube 2";
+    mGeos[1].mName = "Cube Blue";
     color = { 0.0f, 1.0f, 0.0f, 1.0f };
-    mGeos[1].mVertices = {
-        { { -1.0f, -1.0f, -1.0f }, color },
-        { { -1.0f, +1.0f, -1.0f }, color },
-        { { +1.0f, +1.0f, -1.0f }, color },
-        { { +1.0f, -1.0f, -1.0f }, color },
-        { { -1.0f, -1.0f, +1.0f }, color },
-        { { -1.0f, +1.0f, +1.0f }, color },
-        { { +1.0f, +1.0f, +1.0f }, color },
-        { { +1.0f, -1.0f, +1.0f }, color },
-    };
-    mGeos[1].mIndices = {
-      // front face
-      0, 1, 2,
-      0, 2, 3,
+    SetCubeGeo(mGeos[1], color);
 
-      // back face
-      4, 6, 5,
-      4, 7, 6,
+    obj = RegisterGeo(mGeos[1]);
+    obj->SetPos(0.0f, 0.0f, 0.0f);
 
-      // left face
-      4, 5, 1,
-      4, 1, 0,
+    mGeos.emplace_back();
+    mGeos[2].mName = "Cube Green";
+    color = { 0.0f, 0.0f, 1.0f, 1.0f };
+    SetCubeGeo(mGeos[2], color);
 
-      // right face
-      3, 2, 6,
-      3, 6, 7,
+    obj = RegisterGeo(mGeos[2]);
+    obj->SetPos(0.0f, 4.0f, 0.0f);
 
-      // top face
-      1, 5, 6,
-      1, 6, 2,
-
-      // bottom face
-      4, 0, 3,
-      4, 3, 7
-    };
-
-    RegisterGeo(mGeos[1]);
-
-    //mGeos.emplace_back();
-    //mGeos[0].mName = "Quad Red";
-    //XMFLOAT4 color = { 1.0f, 0.8f, 1.0f, 1.0f };
-    //mGeos[0].mVertices = {
-    //    { { -0.5f, 0.5f, .5f }, color },
-    //    { { 0.5f, 0.5f, .5f }, color },
-    //    { { -0.5f, -0.5f, .5f }, color },
-    //    { { 0.5f, -0.5f, .5f }, color },
-    //};
-    //mGeos[0].mIndices = {
-    //  0, 1, 2,
-    //  1, 2, 3
-    //};
-
-    //RegisterGeo(mGeos[0]);
 
     // Set input layout
     mInputLayout =
