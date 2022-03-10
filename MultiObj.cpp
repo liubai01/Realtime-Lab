@@ -33,19 +33,20 @@ SOFTWARE.
 struct Vertex {
   XMFLOAT3 pos;
   XMFLOAT4 color;
+  XMFLOAT3 normal;
 };
 
 void SetCubeGeo(BaseGeometry<Vertex>& geo, XMFLOAT4& color)
 {
   geo.mVertices = {
-          { { -1.0f, -1.0f, -1.0f }, color },
-          { { -1.0f, +1.0f, -1.0f }, color },
-          { { +1.0f, +1.0f, -1.0f }, color },
-          { { +1.0f, -1.0f, -1.0f }, color },
-          { { -1.0f, -1.0f, +1.0f }, color },
-          { { -1.0f, +1.0f, +1.0f }, color },
-          { { +1.0f, +1.0f, +1.0f }, color },
-          { { +1.0f, -1.0f, +1.0f }, color },
+          { { -1.0f, -1.0f, -1.0f }, color, { 0.0f, 0.0f, 0.0f } },
+          { { -1.0f, +1.0f, -1.0f }, color, { 0.0f, 0.0f, 0.0f } },
+          { { +1.0f, +1.0f, -1.0f }, color, { 0.0f, 0.0f, 0.0f } },
+          { { +1.0f, -1.0f, -1.0f }, color, { 0.0f, 0.0f, 0.0f } },
+          { { -1.0f, -1.0f, +1.0f }, color, { 0.0f, 0.0f, 0.0f } },
+          { { -1.0f, +1.0f, +1.0f }, color, { 0.0f, 0.0f, 0.0f } },
+          { { +1.0f, +1.0f, +1.0f }, color, { 0.0f, 0.0f, 0.0f } },
+          { { +1.0f, -1.0f, +1.0f }, color, { 0.0f, 0.0f, 0.0f } },
   };
   geo.mIndices = {
     // front face
@@ -72,6 +73,16 @@ void SetCubeGeo(BaseGeometry<Vertex>& geo, XMFLOAT4& color)
     4, 0, 3,
     4, 3, 7
   };
+
+  vector<XMFLOAT3*> norms;
+  vector<XMFLOAT3*> pos;
+
+  for (auto& v : geo.mVertices) {
+    pos.push_back(&v.pos);
+    norms.push_back(&v.normal);
+  }
+
+  geo.ComputeNormal(pos, norms);
 }
 
 class MyApp : public BaseApp {
@@ -83,7 +94,7 @@ public:
     // Set data
     mGeos.emplace_back();
     mGeos[0].mName = "Cube Red";
-    XMFLOAT4 color = { 1.0f, 0.0f, 0.0f, 1.0f };
+    XMFLOAT4 color = { 0.8f, 0.2f, 0.2f, 1.0f };
     SetCubeGeo(mGeos[0], color);
     
     BaseRenderingObj* obj = RegisterGeo(mGeos[0]);
@@ -91,7 +102,7 @@ public:
 
     mGeos.emplace_back();
     mGeos[1].mName = "Cube Blue";
-    color = { 0.0f, 1.0f, 0.0f, 1.0f };
+    color = { 0.2f, 0.8f, 0.2f, 1.0f };
     SetCubeGeo(mGeos[1], color);
 
     obj = RegisterGeo(mGeos[1]);
@@ -99,7 +110,7 @@ public:
 
     mGeos.emplace_back();
     mGeos[2].mName = "Cube Green";
-    color = { 0.0f, 0.0f, 1.0f, 1.0f };
+    color = { 0.2f, 0.2f, 0.8f, 1.0f };
     SetCubeGeo(mGeos[2], color);
 
     obj = RegisterGeo(mGeos[2]);
@@ -110,7 +121,8 @@ public:
     mInputLayout =
     {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-        { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+        { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+        { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 28, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
     };
 
     mShader.AddVertexShader("VertexShader.hlsl");

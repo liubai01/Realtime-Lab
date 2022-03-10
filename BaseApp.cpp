@@ -111,8 +111,11 @@ void BaseApp::Update()
   float z = mRadius * sinf(mPhi) * sinf(mTheta);
   float y = mRadius * cosf(mPhi);
 
+  mCb.LightDir = XMFLOAT3(x, y, z);
+
   XMVECTOR view_dir = XMVectorSet(x, y, z, 0);
   view_dir = XMVector3Normalize(view_dir);
+  XMStoreFloat3(&mCb.LightDir, view_dir);
 
   // Build the view matrix.
   XMVECTOR pos = XMVectorSet(x, y, z, 1.0f);
@@ -259,7 +262,7 @@ void BaseApp::InitConstBuffer()
   mRootParams.emplace_back();
   mRootParams[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; // this is a descriptor table
   mRootParams[0].DescriptorTable = descriptorTable; // this is our descriptor table for this root parameter
-  mRootParams[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX; // our pixel shader will be the only shader accessing this parameter for now
+  mRootParams[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL; // our vector shader will be the only shader accessing this parameter for now
 
 
   D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};

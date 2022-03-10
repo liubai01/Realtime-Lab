@@ -53,9 +53,6 @@
     <ClInclude Include="DebugOut.h">
       <Filter>Header Files\Base</Filter>
     </ClInclude>
-    <ClInclude Include="ShaderManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="BaseGeometry.h">
       <Filter>Header Files\Base</Filter>
     </ClInclude>
@@ -63,6 +60,9 @@
       <Filter>Header Files\Base</Filter>
     </ClInclude>
     <ClInclude Include="MathUtils.h">
+      <Filter>Header Files\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderManager.h">
       <Filter>Header Files\Base</Filter>
     </ClInclude>
   </ItemGroup>
