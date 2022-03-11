@@ -2,6 +2,7 @@ cbuffer cbPerObject : register(b0)
 {
 	float4x4 gWorldViewProj;
 	float4x4 gWorld;
+	float4x4 gRSInvT;
 	float4 gLightDir;
 	float4 gEyePos;
 };
@@ -28,8 +29,12 @@ VertexOut main(VertexIn vin)
 
   vout.Color = vin.Color;
 	vout.Pos = mul(float4(vin.Pos, 1.0f), gWorldViewProj);
+
 	vout.PosW = mul(float4(vin.Pos, 1.0f), gWorld);
-	vout.Norm = vin.Norm;
+	//vout.Norm = vin.Norm / vout.Pos.z * vout.Pos.w;
+	vout.Norm = normalize(mul(vin.Norm, gRSInvT));
+	//vout.Norm = vin.Norm;
+
 
 	return vout;
 }

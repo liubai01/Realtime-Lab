@@ -39,39 +39,61 @@ struct Vertex {
 void SetCubeGeo(BaseGeometry<Vertex>& geo, XMFLOAT4& color)
 {
   geo.mVertices = {
-          { { -1.0f, -1.0f, -1.0f }, color, { 0.0f, 0.0f, 0.0f } },
+          // front
           { { -1.0f, +1.0f, -1.0f }, color, { 0.0f, 0.0f, 0.0f } },
-          { { +1.0f, +1.0f, -1.0f }, color, { 0.0f, 0.0f, 0.0f } },
           { { +1.0f, -1.0f, -1.0f }, color, { 0.0f, 0.0f, 0.0f } },
-          { { -1.0f, -1.0f, +1.0f }, color, { 0.0f, 0.0f, 0.0f } },
-          { { -1.0f, +1.0f, +1.0f }, color, { 0.0f, 0.0f, 0.0f } },
+          { { -1.0f, -1.0f, -1.0f }, color, { 0.0f, 0.0f, 0.0f } },
+          { { +1.0f, +1.0f, -1.0f }, color, { 0.0f, 0.0f, 0.0f } },
+          // right
+          { { +1.0f, -1.0f, -1.0f }, color, { 0.0f, 0.0f, 0.0f } },
           { { +1.0f, +1.0f, +1.0f }, color, { 0.0f, 0.0f, 0.0f } },
           { { +1.0f, -1.0f, +1.0f }, color, { 0.0f, 0.0f, 0.0f } },
+          { { +1.0f, +1.0f, -1.0f }, color, { 0.0f, 0.0f, 0.0f } },
+          // left
+          { { -1.0f, +1.0f, +1.0f }, color, { 0.0f, 0.0f, 0.0f } },
+          { { -1.0f, -1.0f, -1.0f }, color, { 0.0f, 0.0f, 0.0f } },
+          { { -1.0f, -1.0f, +1.0f }, color, { 0.0f, 0.0f, 0.0f } },
+          { { -1.0f, +1.0f, -1.0f }, color, { 0.0f, 0.0f, 0.0f } },
+          // back
+          { { +1.0f, +1.0f, +1.0f }, color, { 0.0f, 0.0f, 0.0f } },
+          { { -1.0f, -1.0f, +1.0f }, color, { 0.0f, 0.0f, 0.0f } },
+          { { +1.0f, -1.0f, +1.0f }, color, { 0.0f, 0.0f, 0.0f } },
+          { { -1.0f, +1.0f, +1.0f }, color, { 0.0f, 0.0f, 0.0f } },
+          // top
+          { { -1.0f, +1.0f, -1.0f }, color, { 0.0f, 0.0f, 0.0f } },
+          { { +1.0f, +1.0f, +1.0f }, color, { 0.0f, 0.0f, 0.0f } },
+          { { +1.0f, +1.0f, -1.0f }, color, { 0.0f, 0.0f, 0.0f } },
+          { { -1.0f, +1.0f, +1.0f }, color, { 0.0f, 0.0f, 0.0f } },
+          // bottom
+          { { +1.0f, -1.0f, +1.0f }, color, { 0.0f, 0.0f, 0.0f } },
+          { { -1.0f, -1.0f, -1.0f }, color, { 0.0f, 0.0f, 0.0f } },
+          { { +1.0f, -1.0f, -1.0f }, color, { 0.0f, 0.0f, 0.0f } },
+          { { -1.0f, -1.0f, +1.0f }, color, { 0.0f, 0.0f, 0.0f } },
   };
   geo.mIndices = {
-    // front face
-    0, 1, 2,
-    0, 2, 3,
-
-    // back face
-    4, 6, 5,
-    4, 7, 6,
+    // ffront face
+    0, 1, 2, // first triangle
+    0, 3, 1, // second triangle
 
     // left face
-    4, 5, 1,
-    4, 1, 0,
+    4, 5, 6, // first triangle
+    4, 7, 5, // second triangle
 
     // right face
-    3, 2, 6,
-    3, 6, 7,
+    8, 9, 10, // first triangle
+    8, 11, 9, // second triangle
+
+    // back face
+    12, 13, 14, // first triangle
+    12, 15, 13, // second triangle
 
     // top face
-    1, 5, 6,
-    1, 6, 2,
+    16, 17, 18, // first triangle
+    16, 19, 17, // second triangle
 
     // bottom face
-    4, 0, 3,
-    4, 3, 7
+    20, 21, 22, // first triangle
+    20, 23, 21, // second triangle
   };
 
   vector<XMFLOAT3*> norms;
@@ -98,23 +120,26 @@ public:
     SetCubeGeo(mGeos[0], color);
     
     BaseRenderingObj* obj = RegisterGeo(mGeos[0]);
-    obj->SetPos(2.0f, 2.0f, 0.0f);
+    obj->SetPos(2.0f, 4.0f, 0.0f);
+    obj->SetRot(XM_PI / 4.0f, 0.0f, 0.0f);
 
     mGeos.emplace_back();
-    mGeos[1].mName = "Cube Blue";
-    color = { 0.2f, 0.8f, 0.2f, 1.0f };
+    mGeos[1].mName = "Cube Green";
+    color = { 0.2f, 0.4f, 0.2f, 1.0f };
     SetCubeGeo(mGeos[1], color);
 
     obj = RegisterGeo(mGeos[1]);
     obj->SetPos(0.0f, 0.0f, 0.0f);
+    obj->SetScale(6.0f, 0.5f, 6.0f);
 
     mGeos.emplace_back();
-    mGeos[2].mName = "Cube Green";
+    mGeos[2].mName = "Cube Blue";
     color = { 0.2f, 0.2f, 0.8f, 1.0f };
     SetCubeGeo(mGeos[2], color);
 
     obj = RegisterGeo(mGeos[2]);
-    obj->SetPos(0.0f, 4.0f, 0.0f);
+    obj->SetPos(-2.0f, 4.0f, 4.0f);
+    obj->SetRot(-XM_PI / 4.0f, XM_PI / 8.0f, 0.0f);
 
 
     // Set input layout

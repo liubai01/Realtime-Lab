@@ -100,7 +100,7 @@ void BaseApp::Update()
 
   static float mTheta = 1.5f * XM_PI;
   float mPhi = XM_PIDIV4;
-  float mRadius = 15.0f;
+  float mRadius = 20.0f;
 
   mTheta += XM_PI * mTimeDelta * 0.1f;
 
@@ -115,7 +115,7 @@ void BaseApp::Update()
   //view_dir = XMVector3Normalize(view_dir);
 
   //XMVECTOR ldir = XMVectorSet(1, 1, 1, 0);
-  XMStoreFloat4(&mCb.LightDir, XMVector3Normalize(view_dir));
+  XMStoreFloat4(&mCb.LightDir, XMVector3Normalize(light_dir));
 
   // Build the view matrix.
   //XMVECTOR pos = XMVectorSet(x, y, z, 1.0f);
@@ -139,6 +139,7 @@ void BaseApp::Update()
     // Update the constant buffer with the latest worldViewProj matrix.
     XMStoreFloat4x4(&mCb.WorldViewProj, XMMatrixTranspose(worldViewProj));
     XMStoreFloat4x4(&mCb.World, XMMatrixTranspose(mObjs[i].GetWorldMatrix()));
+    XMStoreFloat4x4(&mCb.RSInvT, XMMatrixTranspose(mObjs[i].GetRSInvT()));
 
     memcpy(mCbAddr + i * mAlignSize, &mCb, sizeof(mCb));
   }

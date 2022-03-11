@@ -25,6 +25,7 @@ using namespace std;
 struct ConstantBuffer {
   XMFLOAT4X4 WorldViewProj = Identity4x4();
   XMFLOAT4X4 World = Identity4x4();
+  XMFLOAT4X4 RSInvT = Identity4x4();
   XMFLOAT4 LightDir;
   XMFLOAT4 EyePos;
 };
