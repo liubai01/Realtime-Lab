@@ -1,7 +1,9 @@
 cbuffer cbPerObject : register(b0)
 {
 	float4x4 gWorldViewProj;
-	float3 gLightDir;
+	float4x4 gWorld;
+	float4 gLightDir;
+	float4 gEyePos;
 };
 
 struct VertexIn
@@ -14,6 +16,7 @@ struct VertexIn
 struct VertexOut
 {
 	float4 Pos  : SV_POSITION;
+	float4 PosW : POSITION;
 	float3 Norm : NORMAL;
 	float4 Color : COLOR;
 };
@@ -25,6 +28,7 @@ VertexOut main(VertexIn vin)
 
   vout.Color = vin.Color;
 	vout.Pos = mul(float4(vin.Pos, 1.0f), gWorldViewProj);
+	vout.PosW = mul(float4(vin.Pos, 1.0f), gWorld);
 	vout.Norm = vin.Norm;
 
 	return vout;

@@ -12,8 +12,6 @@
 
 using namespace DirectX;
 
-
-
 LRESULT CALLBACK BaseApp::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
   if (msg == WM_DESTROY)
@@ -111,29 +109,36 @@ void BaseApp::Update()
   float z = mRadius * sinf(mPhi) * sinf(mTheta);
   float y = mRadius * cosf(mPhi);
 
-  mCb.LightDir = XMFLOAT3(x, y, z);
 
   XMVECTOR view_dir = XMVectorSet(x, y, z, 0);
-  view_dir = XMVector3Normalize(view_dir);
-  XMStoreFloat3(&mCb.LightDir, view_dir);
+  XMVECTOR light_dir = XMVectorSet(1.0f, 1.0f, 1.0f, 0);
+  //view_dir = XMVector3Normalize(view_dir);
+
+  //XMVECTOR ldir = XMVectorSet(1, 1, 1, 0);
+  XMStoreFloat4(&mCb.LightDir, XMVector3Normalize(view_dir));
 
   // Build the view matrix.
-  XMVECTOR pos = XMVectorSet(x, y, z, 1.0f);
+  //XMVECTOR pos = XMVectorSet(x, y, z, 1.0f);
+  XMVECTOR pos = view_dir;
   XMVECTOR target = XMVectorZero();
   XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+
+  XMStoreFloat4(&mCb.EyePos, pos);
+  //dout::printf("[%.2f, %.2f, %.2f]\n", x, y, z);
 
   XMMATRIX view = XMMatrixLookAtLH(pos, target, up);
   XMStoreFloat4x4(&mView, view);
 
-  //XMMATRIX world = XMLoadFloat4x4(&mWorld);
   XMMATRIX proj = XMLoadFloat4x4(&mProj);
 
   // copy our ConstantBuffer instance to the mapped constant buffer resource
   for (size_t i = 0; i < mObjs.size(); ++i)
   {
     XMMATRIX worldViewProj = mObjs[i].GetWorldMatrix() * view * proj;
+
     // Update the constant buffer with the latest worldViewProj matrix.
     XMStoreFloat4x4(&mCb.WorldViewProj, XMMatrixTranspose(worldViewProj));
+    XMStoreFloat4x4(&mCb.World, XMMatrixTranspose(mObjs[i].GetWorldMatrix()));
 
     memcpy(mCbAddr + i * mAlignSize, &mCb, sizeof(mCb));
   }

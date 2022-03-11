@@ -98,7 +98,7 @@ public:
     SetCubeGeo(mGeos[0], color);
     
     BaseRenderingObj* obj = RegisterGeo(mGeos[0]);
-    obj->SetPos(0.0f, 2.0f, 2.0f);
+    obj->SetPos(2.0f, 2.0f, 0.0f);
 
     mGeos.emplace_back();
     mGeos[1].mName = "Cube Blue";

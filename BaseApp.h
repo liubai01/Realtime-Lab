@@ -24,7 +24,9 @@ using namespace std;
 
 struct ConstantBuffer {
   XMFLOAT4X4 WorldViewProj = Identity4x4();
-  XMFLOAT3 LightDir;
+  XMFLOAT4X4 World = Identity4x4();
+  XMFLOAT4 LightDir;
+  XMFLOAT4 EyePos;
 };
 
 class BaseApp
@@ -68,8 +70,8 @@ public:
   ComPtr<ID3D12DescriptorHeap> mRtvDescriptorHeap;
   vector<ComPtr<ID3D12Resource>> mRenderTargets;
 
-  int mWidth = 800;
-  int mHeight = 600;
+  int mWidth = 1024;
+  int mHeight = 768;
   HWND mHwnd;
 
   clock_t mTimer;
