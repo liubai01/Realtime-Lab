@@ -51,7 +51,6 @@ BaseApp::BaseApp(HINSTANCE hInstance)
 void BaseApp::Init(HINSTANCE hInstance)
 {
   // Invoke after dumping in Shader, Geometry, etc.
-  InitConstBuffer();
   InitRootSig();
   InitInputLayout();
   InitPSO();
@@ -93,140 +92,6 @@ void BaseApp::Run()
   }
 }
 
-void BaseApp::Update()
-{
-  //XMFLOAT4X4 mWorld = Identity4x4();
-  XMFLOAT4X4 mView = Identity4x4();
-
-  static float mTheta = 1.5f * XM_PI;
-  float mPhi = XM_PIDIV4;
-  float mRadius = 20.0f;
-
-  mTheta += XM_PI * mTimeDelta * 0.1f;
-
-  // Convert Spherical to Cartesian coordinates.
-  float x = mRadius * sinf(mPhi) * cosf(mTheta);
-  float z = mRadius * sinf(mPhi) * sinf(mTheta);
-  float y = mRadius * cosf(mPhi);
-
-
-  XMVECTOR view_dir = XMVectorSet(x, y, z, 0);
-  XMVECTOR light_dir = XMVectorSet(1.0f, 1.0f, 1.0f, 0);
-  //view_dir = XMVector3Normalize(view_dir);
-
-  //XMVECTOR ldir = XMVectorSet(1, 1, 1, 0);
-  XMStoreFloat4(&mCb.LightDir, XMVector3Normalize(light_dir));
-
-  // Build the view matrix.
-  //XMVECTOR pos = XMVectorSet(x, y, z, 1.0f);
-  XMVECTOR pos = view_dir;
-  XMVECTOR target = XMVectorZero();
-  XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-
-  XMStoreFloat4(&mCb.EyePos, pos);
-  //dout::printf("[%.2f, %.2f, %.2f]\n", x, y, z);
-
-  XMMATRIX view = XMMatrixLookAtLH(pos, target, up);
-  XMStoreFloat4x4(&mView, view);
-
-  XMMATRIX proj = XMLoadFloat4x4(&mProj);
-
-  // copy our ConstantBuffer instance to the mapped constant buffer resource
-  for (size_t i = 0; i < mObjs.size(); ++i)
-  {
-    XMMATRIX worldViewProj = mObjs[i].GetWorldMatrix() * view * proj;
-
-    // Update the constant buffer with the latest worldViewProj matrix.
-    XMStoreFloat4x4(&mCb.WorldViewProj, XMMatrixTranspose(worldViewProj));
-    XMStoreFloat4x4(&mCb.World, XMMatrixTranspose(mObjs[i].GetWorldMatrix()));
-    XMStoreFloat4x4(&mCb.RSInvT, XMMatrixTranspose(mObjs[i].GetRSInvT()));
-
-    memcpy(mCbAddr + i * mAlignSize, &mCb, sizeof(mCb));
-  }
-  
-
-}
-
-void BaseApp::Render()
-{
-  ResetCommandList();
-
-  mCommandList->SetGraphicsRootSignature(mRootSig.Get());
-  mCommandList->RSSetViewports(1, &mViewport);
-  mCommandList->RSSetScissorRects(1, &mScissorRect);
-
-  //// Indicate a state transition on the resource usage.
-  auto trans = CD3DX12_RESOURCE_BARRIER::Transition(
-    mRenderTargets[mFrameIdx].Get(),
-    D3D12_RESOURCE_STATE_PRESENT,
-    D3D12_RESOURCE_STATE_RENDER_TARGET
-  );
-  mCommandList->ResourceBarrier(
-    1, 
-    &trans
-  );
-
-  // Clear the back buffer and depth buffer.
-  const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
-  mCommandList->ClearRenderTargetView(CurrentBackBufferView(), clearColor, 0, nullptr);
-  mCommandList->ClearDepthStencilView(DepthBufferView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
-
-  //// Specify the buffers we are going to render to.
-  D3D12_CPU_DESCRIPTOR_HANDLE rtv = CurrentBackBufferView();
-  D3D12_CPU_DESCRIPTOR_HANDLE dsv = DepthBufferView();
-  mCommandList->OMSetRenderTargets(1, &rtv, false, &dsv);
-
-  ID3D12DescriptorHeap* descriptorHeaps[] = { mConstDescHeap.Get() };
-  mCommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
-
-  //mCommandList->SetGraphicsRootDescriptorTable(0, mConstDescHeap->GetGPUDescriptorHandleForHeapStart());
-
-
-  auto cbvHandle = CD3DX12_GPU_DESCRIPTOR_HANDLE(mConstDescHeap->GetGPUDescriptorHandleForHeapStart());
-  for (auto& obj: mObjs)
-  {
-    D3D12_INDEX_BUFFER_VIEW ibView = obj.mIndexBufferView;
-    D3D12_VERTEX_BUFFER_VIEW vbView = obj.mVertexBufferView;
-
-    //mCommandList->SetGraphicsRootConstantBufferView(0,
-    //  mConstBufferUploadHeap->GetGPUVirtualAddress() + static_cast<UINT64>(mAlignSize) * cnt
-    //);
-
-    mCommandList->SetGraphicsRootDescriptorTable(0, cbvHandle);
-    mCommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    mCommandList->IASetVertexBuffers(0, 1, &vbView);
-    mCommandList->IASetIndexBuffer(&ibView);
-
-    mCommandList->DrawIndexedInstanced(
-      obj.mNumIndex,
-      1, 0, 0, 0
-    );
-
-    cbvHandle.Offset(1, mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
-  }
-
-  // Indicate a state transition on the resource usage.
-  trans = CD3DX12_RESOURCE_BARRIER::Transition(
-    mRenderTargets[mFrameIdx].Get(),
-    D3D12_RESOURCE_STATE_RENDER_TARGET, 
-    D3D12_RESOURCE_STATE_PRESENT
-  );
-  mCommandList->ResourceBarrier(1, &trans);
-
-  // Done recording commands.
-  HRESULT hr = mCommandList->Close();
-  if (FAILED(hr))
-  {
-    mCommandList->Close();
-  }
-
-  // Add the command list to the queue for execution.
-  ID3D12CommandList* cmdsLists[] = { mCommandList.Get() };
-  mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
-
-  Flush();
-}
-
 void BaseApp::ResetCommandList()
 {
   // Reuse the memory associated with command recording.
@@ -246,70 +111,6 @@ void BaseApp::ResetCommandList()
     mIsRunning = false;
     dout::printf("Command List Failed!");
   }
-}
-
-void BaseApp::InitConstBuffer()
-{
-  // create a descriptor range (descriptor table) and fill it out
-  // this is a range of descriptors inside a descriptor heap
-  mDescTableRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV; // this is a range of constant buffer views (descriptors)
-  mDescTableRanges[0].NumDescriptors = 1; // we only have one constant buffer, so the range is only 1
-  mDescTableRanges[0].BaseShaderRegister = 0; // start index of the shader registers in the range
-  mDescTableRanges[0].RegisterSpace = 0; // space 0. can usually be zero
-  mDescTableRanges[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // this appends the range to the end of the root signature descriptor tables
-
-  // create a descriptor table
-  D3D12_ROOT_DESCRIPTOR_TABLE descriptorTable;
-  descriptorTable.NumDescriptorRanges = _countof(mDescTableRanges); // we only have one range
-  descriptorTable.pDescriptorRanges = &mDescTableRanges[0]; // the pointer to the beginning of our ranges array
-
-
-  // create a root parameter and fill it out
-  mRootParams.emplace_back();
-  mRootParams[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; // this is a descriptor table
-  mRootParams[0].DescriptorTable = descriptorTable; // this is our descriptor table for this root parameter
-  mRootParams[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL; // our vector shader will be the only shader accessing this parameter for now
-
-
-  D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
-  heapDesc.NumDescriptors = mObjs.size(); 
-  heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-  heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-    
-  HRESULT hr = mDevice->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(mConstDescHeap.GetAddressOf()));
-  if (FAILED(hr))
-  {
-    mIsRunning = false;
-  }
-    
-  auto hprop = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
-  auto rdesc = CD3DX12_RESOURCE_DESC::Buffer(256 * 64); // now we allocate a fixed large enough space
-  hr = mDevice->CreateCommittedResource(
-    &hprop, // this heap will be used to upload the constant buffer data
-    D3D12_HEAP_FLAG_NONE, // no flags
-    &rdesc, // size of the resource heap. Must be a multiple of 64KB for single-textures and constant buffers
-    D3D12_RESOURCE_STATE_GENERIC_READ, // will be data that is read from so we keep it in the generic read state
-    nullptr, // we do not have use an optimized clear value for constant buffers
-    IID_PPV_ARGS(mConstBufferUploadHeap.GetAddressOf()));
-  mConstBufferUploadHeap->SetName(L"Constant Buffer Upload Resource Heap");
-
-  mAlignSize = (sizeof(ConstantBuffer) + 255) & ~255;
-  for (UINT i = 0; i < mObjs.size(); ++i)
-  {
-    auto handle = CD3DX12_CPU_DESCRIPTOR_HANDLE(mConstDescHeap->GetCPUDescriptorHandleForHeapStart());
-    handle.Offset(i, mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
-
-    D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
-    cbvDesc.BufferLocation = mConstBufferUploadHeap->GetGPUVirtualAddress() + static_cast<D3D12_GPU_VIRTUAL_ADDRESS>(i) * mAlignSize;
-    cbvDesc.SizeInBytes = mAlignSize;    // CB size is required to be 256-byte aligned.
-    mDevice->CreateConstantBufferView(&cbvDesc, handle);
-  }
-
-  CD3DX12_RANGE readRange(0, 0);    // We do not intend to read from this resource on the CPU. (End is less than or equal to begin)
-  hr = mConstBufferUploadHeap->Map(0, &readRange, reinterpret_cast<void**>(&mCbAddr));
-
-  //ZeroMemory(&mCb, sizeof(mCb));
-  //memcpy(mCbAddr, &mCb, sizeof(mCb));
 }
 
 void BaseApp::InitView()
@@ -382,8 +183,19 @@ void BaseApp::InitInputLayout()
 
 void BaseApp::Flush()
 {
+  // Done recording commands.
+  HRESULT hr = mCommandList->Close();
+  if (FAILED(hr))
+  {
+    mCommandList->Close();
+  }
+
+  // Add the command list to the queue for execution.
+  ID3D12CommandList* cmdsLists[] = { mCommandList.Get() };
+  mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
+
   ++mExpectedFenceValue[mFrameIdx];
-  HRESULT hr = mCommandQueue->Signal(mFence[mFrameIdx].Get(), mExpectedFenceValue[mFrameIdx]);
+  hr = mCommandQueue->Signal(mFence[mFrameIdx].Get(), mExpectedFenceValue[mFrameIdx]);
 
   if (FAILED(hr))
   {
@@ -404,8 +216,11 @@ void BaseApp::Flush()
     WaitForSingleObject(mFenceEvent, INFINITE);
   }
 
+}
+
+void BaseApp::Swap() {
   // present the current backbuffer
-  hr = mSwapChain->Present(0, 0);
+  HRESULT hr = mSwapChain->Present(0, 0);
   if (FAILED(hr))
   {
     mIsRunning = false;
@@ -413,8 +228,7 @@ void BaseApp::Flush()
   }
 
   // frameIndex points to next backBuffer to be flipped to front-end
-  mFrameIdx = (mFrameIdx + 1) % mFrameCnt;
-
+  mFrameIdx = mSwapChain.Get()->GetCurrentBackBufferIndex();
 }
 
 void BaseApp::InitRTV()

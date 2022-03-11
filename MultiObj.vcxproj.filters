@@ -65,6 +65,9 @@
     <ClInclude Include="ShaderManager.h">
       <Filter>Header Files\Base</Filter>
     </ClInclude>
+    <ClInclude Include="MultiObj.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="VertexShader.hlsl">

@@ -36,9 +36,10 @@ public:
   BaseApp(HINSTANCE hInstance);
   ~BaseApp();
   void Run();
-  void Update();
-  virtual void Render();
+  virtual void Update() = 0;
+  virtual void Render() = 0;
   void Flush();
+  void Swap();
 
   static LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -53,7 +54,6 @@ public:
 
   void InitRTV();
   void InitDepth();
-  void InitConstBuffer();
 
   void InitRootSig();
   void InitInputLayout();
@@ -80,9 +80,7 @@ public:
 
   D3D12_VIEWPORT mViewport; // area that output from rasterizer will be stretched to.
   D3D12_RECT mScissorRect; // the area to draw in. pixels outside that area will not be drawn onto
-
   XMFLOAT4X4 mProj = Identity4x4();
-
   void InitView();
 
   vector<BaseRenderingObj> mObjs;
@@ -111,19 +109,7 @@ public:
 
   ShaderManager mShader;
 
-#pragma region [Constant Buffer]
-
-  ComPtr<ID3D12DescriptorHeap> mConstDescHeap;
-  ComPtr<ID3D12Resource> mConstBufferUploadHeap;
-
   vector<D3D12_ROOT_PARAMETER> mRootParams;
-  D3D12_DESCRIPTOR_RANGE mDescTableRanges[1];
-
-  ConstantBuffer mCb;
-  UINT8* mCbAddr;
-  int mAlignSize;
-
-#pragma endregion
 };
 
 
@@ -136,32 +122,7 @@ BaseRenderingObj* BaseApp::RegisterGeo(BaseGeometry<V>& geo) {
 
   obj.UploadGeo(geo, mDevice, mCommandList);
 
-  // Now we execute the command list to upload the initial assets (triangle data)
-  mCommandList->Close();
-  ID3D12CommandList* ppCommandLists[] = { mCommandList.Get() };
-  mCommandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
-
-  // increment the fence value now, otherwise the buffer might not be uploaded by the time we start drawing
-  // because we only have one commitlist ( sadly :( )
-  ++mExpectedFenceValue[mFrameIdx];
-  HRESULT hr = mCommandQueue->Signal(mFence[mFrameIdx].Get(), mExpectedFenceValue[mFrameIdx]);
-  if (FAILED(hr))
-  {
-    mIsRunning = false;
-  }
-
-  UINT64 nowFenceValue = mFence[mFrameIdx]->GetCompletedValue();
-  if (nowFenceValue < mExpectedFenceValue[mFrameIdx])
-  {
-    hr = mFence[mFrameIdx]->SetEventOnCompletion(mExpectedFenceValue[mFrameIdx], mFenceEvent);
-    if (FAILED(hr))
-    {
-      mIsRunning = false;
-      return nullptr;
-    }
-
-    WaitForSingleObject(mFenceEvent, INFINITE);
-  }
+  Flush();
   
   return &obj;
 }

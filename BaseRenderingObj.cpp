@@ -22,6 +22,11 @@ XMMATRIX BaseRenderingObj::GetWorldMatrix()
   XMMATRIX ret = XMLoadFloat4x4(&tmp);
   XMMATRIX tmpMat;
 
+  // translation
+  XMVECTOR posVec = XMLoadFloat4(&mPosition); // create xmvector for  position
+  tmpMat = XMMatrixTranslationFromVector(posVec); // create translation matrix from position vector
+  ret = tmpMat * ret;
+
   // rotation
   tmpMat = XMMatrixRotationX(mRotation.x);
   ret = tmpMat * ret;
@@ -38,11 +43,6 @@ XMMATRIX BaseRenderingObj::GetWorldMatrix()
     0.0f, 0.0f, 0.0f, 1.0f
   );
   tmpMat = XMLoadFloat4x4(&tmp);
-  ret = tmpMat * ret;
-
-  // translation
-  XMVECTOR posVec = XMLoadFloat4(&mPosition); // create xmvector for  position
-  tmpMat = XMMatrixTranslationFromVector(posVec); // create translation matrix from position vector
   ret = tmpMat * ret;
 
   return ret;

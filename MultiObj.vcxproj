@@ -153,6 +153,7 @@
     <ClInclude Include="DebugOut.h" />
     <ClInclude Include="BaseGeometry.h" />
     <ClInclude Include="MathUtils.h" />
+    <ClInclude Include="MultiObj.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="ShaderManager.h" />
   </ItemGroup>
