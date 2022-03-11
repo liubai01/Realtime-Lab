@@ -67,6 +67,7 @@ public:
   bool mIsRunning = true;
   vector<ComPtr<ID3D12Fence>> mFence;
   vector<UINT64> mExpectedFenceValue;
+  HANDLE mFenceEvent;
 
   ComPtr<ID3D12DescriptorHeap> mRtvDescriptorHeap;
   vector<ComPtr<ID3D12Resource>> mRenderTargets;
@@ -92,8 +93,6 @@ public:
 
   ComPtr<IDXGIFactory4> mDxgiFactory;
   ComPtr<IDXGISwapChain3> mSwapChain;
-
-  HANDLE mFenceEvent;
 
   ComPtr<ID3D12Device> mDevice;
 

@@ -169,7 +169,7 @@ void MyApp::Update() {
 
   XMVECTOR view_dir = XMVectorSet(x, y, z, 0);
   XMVECTOR light_dir = XMVectorSet(1.0f, 1.0f, 1.0f, 0);
-  XMStoreFloat4(&mCb.LightDir, XMVector3Normalize(light_dir));
+  XMStoreFloat4(&mConstBuffer->mData.LightDir, XMVector3Normalize(light_dir));
 
   // Build the view matrix.
   //XMVECTOR pos = XMVectorSet(x, y, z, 1.0f);
@@ -177,8 +177,7 @@ void MyApp::Update() {
   XMVECTOR target = XMVectorZero();
   XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
-  XMStoreFloat4(&mCb.EyePos, pos);
-  //dout::printf("[%.2f, %.2f, %.2f]\n", x, y, z);
+  XMStoreFloat4(&mConstBuffer->mData.EyePos, pos);
 
   XMMATRIX view = XMMatrixLookAtLH(pos, target, up);
   XMStoreFloat4x4(&mView, view);
@@ -193,11 +192,11 @@ void MyApp::Update() {
     XMMATRIX worldViewProj = mObjs[i].GetWorldMatrix() * view * proj;
 
     // Update the constant buffer with the latest worldViewProj matrix.
-    XMStoreFloat4x4(&mCb.WorldViewProj, XMMatrixTranspose(worldViewProj));
-    XMStoreFloat4x4(&mCb.World, XMMatrixTranspose(mObjs[i].GetWorldMatrix()));
-    XMStoreFloat4x4(&mCb.RSInvT, XMMatrixTranspose(mObjs[i].GetRSInvT()));
+    XMStoreFloat4x4(&mConstBuffer->mData.WorldViewProj, XMMatrixTranspose(worldViewProj));
+    XMStoreFloat4x4(&mConstBuffer->mData.World, XMMatrixTranspose(mObjs[i].GetWorldMatrix()));
+    XMStoreFloat4x4(&mConstBuffer->mData.RSInvT, XMMatrixTranspose(mObjs[i].GetRSInvT()));
 
-    memcpy(mCbAddr + i * mAlignSize, &mCb, sizeof(mCb));
+    mConstBuffer->Upload(i);
   }
 }
 
@@ -221,7 +220,7 @@ void MyApp::InitConstBuffer()
   mRootParams.emplace_back();
   mRootParams[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; // this is a descriptor table
   mRootParams[0].DescriptorTable = descriptorTable; // this is our descriptor table for this root parameter
-  mRootParams[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL; // our vector shader will be the only shader accessing this parameter for now
+  mRootParams[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
 
   D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
@@ -233,34 +232,9 @@ void MyApp::InitConstBuffer()
   if (FAILED(hr))
   {
     mIsRunning = false;
+    return;
   }
 
-  auto hprop = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
-  auto rdesc = CD3DX12_RESOURCE_DESC::Buffer(256 * 64); // now we allocate a fixed large enough space
-  hr = mDevice->CreateCommittedResource(
-    &hprop, // this heap will be used to upload the constant buffer data
-    D3D12_HEAP_FLAG_NONE, // no flags
-    &rdesc, // size of the resource heap. Must be a multiple of 64KB for single-textures and constant buffers
-    D3D12_RESOURCE_STATE_GENERIC_READ, // will be data that is read from so we keep it in the generic read state
-    nullptr, // we do not have use an optimized clear value for constant buffers
-    IID_PPV_ARGS(mConstBufferUploadHeap.GetAddressOf()));
-  mConstBufferUploadHeap->SetName(L"Constant Buffer Upload Resource Heap");
-
-  mAlignSize = (sizeof(ConstantBuffer) + 255) & ~255;
-  for (UINT i = 0; i < mObjs.size(); ++i)
-  {
-    auto handle = CD3DX12_CPU_DESCRIPTOR_HANDLE(mConstDescHeap->GetCPUDescriptorHandleForHeapStart());
-    handle.Offset(i, mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
-
-    D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
-    cbvDesc.BufferLocation = mConstBufferUploadHeap->GetGPUVirtualAddress() + static_cast<D3D12_GPU_VIRTUAL_ADDRESS>(i) * mAlignSize;
-    cbvDesc.SizeInBytes = mAlignSize;    // CB size is required to be 256-byte aligned.
-    mDevice->CreateConstantBufferView(&cbvDesc, handle);
-  }
-
-  CD3DX12_RANGE readRange(0, 0);    // We do not intend to read from this resource on the CPU. (End is less than or equal to begin)
-  hr = mConstBufferUploadHeap->Map(0, &readRange, reinterpret_cast<void**>(&mCbAddr));
-
-  //ZeroMemory(&mCb, sizeof(mCb));
-  //memcpy(mCbAddr, &mCb, sizeof(mCb));
+  mConstBuffer = make_unique<BaseUploadHeap<ConstantBuffer>>(mObjs.size(), mDevice.Get());
+  mConstBuffer->ConstructDescHeap(mDevice.Get(), mConstDescHeap.Get());
 }

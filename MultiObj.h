@@ -3,6 +3,10 @@
 #include "DebugOut.h"
 #include "BaseApp.h"
 #include "BaseGeometry.h"
+#include "BaseUploadHeap.h"
+#include <memory>
+
+using namespace std;
 
 struct Vertex {
   XMFLOAT3 pos;
@@ -92,13 +96,13 @@ public:
 #pragma region [Constant Buffer]
 
   ComPtr<ID3D12DescriptorHeap> mConstDescHeap;
-  ComPtr<ID3D12Resource> mConstBufferUploadHeap;
-
   D3D12_DESCRIPTOR_RANGE mDescTableRanges[1];
 
-  ConstantBuffer mCb;
-  UINT8* mCbAddr;
-  int mAlignSize;
+  //ComPtr<ID3D12Resource> mConstBufferUploadHeap;
+  //ConstantBuffer mCb;
+  //UINT8* mCbAddr;
+  //int mAlignSize;
+  unique_ptr<BaseUploadHeap<ConstantBuffer>> mConstBuffer;
 
   void InitConstBuffer();
 
