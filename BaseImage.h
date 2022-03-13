@@ -25,7 +25,6 @@ public:
 
   ~BaseImage();
 
-  void AppendDescriptorTable(vector<D3D12_ROOT_PARAMETER>& rootParams);
   void AppendDescHeap(ID3D12Device* device, ID3D12DescriptorHeap* descHeap, int offset=0);
   void Read(const string& filepath);
   void Upload(ID3D12Device* device, ID3D12GraphicsCommandList* commandList);

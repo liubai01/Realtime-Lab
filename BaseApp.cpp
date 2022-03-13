@@ -110,14 +110,14 @@ void BaseApp::InitView()
   XMStoreFloat4x4(&mProj, P);
 }
 
-void BaseApp::Flush(unique_ptr<BaseDrawContext>& drawContext)
+void BaseApp::Flush(ID3D12GraphicsCommandList* commandList)
 {
   // Done recording commands.
-  HRESULT hr = drawContext->mCommandList->Close();
+  HRESULT hr = commandList->Close();
   ThrowIfFailed(hr);
 
   // Add the command list to the queue for execution.
-  ID3D12CommandList* cmdsLists[] = { drawContext->mCommandList.Get() };
+  ID3D12CommandList* cmdsLists[] = { commandList };
   mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
 
   ++mExpectedFenceValue[mFrameIdx];

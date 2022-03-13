@@ -33,7 +33,7 @@ public:
   virtual void Render() = 0;
   virtual void Start() {};
 
-  void Flush(unique_ptr<BaseDrawContext>& drawContext);
+  void Flush(ID3D12GraphicsCommandList* commandList);
   void Swap();
 
   static LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);

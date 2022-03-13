@@ -1,27 +1,6 @@
 #include "BaseImage.h"
 #include "DebugOut.h"
 
-void BaseImage::AppendDescriptorTable(vector<D3D12_ROOT_PARAMETER>& rootParams)
-{
-  // create a descriptor range (descriptor table) and fill it out
-  // this is a range of descriptors inside a descriptor heap
-  D3D12_DESCRIPTOR_RANGE  descriptorTableRanges[1]; // only one range right now
-  descriptorTableRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV; // this is a range of shader resource views (descriptors)
-  descriptorTableRanges[0].NumDescriptors = 1; // we only have one texture right now, so the range is only 1
-  descriptorTableRanges[0].BaseShaderRegister = 0; // start index of the shader registers in the range
-  descriptorTableRanges[0].RegisterSpace = 0; // space 0. can usually be zero
-  descriptorTableRanges[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // this appends the range to the end of the root signature descriptor tables
-
-  // create a descriptor table
-  D3D12_ROOT_DESCRIPTOR_TABLE descriptorTable;
-  descriptorTable.NumDescriptorRanges = _countof(descriptorTableRanges); // we only have one range
-  descriptorTable.pDescriptorRanges = &descriptorTableRanges[0]; // the pointer to the beginning of our ranges array
-
-  rootParams.emplace_back();
-  rootParams.back().ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; // this is a descriptor table
-  rootParams.back().DescriptorTable = descriptorTable; // this is our descriptor table for this root parameter
-  rootParams.back().ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // our pixel shader will be the only shader accessing this parameter for now
-}
 
 void BaseImage::Read(const string& filepath) {
   std::wstring stemp = std::wstring(filepath.begin(), filepath.end());

@@ -114,5 +114,6 @@ public:
   unique_ptr<BaseDrawContext> mDrawContext;
 
   void InitConstBuffer();
+  void InitTextureBuffer();
 
 };

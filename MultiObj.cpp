@@ -46,6 +46,19 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
 MyApp::MyApp(HINSTANCE hInstance) : BaseApp(hInstance) {
   mDrawContext = make_unique<BaseDrawContext>(mDevice.Get());
+
+  // Set input layout
+  mDrawContext->mInputLayout =
+  {
+      { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+      { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+      { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 28, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+      { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 40, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0}
+  };
+
+  mDrawContext->mShader.AddVertexShader("VertexShader.hlsl");
+  mDrawContext->mShader.AddPixelShader("PixelShader.hlsl");
+
   // load image
   mTexture = make_unique<BaseImage>();
   mTexture->Read("Asset\\Water.jpg");
@@ -80,20 +93,7 @@ MyApp::MyApp(HINSTANCE hInstance) : BaseApp(hInstance) {
   obj->SetPos(-2.0f, 4.0f, 4.0f);
   obj->SetRot(-XM_PI / 4.0f, XM_PI / 8.0f, 0.0f);
 
-  Flush(mDrawContext);
-
-
-  // Set input layout
-  mDrawContext->mInputLayout =
-  {
-      { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-      { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-      { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 28, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-      { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 40, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0}
-  };
-
-  mDrawContext->mShader.AddVertexShader("VertexShader.hlsl");
-  mDrawContext->mShader.AddPixelShader("PixelShader.hlsl");
+  Flush(mDrawContext->mCommandList.Get());
 
   D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
   heapDesc.NumDescriptors = mObjs.size() + 1;
@@ -108,8 +108,7 @@ MyApp::MyApp(HINSTANCE hInstance) : BaseApp(hInstance) {
   }
 
   InitConstBuffer();
-  mTexture->AppendDescHeap(mDevice.Get(), mDescHeap.Get(), 3);
-  mTexture->AppendDescriptorTable(mDrawContext->mRootParams);
+  InitTextureBuffer();
 
   mDrawContext->Init();
 }
@@ -117,7 +116,6 @@ MyApp::MyApp(HINSTANCE hInstance) : BaseApp(hInstance) {
 void MyApp::Start() {
 
 }
-
 
 void MyApp::Render() {
   mDrawContext->ResetCommandList();
@@ -184,7 +182,7 @@ void MyApp::Render() {
   );
   commandList->ResourceBarrier(1, &trans);
 
-  Flush(mDrawContext);
+  Flush(mDrawContext->mCommandList.Get());
   Swap();
 }
 
@@ -268,4 +266,28 @@ void MyApp::InitConstBuffer()
 
   mConstBuffer = make_unique<BaseUploadHeap<GlobalConsts>>(mObjs.size(), mDevice.Get());
   mConstBuffer->AppendDesc(mDevice.Get(), mDescHeap.Get());
+}
+
+void MyApp::InitTextureBuffer()
+{
+  mTexture->AppendDescHeap(mDevice.Get(), mDescHeap.Get(), 3);
+
+  // create a descriptor range (descriptor table) and fill it out
+  // this is a range of descriptors inside a descriptor heap
+  D3D12_DESCRIPTOR_RANGE  descriptorTableRanges[1]; // only one range right now
+  descriptorTableRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV; // this is a range of shader resource views (descriptors)
+  descriptorTableRanges[0].NumDescriptors = 1; // we only have one texture right now, so the range is only 1
+  descriptorTableRanges[0].BaseShaderRegister = 0; // start index of the shader registers in the range
+  descriptorTableRanges[0].RegisterSpace = 0; // space 0. can usually be zero
+  descriptorTableRanges[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // this appends the range to the end of the root signature descriptor tables
+
+  // create a descriptor table
+  D3D12_ROOT_DESCRIPTOR_TABLE descriptorTable;
+  descriptorTable.NumDescriptorRanges = _countof(descriptorTableRanges); // we only have one range
+  descriptorTable.pDescriptorRanges = &descriptorTableRanges[0]; // the pointer to the beginning of our ranges array
+
+  mDrawContext->mRootParams.emplace_back();
+  mDrawContext->mRootParams.back().ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; // this is a descriptor table
+  mDrawContext->mRootParams.back().DescriptorTable = descriptorTable; // this is our descriptor table for this root parameter
+  mDrawContext->mRootParams.back().ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // our pixel shader will be the only shader accessing this parameter for now
 }
