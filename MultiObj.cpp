@@ -47,10 +47,9 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 MyApp::MyApp(HINSTANCE hInstance) : BaseApp(hInstance) {
   // load image
   mTexture = make_unique<BaseImage>();
-  mTexture->Open("Asset\\grass.jpg");
+  mTexture->Read("Asset\\Water.jpg");
   ResetCommandList();
   mTexture->Upload(mDevice.Get(), mCommandList.Get());
-  Flush();
 
   BaseGeometry<Vertex> cube;
 
@@ -78,6 +77,8 @@ MyApp::MyApp(HINSTANCE hInstance) : BaseApp(hInstance) {
   obj = RegisterGeo(cube);
   obj->SetPos(-2.0f, 4.0f, 4.0f);
   obj->SetRot(-XM_PI / 4.0f, XM_PI / 8.0f, 0.0f);
+
+  Flush();
 
 
   // Set input layout
@@ -108,6 +109,10 @@ MyApp::MyApp(HINSTANCE hInstance) : BaseApp(hInstance) {
   mTexture->AppendDescHeap(mDevice.Get(), mDescHeap.Get(), 3);
   mTexture->AppendDescriptorTable(mRootParams);
   InitDrawContext();
+}
+
+void MyApp::Start() {
+
 }
 
 
@@ -195,7 +200,7 @@ void MyApp::Update() {
 
 
   XMVECTOR view_dir = XMVectorSet(x, y, z, 0);
-  XMVECTOR light_dir = XMVectorSet(1.0f, 1.0f, 1.0f, 0);
+  XMVECTOR light_dir = XMVectorSet(1.0f, y / 10.0f, 1.0f, 0);
   XMStoreFloat4(&mConstBuffer->mData.LightDir, XMVector3Normalize(light_dir));
 
   // Build the view matrix.
@@ -258,5 +263,5 @@ void MyApp::InitConstBuffer()
   mRootParams[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
   mConstBuffer = make_unique<BaseUploadHeap<GlobalConsts>>(mObjs.size(), mDevice.Get());
-  mConstBuffer->ConstructDescHeap(mDevice.Get(), mDescHeap.Get());
+  mConstBuffer->AppendDesc(mDevice.Get(), mDescHeap.Get());
 }

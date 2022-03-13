@@ -23,10 +23,10 @@ void BaseImage::AppendDescriptorTable(vector<D3D12_ROOT_PARAMETER>& rootParams)
   rootParams.back().ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // our pixel shader will be the only shader accessing this parameter for now
 }
 
-void BaseImage::Open(const string& filepath) {
+void BaseImage::Read(const string& filepath) {
   std::wstring stemp = std::wstring(filepath.begin(), filepath.end());
   LPCWSTR sw = stemp.c_str();
-  mImageSize = LoadImageDataFromFile(&mImageData, mTextureDesc, sw, mImageBytesPerRow);
+  mImageSize = LoadImageDataFromFile(&mImageData, &mTextureDesc, sw, &mImageBytesPerRow);
 
   // make sure we have data
   if (mImageSize <= 0)
@@ -205,7 +205,7 @@ int GetDXGIFormatBitsPerPixel(DXGI_FORMAT& dxgiFormat)
   return -1;
 }
 
-int LoadImageDataFromFile(BYTE** imageData, D3D12_RESOURCE_DESC& resourceDescription, LPCWSTR filename, int& bytesPerRow)
+int LoadImageDataFromFile(BYTE** imageData, D3D12_RESOURCE_DESC* resourceDescription, LPCWSTR filename, int* bytesPerRow)
 {
   HRESULT hr;
 
@@ -294,8 +294,8 @@ int LoadImageDataFromFile(BYTE** imageData, D3D12_RESOURCE_DESC& resourceDescrip
   }
 
   int bitsPerPixel = GetDXGIFormatBitsPerPixel(dxgiFormat); // number of bits per pixel
-  bytesPerRow = (textureWidth * bitsPerPixel) / 8; // number of bytes in each row of the image data
-  int imageSize = bytesPerRow * textureHeight; // total image size in bytes
+  *bytesPerRow = (textureWidth * bitsPerPixel) / 8; // number of bytes in each row of the image data
+  int imageSize = *bytesPerRow * textureHeight; // total image size in bytes
 
   // allocate enough memory for the raw image data, and set imageData to point to that memory
   *imageData = (BYTE*)malloc(imageSize);
@@ -304,29 +304,29 @@ int LoadImageDataFromFile(BYTE** imageData, D3D12_RESOURCE_DESC& resourceDescrip
   if (imageConverted)
   {
     // if image format needed to be converted, the wic converter will contain the converted image
-    hr = wicConverter->CopyPixels(0, bytesPerRow, imageSize, *imageData);
+    hr = wicConverter->CopyPixels(0, *bytesPerRow, imageSize, *imageData);
     if (FAILED(hr)) return 0;
   }
   else
   {
     // no need to convert, just copy data from the wic frame
-    hr = wicFrame->CopyPixels(0, bytesPerRow, imageSize, *imageData);
+    hr = wicFrame->CopyPixels(0, *bytesPerRow, imageSize, *imageData);
     if (FAILED(hr)) return 0;
   }
 
   // now describe the texture with the information we have obtained from the image
-  resourceDescription = {};
-  resourceDescription.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-  resourceDescription.Alignment = 0; // may be 0, 4KB, 64KB, or 4MB. 0 will let runtime decide between 64KB and 4MB (4MB for multi-sampled textures)
-  resourceDescription.Width = textureWidth; // width of the texture
-  resourceDescription.Height = textureHeight; // height of the texture
-  resourceDescription.DepthOrArraySize = 1; // if 3d image, depth of 3d image. Otherwise an array of 1D or 2D textures (we only have one image, so we set 1)
-  resourceDescription.MipLevels = 1; // Number of mipmaps. We are not generating mipmaps for this texture, so we have only one level
-  resourceDescription.Format = dxgiFormat; // This is the dxgi format of the image (format of the pixels)
-  resourceDescription.SampleDesc.Count = 1; // This is the number of samples per pixel, we just want 1 sample
-  resourceDescription.SampleDesc.Quality = 0; // The quality level of the samples. Higher is better quality, but worse performance
-  resourceDescription.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN; // The arrangement of the pixels. Setting to unknown lets the driver choose the most efficient one
-  resourceDescription.Flags = D3D12_RESOURCE_FLAG_NONE; // no flags
+  *resourceDescription = {};
+  resourceDescription->Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+  resourceDescription->Alignment = 0; // may be 0, 4KB, 64KB, or 4MB. 0 will let runtime decide between 64KB and 4MB (4MB for multi-sampled textures)
+  resourceDescription->Width = textureWidth; // width of the texture
+  resourceDescription->Height = textureHeight; // height of the texture
+  resourceDescription->DepthOrArraySize = 1; // if 3d image, depth of 3d image. Otherwise an array of 1D or 2D textures (we only have one image, so we set 1)
+  resourceDescription->MipLevels = 1; // Number of mipmaps. We are not generating mipmaps for this texture, so we have only one level
+  resourceDescription->Format = dxgiFormat; // This is the dxgi format of the image (format of the pixels)
+  resourceDescription->SampleDesc.Count = 1; // This is the number of samples per pixel, we just want 1 sample
+  resourceDescription->SampleDesc.Quality = 0; // The quality level of the samples. Higher is better quality, but worse performance
+  resourceDescription->Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN; // The arrangement of the pixels. Setting to unknown lets the driver choose the most efficient one
+  resourceDescription->Flags = D3D12_RESOURCE_FLAG_NONE; // no flags
 
   // return the size of the image. remember to delete the image once your done with it (in this tutorial once its uploaded to the gpu)
   return imageSize;

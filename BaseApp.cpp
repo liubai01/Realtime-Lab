@@ -71,6 +71,7 @@ void BaseApp::Run()
   MSG msg;
   ZeroMemory(&msg, sizeof(MSG));
 
+  Start();
   while (mIsRunning)
   {
     // Checks the thread message queue for a posted message and retrieves the message (if any exist)

@@ -14,11 +14,13 @@ public:
   BaseUploadHeap(int num, ID3D12Device* device);
   ~BaseUploadHeap();
 
-  void ConstructDescHeap(ID3D12Device* device, ID3D12DescriptorHeap* descHeap);
+  void AppendDesc(ID3D12Device* device, ID3D12DescriptorHeap* descHeap, int offset=0);
   void Upload(int idx);
 
   ComPtr<ID3D12Resource> mUploadHeap;
   T mData;
+
+private: 
   UINT8* mCPUAddr;
 
   int mBlockSize;
@@ -69,9 +71,10 @@ void BaseUploadHeap<T>::Upload(int idx)
 }
 
 template<class T>
-void BaseUploadHeap<T>::ConstructDescHeap(ID3D12Device* device, ID3D12DescriptorHeap* descHeap)
+void BaseUploadHeap<T>::AppendDesc(ID3D12Device* device, ID3D12DescriptorHeap* descHeap, int offset)
 {
   auto handle = CD3DX12_CPU_DESCRIPTOR_HANDLE(descHeap->GetCPUDescriptorHandleForHeapStart());
+  handle.Offset(offset, device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
   for (UINT i = 0; i < static_cast<UINT>(mNum); ++i)
   {
     D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};

@@ -30,6 +30,8 @@ public:
   void Run();
   virtual void Update() = 0;
   virtual void Render() = 0;
+  virtual void Start() {};
+
   void Flush();
   void Swap();
 
@@ -107,14 +109,10 @@ public:
 
 template<typename V>
 BaseRenderingObj* BaseApp::RegisterGeo(BaseGeometry<V>& geo) {
-  ResetCommandList();
-
   mObjs.emplace_back();
   auto& obj = mObjs.back();
 
-  obj.UploadGeo(geo, mDevice, mCommandList);
+  obj.UploadGeo(geo, mDevice.Get(), mCommandList.Get());
 
-  Flush();
-  
   return &obj;
 }

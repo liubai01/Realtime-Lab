@@ -27,7 +27,7 @@ public:
 
   void AppendDescriptorTable(vector<D3D12_ROOT_PARAMETER>& rootParams);
   void AppendDescHeap(ID3D12Device* device, ID3D12DescriptorHeap* descHeap, int offset=0);
-  void Open(const string& filepath);
+  void Read(const string& filepath);
   void Upload(ID3D12Device* device, ID3D12GraphicsCommandList* commandList);
 };
 
@@ -44,4 +44,4 @@ WICPixelFormatGUID GetConvertToWICFormat(WICPixelFormatGUID& wicFormatGUID);
 int GetDXGIFormatBitsPerPixel(DXGI_FORMAT& dxgiFormat);
 
 // load and decode image from file
-int LoadImageDataFromFile(BYTE** imageData, D3D12_RESOURCE_DESC& resourceDescription, LPCWSTR filename, int& bytesPerRow);
+int LoadImageDataFromFile(BYTE** imageData, D3D12_RESOURCE_DESC* resourceDescription, LPCWSTR filename, int* bytesPerRow);

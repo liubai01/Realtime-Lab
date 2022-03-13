@@ -37,25 +37,25 @@ public:
   ComPtr<ID3D12Resource> miBufferUploadHeap;
 
   template <class T>
-  void UploadGeo(BaseGeometry<T>& geo, ComPtr<ID3D12Device>& device, ComPtr <ID3D12GraphicsCommandList>& commandList);
+  void UploadGeo(BaseGeometry<T>& geo, ID3D12Device* device, ID3D12GraphicsCommandList* commandList);
 
 private:
   template <class T>
-  void UploadVertex(BaseGeometry<T>& geo, ComPtr<ID3D12Device>& device, ComPtr <ID3D12GraphicsCommandList>& commandList);
+  void UploadVertex(BaseGeometry<T>& geo, ID3D12Device* device, ID3D12GraphicsCommandList* commandList);
 
   template <class T>
-  void UploadIndex(BaseGeometry<T>& geo, ComPtr<ID3D12Device>& device, ComPtr <ID3D12GraphicsCommandList>& commandList);
+  void UploadIndex(BaseGeometry<T>& geo, ID3D12Device* device, ID3D12GraphicsCommandList* commandList);
 };
 
 template <class T>
-void BaseRenderingObj::UploadGeo(BaseGeometry<T>& geo, ComPtr<ID3D12Device>& device, ComPtr <ID3D12GraphicsCommandList>& commandList)
+void BaseRenderingObj::UploadGeo(BaseGeometry<T>& geo, ID3D12Device* device, ID3D12GraphicsCommandList* commandList)
 {
   UploadVertex(geo, device, commandList);
   UploadIndex(geo, device, commandList);
 }
 
 template <class T>
-void BaseRenderingObj::UploadVertex(BaseGeometry<T>& geo, ComPtr<ID3D12Device>& device, ComPtr <ID3D12GraphicsCommandList>& commandList)
+void BaseRenderingObj::UploadVertex(BaseGeometry<T>& geo, ID3D12Device* device, ID3D12GraphicsCommandList* commandList)
 {
   int vBufferSize = sizeof(T) * geo.mVertices.size();
 
@@ -105,7 +105,7 @@ void BaseRenderingObj::UploadVertex(BaseGeometry<T>& geo, ComPtr<ID3D12Device>& 
 
   // we are now creating a command with the command list to copy the data from
   // the upload heap to the default heap
-  UpdateSubresources(commandList.Get(), mVertexBuffer.Get(), mvBufferUploadHeap.Get(), 0, 0, 1, &vertexData);
+  UpdateSubresources(commandList, mVertexBuffer.Get(), mvBufferUploadHeap.Get(), 0, 0, 1, &vertexData);
 
   // transition the vertex buffer data from copy destination state to vertex buffer state
   auto trans = CD3DX12_RESOURCE_BARRIER::Transition(
@@ -124,7 +124,7 @@ void BaseRenderingObj::UploadVertex(BaseGeometry<T>& geo, ComPtr<ID3D12Device>& 
 }
 
 template <class T>
-void BaseRenderingObj::UploadIndex(BaseGeometry<T>& geo, ComPtr<ID3D12Device>& device, ComPtr <ID3D12GraphicsCommandList>& commandList)
+void BaseRenderingObj::UploadIndex(BaseGeometry<T>& geo, ID3D12Device* device, ID3D12GraphicsCommandList* commandList)
 {
   int iBufferSize = sizeof(T) * geo.mIndices.size();
 
@@ -167,7 +167,7 @@ void BaseRenderingObj::UploadIndex(BaseGeometry<T>& geo, ComPtr<ID3D12Device>& d
 
   // we are now creating a command with the command list to copy the data from
   // the upload heap to the default heap
-  UpdateSubresources(commandList.Get(), mIndexBuffer.Get(), miBufferUploadHeap.Get(), 0, 0, 1, &indexData);
+  UpdateSubresources(commandList, mIndexBuffer.Get(), miBufferUploadHeap.Get(), 0, 0, 1, &indexData);
 
   // transition the vertex buffer data from copy destination state to vertex buffer state
   auto trans = CD3DX12_RESOURCE_BARRIER::Transition(

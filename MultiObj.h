@@ -101,10 +101,9 @@ public:
   vector<Vertex> mvList;
   MyApp(HINSTANCE hInstance);
 
+  void Start();
   void Render();
   void Update();
-
-#pragma region [Constant Buffer]
 
   ComPtr<ID3D12DescriptorHeap> mDescHeap;
   D3D12_DESCRIPTOR_RANGE mDescTableRanges[1];
@@ -115,5 +114,4 @@ public:
 
   void InitConstBuffer();
 
-#pragma endregion
 };
