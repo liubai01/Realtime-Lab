@@ -45,6 +45,13 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 }
 
 MyApp::MyApp(HINSTANCE hInstance) : BaseApp(hInstance) {
+  // load image
+  mTexture = make_unique<BaseImage>();
+  mTexture->Open("Asset\\grass.jpg");
+  ResetCommandList();
+  mTexture->Upload(mDevice.Get(), mCommandList.Get());
+  Flush();
+
   BaseGeometry<Vertex> cube;
 
   // Set data
@@ -79,14 +86,28 @@ MyApp::MyApp(HINSTANCE hInstance) : BaseApp(hInstance) {
       { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
       { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
       { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 28, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+      { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 40, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0}
   };
 
   mShader.AddVertexShader("VertexShader.hlsl");
   mShader.AddPixelShader("PixelShader.hlsl");
 
-  InitConstBuffer();
+  D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
+  heapDesc.NumDescriptors = mObjs.size() + 1;
+  heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+  heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 
-  Init(hInstance);
+  HRESULT hr = mDevice->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(mDescHeap.GetAddressOf()));
+  if (FAILED(hr))
+  {
+    mIsRunning = false;
+    return;
+  }
+
+  InitConstBuffer();
+  mTexture->AppendDescHeap(mDevice.Get(), mDescHeap.Get(), 3);
+  mTexture->AppendDescriptorTable(mRootParams);
+  InitDrawContext();
 }
 
 
@@ -118,16 +139,22 @@ void MyApp::Render() {
   D3D12_CPU_DESCRIPTOR_HANDLE dsv = DepthBufferView();
   mCommandList->OMSetRenderTargets(1, &rtv, false, &dsv);
 
-  ID3D12DescriptorHeap* descriptorHeaps[] = { mConstDescHeap.Get() };
+  ID3D12DescriptorHeap* descriptorHeaps[] = { mDescHeap.Get()};
   mCommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 
-  auto cbvHandle = CD3DX12_GPU_DESCRIPTOR_HANDLE(mConstDescHeap->GetGPUDescriptorHandleForHeapStart());
+  auto handle = CD3DX12_GPU_DESCRIPTOR_HANDLE(mDescHeap->GetGPUDescriptorHandleForHeapStart());
+  handle.Offset(mObjs.size(), mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
+  mCommandList->SetGraphicsRootDescriptorTable(1, handle);
+
+  handle = CD3DX12_GPU_DESCRIPTOR_HANDLE(mDescHeap->GetGPUDescriptorHandleForHeapStart());
+  //cbvHandle.Offset(1, mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
   for (auto& obj : mObjs)
   {
     D3D12_INDEX_BUFFER_VIEW ibView = obj.mIndexBufferView;
     D3D12_VERTEX_BUFFER_VIEW vbView = obj.mVertexBufferView;
 
-    mCommandList->SetGraphicsRootDescriptorTable(0, cbvHandle);
+    mCommandList->SetGraphicsRootDescriptorTable(0, handle);
+
     mCommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     mCommandList->IASetVertexBuffers(0, 1, &vbView);
     mCommandList->IASetIndexBuffer(&ibView);
@@ -137,7 +164,7 @@ void MyApp::Render() {
       1, 0, 0, 0
     );
 
-    cbvHandle.Offset(1, mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
+    handle.Offset(1, mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
   }
 
   // Indicate a state transition on the resource usage.
@@ -196,6 +223,14 @@ void MyApp::Update() {
     XMStoreFloat4x4(&mConstBuffer->mData.World, XMMatrixTranspose(mObjs[i].GetWorldMatrix()));
     XMStoreFloat4x4(&mConstBuffer->mData.RSInvT, XMMatrixTranspose(mObjs[i].GetRSInvT()));
 
+    if (i == 1)
+    {
+      XMStoreFloat4(&mConstBuffer->mData.TexBlend, XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f));
+    }
+    else {
+      XMStoreFloat4(&mConstBuffer->mData.TexBlend, XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f));
+    }
+
     mConstBuffer->Upload(i);
   }
 }
@@ -222,19 +257,6 @@ void MyApp::InitConstBuffer()
   mRootParams[0].DescriptorTable = descriptorTable; // this is our descriptor table for this root parameter
   mRootParams[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
-
-  D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
-  heapDesc.NumDescriptors = mObjs.size();
-  heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-  heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-
-  HRESULT hr = mDevice->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(mConstDescHeap.GetAddressOf()));
-  if (FAILED(hr))
-  {
-    mIsRunning = false;
-    return;
-  }
-
-  mConstBuffer = make_unique<BaseUploadHeap<ConstantBuffer>>(mObjs.size(), mDevice.Get());
-  mConstBuffer->ConstructDescHeap(mDevice.Get(), mConstDescHeap.Get());
+  mConstBuffer = make_unique<BaseUploadHeap<GlobalConsts>>(mObjs.size(), mDevice.Get());
+  mConstBuffer->ConstructDescHeap(mDevice.Get(), mDescHeap.Get());
 }

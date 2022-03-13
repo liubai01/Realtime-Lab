@@ -22,14 +22,6 @@ using namespace DirectX::PackedVector;
 using Microsoft::WRL::ComPtr;
 using namespace std;
 
-struct ConstantBuffer {
-  XMFLOAT4X4 WorldViewProj = Identity4x4();
-  XMFLOAT4X4 World = Identity4x4();
-  XMFLOAT4X4 RSInvT = Identity4x4();
-  XMFLOAT4 LightDir;
-  XMFLOAT4 EyePos;
-};
-
 class BaseApp
 {
 public:
@@ -44,7 +36,7 @@ public:
   static LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
   void ResetCommandList();
-  void Init(HINSTANCE hInstance);
+  void InitDrawContext();
 
   void InitWindow(HINSTANCE hInstance);
   void InitDevice();
@@ -79,17 +71,9 @@ public:
   clock_t mTimer;
   float mTimeDelta;
 
-  D3D12_VIEWPORT mViewport; // area that output from rasterizer will be stretched to.
-  D3D12_RECT mScissorRect; // the area to draw in. pixels outside that area will not be drawn onto
-  XMFLOAT4X4 mProj = Identity4x4();
-  void InitView();
-
   vector<BaseRenderingObj> mObjs;
   template<typename V>
   BaseRenderingObj* RegisterGeo(BaseGeometry<V>& geo);
-
-  vector<D3D12_INPUT_ELEMENT_DESC> mInputLayout;
-  D3D12_INPUT_LAYOUT_DESC mInputLayoutDesc;
 
   ComPtr<IDXGIFactory4> mDxgiFactory;
   ComPtr<IDXGISwapChain3> mSwapChain;
@@ -100,11 +84,20 @@ public:
   ComPtr<ID3D12CommandAllocator> mCommandAlloc;
   ComPtr<ID3D12GraphicsCommandList> mCommandList;
 
-  ComPtr<ID3D12PipelineState> mPSO;
-  ComPtr<ID3D12RootSignature> mRootSig;
-
   ComPtr<ID3D12Resource> mDepthStencilBuffer;
   ComPtr<ID3D12DescriptorHeap> mDsDescriptorHeap;
+
+  D3D12_VIEWPORT mViewport; // area that output from rasterizer will be stretched to.
+  D3D12_RECT mScissorRect; // the area to draw in. pixels outside that area will not be drawn onto
+  XMFLOAT4X4 mProj = Identity4x4();
+  void InitView();
+
+
+  vector<D3D12_INPUT_ELEMENT_DESC> mInputLayout;
+  D3D12_INPUT_LAYOUT_DESC mInputLayoutDesc;
+
+  ComPtr<ID3D12PipelineState> mPSO;
+  ComPtr<ID3D12RootSignature> mRootSig;
 
   ShaderManager mShader;
 

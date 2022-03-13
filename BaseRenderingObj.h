@@ -24,16 +24,16 @@ public:
   XMMATRIX GetWorldMatrix();
   XMMATRIX GetRSInvT();
 
-  int mNumIndex;
+  int mNumIndex = 0;
 
   // Vertex Buffer
   ComPtr<ID3D12Resource> mVertexBuffer;
-  D3D12_VERTEX_BUFFER_VIEW mVertexBufferView;
+  D3D12_VERTEX_BUFFER_VIEW mVertexBufferView = {};
   ComPtr<ID3D12Resource> mvBufferUploadHeap;
 
   // Index Buffer
   ComPtr<ID3D12Resource> mIndexBuffer;
-  D3D12_INDEX_BUFFER_VIEW mIndexBufferView;
+  D3D12_INDEX_BUFFER_VIEW mIndexBufferView = {};
   ComPtr<ID3D12Resource> miBufferUploadHeap;
 
   template <class T>

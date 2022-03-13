@@ -140,6 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BaseApp.cpp" />
+    <ClCompile Include="BaseImage.cpp" />
     <ClCompile Include="BaseRenderingObj.cpp" />
     <ClCompile Include="BaseUploadHeap.cpp" />
     <ClCompile Include="DebugOut.cpp" />
@@ -149,6 +150,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BaseApp.h" />
+    <ClInclude Include="BaseImage.h" />
     <ClInclude Include="BaseRenderingObj.h" />
     <ClInclude Include="BaseUploadHeap.h" />
     <ClInclude Include="d3dx12.h" />
@@ -174,6 +176,9 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Asset\grass.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

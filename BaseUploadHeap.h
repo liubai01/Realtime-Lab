@@ -42,7 +42,7 @@ BaseUploadHeap<T>::BaseUploadHeap(int num, ID3D12Device* device) : mNum(num)
   mBlockSize = (sizeof(T) + 255) & ~255;
 
   auto hprop = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
-  auto rdesc = CD3DX12_RESOURCE_DESC::Buffer(mBlockSize * mNum); // now we allocate a fixed large enough space
+  auto rdesc = CD3DX12_RESOURCE_DESC::Buffer(static_cast<UINT64>(mBlockSize) * mNum); // now we allocate a fixed large enough space
   HRESULT hr = device->CreateCommittedResource(
     &hprop, // this heap will be used to upload the constant buffer data
     D3D12_HEAP_FLAG_NONE, // no flags
@@ -65,14 +65,14 @@ BaseUploadHeap<T>::BaseUploadHeap(int num, ID3D12Device* device) : mNum(num)
 template<class T>
 void BaseUploadHeap<T>::Upload(int idx)
 {
-  memcpy(GetAddr(i), &mData, sizeof(T));
+  memcpy(GetAddr(idx), &mData, sizeof(T));
 }
 
 template<class T>
 void BaseUploadHeap<T>::ConstructDescHeap(ID3D12Device* device, ID3D12DescriptorHeap* descHeap)
 {
   auto handle = CD3DX12_CPU_DESCRIPTOR_HANDLE(descHeap->GetCPUDescriptorHandleForHeapStart());
-  for (UINT i = 0; i < mNum; ++i)
+  for (UINT i = 0; i < static_cast<UINT>(mNum); ++i)
   {
     D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
     cbvDesc.BufferLocation = mUploadHeap->GetGPUVirtualAddress() + static_cast<D3D12_GPU_VIRTUAL_ADDRESS>(i) * mBlockSize;
