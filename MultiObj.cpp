@@ -45,11 +45,13 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 }
 
 MyApp::MyApp(HINSTANCE hInstance) : BaseApp(hInstance) {
+  mDrawContext = make_unique<BaseDrawContext>(mDevice.Get());
   // load image
   mTexture = make_unique<BaseImage>();
   mTexture->Read("Asset\\Water.jpg");
-  ResetCommandList();
-  mTexture->Upload(mDevice.Get(), mCommandList.Get());
+
+  mDrawContext->ResetCommandList();
+  mTexture->Upload(mDevice.Get(), mDrawContext->mCommandList.Get());
 
   BaseGeometry<Vertex> cube;
 
@@ -58,7 +60,7 @@ MyApp::MyApp(HINSTANCE hInstance) : BaseApp(hInstance) {
   cube.mName = "Cube Red";
   SetCubeGeo(cube, color);
 
-  BaseRenderingObj* obj = RegisterGeo(cube);
+  BaseRenderingObj* obj = RegisterGeo(cube, mDrawContext);
   obj->SetPos(2.0f, 4.0f, 0.0f);
   obj->SetRot(XM_PI / 4.0f, 0.0f, 0.0f);
 
@@ -66,7 +68,7 @@ MyApp::MyApp(HINSTANCE hInstance) : BaseApp(hInstance) {
   color = { 0.2f, 0.4f, 0.2f, 1.0f };
   SetCubeGeo(cube, color);
 
-  obj = RegisterGeo(cube);
+  obj = RegisterGeo(cube, mDrawContext);
   obj->SetPos(0.0f, 0.0f, 0.0f);
   obj->SetScale(6.0f, 0.5f, 6.0f);
 
@@ -74,15 +76,15 @@ MyApp::MyApp(HINSTANCE hInstance) : BaseApp(hInstance) {
   color = { 0.2f, 0.2f, 0.8f, 1.0f };
   SetCubeGeo(cube, color);
 
-  obj = RegisterGeo(cube);
+  obj = RegisterGeo(cube, mDrawContext);
   obj->SetPos(-2.0f, 4.0f, 4.0f);
   obj->SetRot(-XM_PI / 4.0f, XM_PI / 8.0f, 0.0f);
 
-  Flush();
+  Flush(mDrawContext);
 
 
   // Set input layout
-  mInputLayout =
+  mDrawContext->mInputLayout =
   {
       { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
       { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
@@ -90,8 +92,8 @@ MyApp::MyApp(HINSTANCE hInstance) : BaseApp(hInstance) {
       { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 40, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0}
   };
 
-  mShader.AddVertexShader("VertexShader.hlsl");
-  mShader.AddPixelShader("PixelShader.hlsl");
+  mDrawContext->mShader.AddVertexShader("VertexShader.hlsl");
+  mDrawContext->mShader.AddPixelShader("PixelShader.hlsl");
 
   D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
   heapDesc.NumDescriptors = mObjs.size() + 1;
@@ -107,8 +109,9 @@ MyApp::MyApp(HINSTANCE hInstance) : BaseApp(hInstance) {
 
   InitConstBuffer();
   mTexture->AppendDescHeap(mDevice.Get(), mDescHeap.Get(), 3);
-  mTexture->AppendDescriptorTable(mRootParams);
-  InitDrawContext();
+  mTexture->AppendDescriptorTable(mDrawContext->mRootParams);
+
+  mDrawContext->Init();
 }
 
 void MyApp::Start() {
@@ -117,11 +120,13 @@ void MyApp::Start() {
 
 
 void MyApp::Render() {
-  ResetCommandList();
+  mDrawContext->ResetCommandList();
 
-  mCommandList->SetGraphicsRootSignature(mRootSig.Get());
-  mCommandList->RSSetViewports(1, &mViewport);
-  mCommandList->RSSetScissorRects(1, &mScissorRect);
+  ID3D12GraphicsCommandList* commandList = mDrawContext->mCommandList.Get();
+
+  commandList->SetGraphicsRootSignature(mDrawContext->mRootSig.Get());
+  commandList->RSSetViewports(1, &mViewport);
+  commandList->RSSetScissorRects(1, &mScissorRect);
 
   //// Indicate a state transition on the resource usage.
   auto trans = CD3DX12_RESOURCE_BARRIER::Transition(
@@ -129,42 +134,41 @@ void MyApp::Render() {
     D3D12_RESOURCE_STATE_PRESENT,
     D3D12_RESOURCE_STATE_RENDER_TARGET
   );
-  mCommandList->ResourceBarrier(
+  commandList->ResourceBarrier(
     1,
     &trans
   );
 
   // Clear the back buffer and depth buffer.
   const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
-  mCommandList->ClearRenderTargetView(CurrentBackBufferView(), clearColor, 0, nullptr);
-  mCommandList->ClearDepthStencilView(DepthBufferView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+  commandList->ClearRenderTargetView(CurrentBackBufferView(), clearColor, 0, nullptr);
+  commandList->ClearDepthStencilView(DepthBufferView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
   //// Specify the buffers we are going to render to.
   D3D12_CPU_DESCRIPTOR_HANDLE rtv = CurrentBackBufferView();
   D3D12_CPU_DESCRIPTOR_HANDLE dsv = DepthBufferView();
-  mCommandList->OMSetRenderTargets(1, &rtv, false, &dsv);
+  commandList->OMSetRenderTargets(1, &rtv, false, &dsv);
 
   ID3D12DescriptorHeap* descriptorHeaps[] = { mDescHeap.Get()};
-  mCommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
+  commandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 
   auto handle = CD3DX12_GPU_DESCRIPTOR_HANDLE(mDescHeap->GetGPUDescriptorHandleForHeapStart());
   handle.Offset(mObjs.size(), mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
-  mCommandList->SetGraphicsRootDescriptorTable(1, handle);
+  commandList->SetGraphicsRootDescriptorTable(1, handle);
 
   handle = CD3DX12_GPU_DESCRIPTOR_HANDLE(mDescHeap->GetGPUDescriptorHandleForHeapStart());
-  //cbvHandle.Offset(1, mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
   for (auto& obj : mObjs)
   {
     D3D12_INDEX_BUFFER_VIEW ibView = obj.mIndexBufferView;
     D3D12_VERTEX_BUFFER_VIEW vbView = obj.mVertexBufferView;
 
-    mCommandList->SetGraphicsRootDescriptorTable(0, handle);
+    commandList->SetGraphicsRootDescriptorTable(0, handle);
 
-    mCommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    mCommandList->IASetVertexBuffers(0, 1, &vbView);
-    mCommandList->IASetIndexBuffer(&ibView);
+    commandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    commandList->IASetVertexBuffers(0, 1, &vbView);
+    commandList->IASetIndexBuffer(&ibView);
 
-    mCommandList->DrawIndexedInstanced(
+    commandList->DrawIndexedInstanced(
       obj.mNumIndex,
       1, 0, 0, 0
     );
@@ -178,9 +182,9 @@ void MyApp::Render() {
     D3D12_RESOURCE_STATE_RENDER_TARGET,
     D3D12_RESOURCE_STATE_PRESENT
   );
-  mCommandList->ResourceBarrier(1, &trans);
+  commandList->ResourceBarrier(1, &trans);
 
-  Flush();
+  Flush(mDrawContext);
   Swap();
 }
 
@@ -257,10 +261,10 @@ void MyApp::InitConstBuffer()
 
 
   // create a root parameter and fill it out
-  mRootParams.emplace_back();
-  mRootParams[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; // this is a descriptor table
-  mRootParams[0].DescriptorTable = descriptorTable; // this is our descriptor table for this root parameter
-  mRootParams[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+  mDrawContext->mRootParams.emplace_back();
+  mDrawContext->mRootParams[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; // this is a descriptor table
+  mDrawContext->mRootParams[0].DescriptorTable = descriptorTable; // this is our descriptor table for this root parameter
+  mDrawContext->mRootParams[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
   mConstBuffer = make_unique<BaseUploadHeap<GlobalConsts>>(mObjs.size(), mDevice.Get());
   mConstBuffer->AppendDesc(mDevice.Get(), mDescHeap.Get());

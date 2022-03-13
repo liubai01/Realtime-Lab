@@ -15,6 +15,7 @@
 #include "BaseRenderingObj.h"
 #include "MathUtils.h"
 #include <time.h>
+#include "BaseDrawContext.h"
 
 using namespace DirectX;
 using namespace DirectX::PackedVector;
@@ -32,13 +33,10 @@ public:
   virtual void Render() = 0;
   virtual void Start() {};
 
-  void Flush();
+  void Flush(unique_ptr<BaseDrawContext>& drawContext);
   void Swap();
 
   static LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-
-  void ResetCommandList();
-  void InitDrawContext();
 
   void InitWindow(HINSTANCE hInstance);
   void InitDevice();
@@ -48,10 +46,6 @@ public:
 
   void InitRTV();
   void InitDepth();
-
-  void InitRootSig();
-  void InitInputLayout();
-  void InitPSO();
 
   D3D12_CPU_DESCRIPTOR_HANDLE CurrentBackBufferView() const;
   D3D12_CPU_DESCRIPTOR_HANDLE DepthBufferView() const;
@@ -75,7 +69,7 @@ public:
 
   vector<BaseRenderingObj> mObjs;
   template<typename V>
-  BaseRenderingObj* RegisterGeo(BaseGeometry<V>& geo);
+  BaseRenderingObj* RegisterGeo(BaseGeometry<V>& geo, unique_ptr<BaseDrawContext>& drawContext);
 
   ComPtr<IDXGIFactory4> mDxgiFactory;
   ComPtr<IDXGISwapChain3> mSwapChain;
@@ -83,8 +77,6 @@ public:
   ComPtr<ID3D12Device> mDevice;
 
   ComPtr<ID3D12CommandQueue> mCommandQueue;
-  ComPtr<ID3D12CommandAllocator> mCommandAlloc;
-  ComPtr<ID3D12GraphicsCommandList> mCommandList;
 
   ComPtr<ID3D12Resource> mDepthStencilBuffer;
   ComPtr<ID3D12DescriptorHeap> mDsDescriptorHeap;
@@ -93,26 +85,15 @@ public:
   D3D12_RECT mScissorRect; // the area to draw in. pixels outside that area will not be drawn onto
   XMFLOAT4X4 mProj = Identity4x4();
   void InitView();
-
-
-  vector<D3D12_INPUT_ELEMENT_DESC> mInputLayout;
-  D3D12_INPUT_LAYOUT_DESC mInputLayoutDesc;
-
-  ComPtr<ID3D12PipelineState> mPSO;
-  ComPtr<ID3D12RootSignature> mRootSig;
-
-  ShaderManager mShader;
-
-  vector<D3D12_ROOT_PARAMETER> mRootParams;
 };
 
 
 template<typename V>
-BaseRenderingObj* BaseApp::RegisterGeo(BaseGeometry<V>& geo) {
+BaseRenderingObj* BaseApp::RegisterGeo(BaseGeometry<V>& geo, unique_ptr<BaseDrawContext>& drawContext) {
   mObjs.emplace_back();
   auto& obj = mObjs.back();
 
-  obj.UploadGeo(geo, mDevice.Get(), mCommandList.Get());
+  obj.UploadGeo(geo, mDevice.Get(), drawContext->mCommandList.Get());
 
   return &obj;
 }

@@ -108,9 +108,10 @@ public:
   ComPtr<ID3D12DescriptorHeap> mDescHeap;
   D3D12_DESCRIPTOR_RANGE mDescTableRanges[1];
 
-
   unique_ptr<BaseUploadHeap<GlobalConsts>> mConstBuffer;
   unique_ptr<BaseImage> mTexture;
+
+  unique_ptr<BaseDrawContext> mDrawContext;
 
   void InitConstBuffer();
 

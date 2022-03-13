@@ -140,6 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BaseApp.cpp" />
+    <ClCompile Include="BaseDrawContext.cpp" />
     <ClCompile Include="BaseImage.cpp" />
     <ClCompile Include="BaseRenderingObj.cpp" />
     <ClCompile Include="BaseUploadHeap.cpp" />
@@ -150,6 +151,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BaseApp.h" />
+    <ClInclude Include="BaseDrawContext.h" />
     <ClInclude Include="BaseImage.h" />
     <ClInclude Include="BaseRenderingObj.h" />
     <ClInclude Include="BaseUploadHeap.h" />

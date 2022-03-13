@@ -45,6 +45,9 @@
     <ClCompile Include="BaseImage.cpp">
       <Filter>Source Files\Base</Filter>
     </ClCompile>
+    <ClCompile Include="BaseDrawContext.cpp">
+      <Filter>Source Files\Base</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -78,6 +81,9 @@
       <Filter>Header Files\Base</Filter>
     </ClInclude>
     <ClInclude Include="BaseImage.h">
+      <Filter>Header Files\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseDrawContext.h">
       <Filter>Header Files\Base</Filter>
     </ClInclude>
   </ItemGroup>
