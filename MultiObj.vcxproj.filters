@@ -19,6 +19,9 @@
     <Filter Include="Source Files\Base">
       <UniqueIdentifier>{837c7bbc-934f-47c5-a17e-ac2b1d512d3e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\ThirdParty">
+      <UniqueIdentifier>{1bff1885-dddd-4872-8b13-871086bff4eb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MultiObj.cpp">
@@ -48,15 +51,15 @@
     <ClCompile Include="BaseDrawContext.cpp">
       <Filter>Source Files\Base</Filter>
     </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="BaseApp.h">
-      <Filter>Header Files\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="d3dx12.h">
       <Filter>Header Files\Base</Filter>
     </ClInclude>
     <ClInclude Include="DebugOut.h">
@@ -85,6 +88,12 @@
     </ClInclude>
     <ClInclude Include="BaseDrawContext.h">
       <Filter>Header Files\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="ThirdParty\tiny_obj_loader.h">
+      <Filter>Header Files\ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="d3dx12.h">
+      <Filter>Header Files\ThirdParty</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

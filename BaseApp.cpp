@@ -40,16 +40,14 @@ BaseApp::BaseApp(HINSTANCE hInstance)
   // Initialize the objects required for dumping in Shader, Geometry, etc.
   InitWindow(hInstance);
   InitDevice();
-
   InitCommandQueue();
   InitFence();
   InitSwapChain();
+
   InitView();
   InitDepth();
   InitRTV();
 }
-
-
 
 BaseApp::~BaseApp()
 {
@@ -87,8 +85,6 @@ void BaseApp::Run()
     Render();
   }
 }
-
-
 
 void BaseApp::InitView()
 {

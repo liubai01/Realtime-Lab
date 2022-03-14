@@ -146,6 +146,7 @@
     <ClCompile Include="BaseUploadHeap.cpp" />
     <ClCompile Include="DebugOut.cpp" />
     <ClCompile Include="BaseGeometry.cpp" />
+    <ClCompile Include="Main.cpp" />
     <ClCompile Include="MultiObj.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
   </ItemGroup>
@@ -162,6 +163,7 @@
     <ClInclude Include="MultiObj.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="ShaderManager.h" />
+    <ClInclude Include="ThirdParty\tiny_obj_loader.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="PixelShader.hlsl">

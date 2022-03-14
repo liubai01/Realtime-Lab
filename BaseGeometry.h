@@ -22,8 +22,8 @@ public:
   // name
   std::string mName = "Geo";
 
-  vector<T> mVertices;
-  vector<DWORD> mIndices;
+  vector<T> mVertices = {};
+  vector<DWORD> mIndices = {};
 
   void ComputeNormal(vector<XMFLOAT3*>& pos, vector<XMFLOAT3*>& outs);
 };

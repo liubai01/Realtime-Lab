@@ -51,9 +51,9 @@ void BaseImage::Upload(ID3D12Device* device, ID3D12GraphicsCommandList* commandL
 
   // store vertex buffer in upload heap
   D3D12_SUBRESOURCE_DATA textureData = {};
-  textureData.pData = &mImageData[0]; // pointer to our image data
-  textureData.RowPitch = mImageBytesPerRow; // size of all our triangle vertex data
-  textureData.SlicePitch = mImageBytesPerRow * mTextureDesc.Height; // also the size of our triangle vertex data
+  textureData.pData = mImageData; // pointer to our image data
+  textureData.RowPitch = mImageBytesPerRow; 
+  textureData.SlicePitch = mImageBytesPerRow * mTextureDesc.Height; 
 
   // Now we copy the upload buffer contents to the default heap
   UpdateSubresources(commandList, mTextureBuffer.Get(), mTextureUploadHeap.Get(), 0, 0, 1, &textureData);

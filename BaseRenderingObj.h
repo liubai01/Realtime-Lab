@@ -126,7 +126,7 @@ void BaseRenderingObj::UploadVertex(BaseGeometry<T>& geo, ID3D12Device* device, 
 template <class T>
 void BaseRenderingObj::UploadIndex(BaseGeometry<T>& geo, ID3D12Device* device, ID3D12GraphicsCommandList* commandList)
 {
-  int iBufferSize = sizeof(T) * geo.mIndices.size();
+  int iBufferSize = sizeof(DWORD) * geo.mIndices.size();
 
   // create default heap to hold index buffer
   auto hprop = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);

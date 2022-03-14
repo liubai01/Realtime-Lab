@@ -27,22 +27,10 @@ SOFTWARE.
 
 #include "MultiObj.h"
 
-int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPTSTR lpCmdLine, _In_ int nShowCmd)
-{
-  BaseApp* app = new MyApp(hInstance);
-
-  try
-  {
-    app->Run();
-  }
-  catch (dout::DxException e) {
-    dout::printf("%s\n", e.ToString().c_str());
-  }
-
-  delete app;
-
-  return 0;
-}
+#define TINYOBJLOADER_IMPLEMENTATION // define this in only *one* .cc
+// Optional. define TINYOBJLOADER_USE_MAPBOX_EARCUT gives robust trinagulation. Requires C++11
+//#define TINYOBJLOADER_USE_MAPBOX_EARCUT
+#include "ThirdParty/tiny_obj_loader.h"
 
 MyApp::MyApp(HINSTANCE hInstance) : BaseApp(hInstance) {
   mDrawContext = make_unique<BaseDrawContext>(mDevice.Get());
@@ -74,7 +62,7 @@ MyApp::MyApp(HINSTANCE hInstance) : BaseApp(hInstance) {
   SetCubeGeo(cube, color);
 
   BaseRenderingObj* obj = RegisterGeo(cube, mDrawContext);
-  obj->SetPos(2.0f, 4.0f, 0.0f);
+  obj->SetPos(4.0f, 4.0f, 0.0f);
   obj->SetRot(XM_PI / 4.0f, 0.0f, 0.0f);
 
   cube.mName = "Cube Green";
@@ -90,8 +78,10 @@ MyApp::MyApp(HINSTANCE hInstance) : BaseApp(hInstance) {
   SetCubeGeo(cube, color);
 
   obj = RegisterGeo(cube, mDrawContext);
-  obj->SetPos(-2.0f, 4.0f, 4.0f);
+  obj->SetPos(-2.0f, 4.0f, -4.0f);
   obj->SetRot(-XM_PI / 4.0f, XM_PI / 8.0f, 0.0f);
+
+  LoadObj();
 
   Flush(mDrawContext->mCommandList.Get());
 
@@ -111,6 +101,84 @@ MyApp::MyApp(HINSTANCE hInstance) : BaseApp(hInstance) {
   InitTextureBuffer();
 
   mDrawContext->Init();
+}
+
+void MyApp::LoadObj()
+{
+  BaseGeometry<Vertex> bunny;
+
+  std::string inputfile = "Asset\\bunny.obj";
+  tinyobj::ObjReaderConfig reader_config;
+  reader_config.mtl_search_path = "./"; // Path to material files
+
+  tinyobj::ObjReader reader;
+
+  if (!reader.ParseFromFile(inputfile, reader_config)) {
+    if (!reader.Error().empty()) {
+      dout::printf("TinyObjReader: %s\n", reader.Error().c_str());
+    }
+    exit(1);
+  }
+
+  if (!reader.Warning().empty()) {
+    dout::printf("TinyObjReader: %s\n", reader.Warning().c_str());
+  }
+
+  auto& attrib = reader.GetAttrib();
+  auto& shapes = reader.GetShapes();
+  auto& materials = reader.GetMaterials();
+
+
+  assert(shapes.size() == 1);
+
+  // Loop over vertices
+  Vertex vout = {};
+  vout.color = { 0.5f, 0.5f ,0.5f ,1.0f };
+  for (size_t v = 0; v < attrib.vertices.size(); v+=3) {
+
+    tinyobj::real_t vx = attrib.vertices[v + 0];
+    tinyobj::real_t vy = attrib.vertices[v + 1];
+    tinyobj::real_t vz = attrib.vertices[v + 2];
+    vout.pos = {vx, vy, vz};
+
+
+    tinyobj::real_t nx = attrib.normals[v + 0];
+    tinyobj::real_t ny = attrib.normals[v + 1];
+    tinyobj::real_t nz = attrib.normals[v + 2];
+    vout.normal = { nx, ny, nz };
+    
+    bunny.mVertices.push_back(vout);
+  }
+
+  // Loop over faces
+  size_t index_offset = 0;
+
+  for (size_t f = 0; f < shapes[0].mesh.num_face_vertices.size(); f++) {
+    size_t fv = size_t(shapes[0].mesh.num_face_vertices[f]);
+    assert(fv == 3);
+
+    bunny.mIndices.push_back(
+      shapes[0].mesh.indices[index_offset + 0].vertex_index
+    );
+    bunny.mIndices.push_back(
+      shapes[0].mesh.indices[index_offset + 1].vertex_index
+    );
+    bunny.mIndices.push_back(
+      shapes[0].mesh.indices[index_offset + 2].vertex_index
+    );
+
+    index_offset += fv;
+
+  }
+  dout::printf("Index num: %d\n", shapes[0].mesh.num_face_vertices.size());
+
+
+
+  bunny.mName = "Bunny";
+  BaseRenderingObj* obj = RegisterGeo(bunny, mDrawContext);
+  obj->SetScale(3.0f, 3.0f, 3.0f);
+  //obj->SetPos(2.0f, 4.0f, 0.0f);
+  //obj->SetRot(XM_PI / 4.0f, 0.0f, 0.0f);
 }
 
 void MyApp::Start() {
@@ -150,6 +218,7 @@ void MyApp::Render() {
   ID3D12DescriptorHeap* descriptorHeaps[] = { mDescHeap.Get()};
   commandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 
+  // texture handle to 1 (root param [1])
   auto handle = CD3DX12_GPU_DESCRIPTOR_HANDLE(mDescHeap->GetGPUDescriptorHandleForHeapStart());
   handle.Offset(mObjs.size(), mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
   commandList->SetGraphicsRootDescriptorTable(1, handle);
@@ -159,7 +228,8 @@ void MyApp::Render() {
   {
     D3D12_INDEX_BUFFER_VIEW ibView = obj.mIndexBufferView;
     D3D12_VERTEX_BUFFER_VIEW vbView = obj.mVertexBufferView;
-
+    
+    // texture handle to 0 (root param [0])
     commandList->SetGraphicsRootDescriptorTable(0, handle);
 
     commandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -218,8 +288,6 @@ void MyApp::Update() {
 
   XMMATRIX proj = XMLoadFloat4x4(&mProj);
 
-  mObjs[2].mPosition.z = x / 2.0f;
-
   // copy our ConstantBuffer instance to the mapped constant buffer resource
   for (size_t i = 0; i < mObjs.size(); ++i)
   {
@@ -270,8 +338,6 @@ void MyApp::InitConstBuffer()
 
 void MyApp::InitTextureBuffer()
 {
-  mTexture->AppendDescHeap(mDevice.Get(), mDescHeap.Get(), 3);
-
   // create a descriptor range (descriptor table) and fill it out
   // this is a range of descriptors inside a descriptor heap
   D3D12_DESCRIPTOR_RANGE  descriptorTableRanges[1]; // only one range right now
@@ -290,4 +356,77 @@ void MyApp::InitTextureBuffer()
   mDrawContext->mRootParams.back().ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; // this is a descriptor table
   mDrawContext->mRootParams.back().DescriptorTable = descriptorTable; // this is our descriptor table for this root parameter
   mDrawContext->mRootParams.back().ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // our pixel shader will be the only shader accessing this parameter for now
+
+  mTexture->AppendDescHeap(mDevice.Get(), mDescHeap.Get(), mObjs.size());
+}
+
+void SetCubeGeo(BaseGeometry<Vertex>& geo, XMFLOAT4& color)
+{
+  geo.mVertices = {
+    // front
+    { { -1.0f, +1.0f, -1.0f }, color, { 0.0f, 0.0f, 0.0f }, {0.0f, 0.0f} },
+    { { +1.0f, -1.0f, -1.0f }, color, { 0.0f, 0.0f, 0.0f }, {1.0f, 1.0f} },
+    { { -1.0f, -1.0f, -1.0f }, color, { 0.0f, 0.0f, 0.0f }, {1.0f, 0.0f} },
+    { { +1.0f, +1.0f, -1.0f }, color, { 0.0f, 0.0f, 0.0f }, {0.0f, 1.0f} },
+    // right
+    { { +1.0f, -1.0f, -1.0f }, color, { 0.0f, 0.0f, 0.0f }, {0.0f, 0.0f} },
+    { { +1.0f, +1.0f, +1.0f }, color, { 0.0f, 0.0f, 0.0f }, {1.0f, 1.0f} },
+    { { +1.0f, -1.0f, +1.0f }, color, { 0.0f, 0.0f, 0.0f }, {1.0f, 0.0f} },
+    { { +1.0f, +1.0f, -1.0f }, color, { 0.0f, 0.0f, 0.0f }, {0.0f, 1.0f} },
+    // left
+    { { -1.0f, +1.0f, +1.0f }, color, { 0.0f, 0.0f, 0.0f }, {0.0f, 0.0f} },
+    { { -1.0f, -1.0f, -1.0f }, color, { 0.0f, 0.0f, 0.0f }, {1.0f, 1.0f} },
+    { { -1.0f, -1.0f, +1.0f }, color, { 0.0f, 0.0f, 0.0f }, {1.0f, 0.0f} },
+    { { -1.0f, +1.0f, -1.0f }, color, { 0.0f, 0.0f, 0.0f }, {0.0f, 1.0f} },
+    // back
+    { { +1.0f, +1.0f, +1.0f }, color, { 0.0f, 0.0f, 0.0f }, {0.0f, 0.0f} },
+    { { -1.0f, -1.0f, +1.0f }, color, { 0.0f, 0.0f, 0.0f }, {1.0f, 1.0f} },
+    { { +1.0f, -1.0f, +1.0f }, color, { 0.0f, 0.0f, 0.0f }, {1.0f, 0.0f} },
+    { { -1.0f, +1.0f, +1.0f }, color, { 0.0f, 0.0f, 0.0f }, {0.0f, 1.0f} },
+    // top
+    { { -1.0f, +1.0f, -1.0f }, color, { 0.0f, 0.0f, 0.0f }, {0.0f, 0.0f} },
+    { { +1.0f, +1.0f, +1.0f }, color, { 0.0f, 0.0f, 0.0f }, {1.0f, 1.0f} },
+    { { +1.0f, +1.0f, -1.0f }, color, { 0.0f, 0.0f, 0.0f }, {1.0f, 0.0f} },
+    { { -1.0f, +1.0f, +1.0f }, color, { 0.0f, 0.0f, 0.0f }, {0.0f, 1.0f} },
+    // bottom
+    { { +1.0f, -1.0f, +1.0f }, color, { 0.0f, 0.0f, 0.0f }, {0.0f, 0.0f} },
+    { { -1.0f, -1.0f, -1.0f }, color, { 0.0f, 0.0f, 0.0f }, {1.0f, 1.0f} },
+    { { +1.0f, -1.0f, -1.0f }, color, { 0.0f, 0.0f, 0.0f }, {1.0f, 0.0f} },
+    { { -1.0f, -1.0f, +1.0f }, color, { 0.0f, 0.0f, 0.0f }, {0.0f, 1.0f} },
+  };
+  geo.mIndices = {
+    // ffront face
+    0, 1, 2, // first triangle
+    0, 3, 1, // second triangle
+
+    // left face
+    4, 5, 6, // first triangle
+    4, 7, 5, // second triangle
+
+    // right face
+    8, 9, 10, // first triangle
+    8, 11, 9, // second triangle
+
+    // back face
+    12, 13, 14, // first triangle
+    12, 15, 13, // second triangle
+
+    // top face
+    16, 17, 18, // first triangle
+    16, 19, 17, // second triangle
+
+    // bottom face
+    20, 21, 22, // first triangle
+    20, 23, 21, // second triangle
+  };
+
+  vector<XMFLOAT3*> norms;
+  vector<XMFLOAT3*> pos;
+
+  for (auto& v : geo.mVertices) {
+    pos.push_back(&v.pos);
+    norms.push_back(&v.normal);
+  }
+
+  geo.ComputeNormal(pos, norms);
 }
