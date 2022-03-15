@@ -24,6 +24,8 @@ public:
   ComPtr<ID3D12CommandAllocator> mCommandAlloc;
   ComPtr<ID3D12GraphicsCommandList> mCommandList;
 
+
+  vector<vector<D3D12_DESCRIPTOR_RANGE>> mDescTableRanges;
   vector<D3D12_ROOT_PARAMETER> mRootParams;
   ComPtr<ID3D12RootSignature> mRootSig;
 

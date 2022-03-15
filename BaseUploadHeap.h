@@ -41,6 +41,7 @@ UINT8* BaseUploadHeap<T>::GetAddr(int idx) {
 template<class T>
 BaseUploadHeap<T>::BaseUploadHeap(int num, ID3D12Device* device) : mNum(num)
 {
+
   mBlockSize = (sizeof(T) + 255) & ~255;
 
   auto hprop = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);

@@ -39,9 +39,8 @@ MyApp::MyApp(HINSTANCE hInstance) : BaseApp(hInstance) {
   mDrawContext->mInputLayout =
   {
       { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-      { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-      { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 28, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-      { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 40, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0}
+      { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+      { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0}
   };
 
   mDrawContext->mShader.AddVertexShader("VertexShader.hlsl");
@@ -57,25 +56,22 @@ MyApp::MyApp(HINSTANCE hInstance) : BaseApp(hInstance) {
   BaseGeometry<Vertex> cube;
 
   // Set data
-  XMFLOAT4 color = { 0.8f, 0.2f, 0.2f, 1.0f };
   cube.mName = "Cube Red";
-  SetCubeGeo(cube, color);
+  SetCubeGeo(cube);
 
   BaseRenderingObj* obj = RegisterGeo(cube, mDrawContext);
   obj->SetPos(4.0f, 4.0f, 0.0f);
   obj->SetRot(XM_PI / 4.0f, 0.0f, 0.0f);
 
-  cube.mName = "Cube Green";
-  color = { 0.2f, 0.4f, 0.2f, 1.0f };
-  SetCubeGeo(cube, color);
+  cube.mName = "Base";
+  SetCubeGeo(cube);
 
   obj = RegisterGeo(cube, mDrawContext);
   obj->SetPos(0.0f, 0.0f, 0.0f);
   obj->SetScale(6.0f, 0.5f, 6.0f);
 
   cube.mName = "Cube Blue";
-  color = { 0.2f, 0.2f, 0.8f, 1.0f };
-  SetCubeGeo(cube, color);
+  SetCubeGeo(cube);
 
   obj = RegisterGeo(cube, mDrawContext);
   obj->SetPos(-2.0f, 4.0f, -4.0f);
@@ -86,18 +82,15 @@ MyApp::MyApp(HINSTANCE hInstance) : BaseApp(hInstance) {
   Flush(mDrawContext->mCommandList.Get());
 
   D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
-  heapDesc.NumDescriptors = mObjs.size() + 1;
+  heapDesc.NumDescriptors = mObjs.size() * 2 + 1; // three global constant buffer + one texture
   heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
   heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 
   HRESULT hr = mDevice->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(mDescHeap.GetAddressOf()));
-  if (FAILED(hr))
-  {
-    mIsRunning = false;
-    return;
-  }
+  ThrowIfFailed(hr);
 
   InitConstBuffer();
+  InitMatBuffer();
   InitTextureBuffer();
 
   mDrawContext->Init();
@@ -129,11 +122,10 @@ void MyApp::LoadObj()
   auto& materials = reader.GetMaterials();
 
 
-  assert(shapes.size() == 1);
+  //assert(shapes.size() == 1);
 
   // Loop over vertices
   Vertex vout = {};
-  vout.color = { 0.5f, 0.5f ,0.5f ,1.0f };
   for (size_t v = 0; v < attrib.vertices.size(); v+=3) {
 
     tinyobj::real_t vx = attrib.vertices[v + 0];
@@ -172,17 +164,34 @@ void MyApp::LoadObj()
   }
   dout::printf("Index num: %d\n", shapes[0].mesh.num_face_vertices.size());
 
-
-
   bunny.mName = "Bunny";
   BaseRenderingObj* obj = RegisterGeo(bunny, mDrawContext);
-  obj->SetScale(3.0f, 3.0f, 3.0f);
-  //obj->SetPos(2.0f, 4.0f, 0.0f);
-  //obj->SetRot(XM_PI / 4.0f, 0.0f, 0.0f);
+  obj->SetScale(4.0f, 4.0f, 4.0f);
 }
 
 void MyApp::Start() {
+  // copy our ConstantBuffer instance to the mapped constant buffer resource
+  mMatBuffer->mData = BaseMaterialConsts();
+  for (size_t i = 0; i < mObjs.size(); ++i)
+  {
+    if (i == 0) {
+      mMatBuffer->mData.Kd = {1.0f, 0.0f, 0.0f, 1.0f};
+    }
+    else if (i == 2) {
+      mMatBuffer->mData.Kd = { 0.0f, 0.0f, 1.0f, 1.0f };
+    }
+    else if (i == 3) {
+      mMatBuffer->mData.Kd = { 0.5f, 0.5f, 0.5f, 1.0f };
+    }
 
+    if (i == 1) {
+      mMatBuffer->mData.IsTextured = true;
+    }
+    else {
+      mMatBuffer->mData.IsTextured = false;
+    }
+    mMatBuffer->Upload(i);
+  }
 }
 
 void MyApp::Render() {
@@ -218,19 +227,22 @@ void MyApp::Render() {
   ID3D12DescriptorHeap* descriptorHeaps[] = { mDescHeap.Get()};
   commandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 
-  // texture handle to 1 (root param [1])
+  // texture handle to 2 (root param [2])
   auto handle = CD3DX12_GPU_DESCRIPTOR_HANDLE(mDescHeap->GetGPUDescriptorHandleForHeapStart());
-  handle.Offset(mObjs.size(), mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
-  commandList->SetGraphicsRootDescriptorTable(1, handle);
+  handle.Offset(mObjs.size() * 2, mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
+  commandList->SetGraphicsRootDescriptorTable(2, handle);
 
   handle = CD3DX12_GPU_DESCRIPTOR_HANDLE(mDescHeap->GetGPUDescriptorHandleForHeapStart());
   for (auto& obj : mObjs)
   {
+    auto handleMat = CD3DX12_GPU_DESCRIPTOR_HANDLE(handle);
+    handleMat.Offset(mObjs.size(), mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
     D3D12_INDEX_BUFFER_VIEW ibView = obj.mIndexBufferView;
     D3D12_VERTEX_BUFFER_VIEW vbView = obj.mVertexBufferView;
     
-    // texture handle to 0 (root param [0])
+    // constant buffer handle to 0 (root param [0])
     commandList->SetGraphicsRootDescriptorTable(0, handle);
+    commandList->SetGraphicsRootDescriptorTable(1, handleMat);
 
     commandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     commandList->IASetVertexBuffers(0, 1, &vbView);
@@ -298,101 +310,128 @@ void MyApp::Update() {
     XMStoreFloat4x4(&mConstBuffer->mData.World, XMMatrixTranspose(mObjs[i].GetWorldMatrix()));
     XMStoreFloat4x4(&mConstBuffer->mData.RSInvT, XMMatrixTranspose(mObjs[i].GetRSInvT()));
 
-    if (i == 1)
-    {
-      XMStoreFloat4(&mConstBuffer->mData.TexBlend, XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f));
-    }
-    else {
-      XMStoreFloat4(&mConstBuffer->mData.TexBlend, XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f));
-    }
-
     mConstBuffer->Upload(i);
   }
 }
 
-void MyApp::InitConstBuffer()
+void MyApp::InitMatBuffer()
 {
-  // create a descriptor range (descriptor table) and fill it out
-  // this is a range of descriptors inside a descriptor heap
-  mDescTableRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV; // this is a range of constant buffer views (descriptors)
-  mDescTableRanges[0].NumDescriptors = 1; // we only have one constant buffer, so the range is only 1
-  mDescTableRanges[0].BaseShaderRegister = 0; // start index of the shader registers in the range
-  mDescTableRanges[0].RegisterSpace = 0; // space 0. can usually be zero
-  mDescTableRanges[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // this appends the range to the end of the root signature descriptor tables
+  // texture desc
+  mDrawContext->mDescTableRanges.emplace_back(1);
+  vector<D3D12_DESCRIPTOR_RANGE>& descTableRanges= mDrawContext->mDescTableRanges.back();
+
+  descTableRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV; // this is a range of constant buffer views (descriptors)
+  descTableRanges[0].NumDescriptors = 1; // we only have one constant buffer, so the range is only 1
+  descTableRanges[0].BaseShaderRegister = 1; // start index of the shader registers in the range
+  descTableRanges[0].RegisterSpace = 0; // space 0. can usually be zero
+  descTableRanges[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // this appends the range to the end of the root signature descriptor tables
 
   // create a descriptor table
   D3D12_ROOT_DESCRIPTOR_TABLE descriptorTable;
-  descriptorTable.NumDescriptorRanges = _countof(mDescTableRanges); // we only have one range
-  descriptorTable.pDescriptorRanges = &mDescTableRanges[0]; // the pointer to the beginning of our ranges array
+  descriptorTable.NumDescriptorRanges = descTableRanges.size(); // we only have one range
+  descriptorTable.pDescriptorRanges = descTableRanges.data(); // the pointer to the beginning of our ranges array
+
+  // create a root parameter and fill it out
+  mDrawContext->mRootParams.emplace_back();
+  mDrawContext->mRootParams.back().ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; // this is a descriptor table
+  mDrawContext->mRootParams.back().DescriptorTable = descriptorTable; // this is our descriptor table for this root parameter
+  mDrawContext->mRootParams.back().ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
+  mMatBuffer = make_unique<BaseUploadHeap<BaseMaterialConsts>>(mObjs.size(), mDevice.Get());
+  mMatBuffer->AppendDesc(mDevice.Get(), mDescHeap.Get(), mObjs.size());
+}
+
+void MyApp::InitConstBuffer()
+{
+  // global desc
+  // create a descriptor range (descriptor table) and fill it out
+  // this is a range of descriptors inside a descriptor heap
+  mDrawContext->mDescTableRanges.emplace_back(1);
+  vector<D3D12_DESCRIPTOR_RANGE>& descTableRanges = mDrawContext->mDescTableRanges.back();
+
+  descTableRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV; // this is a range of constant buffer views (descriptors)
+  descTableRanges[0].NumDescriptors = 1; // we only have one constant buffer, so the range is only 1
+  descTableRanges[0].BaseShaderRegister = 0; // start index of the shader registers in the range
+  descTableRanges[0].RegisterSpace = 0; // space 0. can usually be zero
+  descTableRanges[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // this appends the range to the end of the root signature descriptor tables
+
+  // create a descriptor table
+  D3D12_ROOT_DESCRIPTOR_TABLE descriptorTable;
+  descriptorTable.NumDescriptorRanges = descTableRanges.size(); // we only have one range
+  descriptorTable.pDescriptorRanges = descTableRanges.data(); // the pointer to the beginning of our ranges array
 
 
   // create a root parameter and fill it out
   mDrawContext->mRootParams.emplace_back();
-  mDrawContext->mRootParams[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; // this is a descriptor table
-  mDrawContext->mRootParams[0].DescriptorTable = descriptorTable; // this is our descriptor table for this root parameter
-  mDrawContext->mRootParams[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+  mDrawContext->mRootParams.back().ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; // this is a descriptor table
+  mDrawContext->mRootParams.back().DescriptorTable = descriptorTable; // this is our descriptor table for this root parameter
+  mDrawContext->mRootParams.back().ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
   mConstBuffer = make_unique<BaseUploadHeap<GlobalConsts>>(mObjs.size(), mDevice.Get());
   mConstBuffer->AppendDesc(mDevice.Get(), mDescHeap.Get());
+
+
 }
 
 void MyApp::InitTextureBuffer()
 {
   // create a descriptor range (descriptor table) and fill it out
   // this is a range of descriptors inside a descriptor heap
-  D3D12_DESCRIPTOR_RANGE  descriptorTableRanges[1]; // only one range right now
-  descriptorTableRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV; // this is a range of shader resource views (descriptors)
-  descriptorTableRanges[0].NumDescriptors = 1; // we only have one texture right now, so the range is only 1
-  descriptorTableRanges[0].BaseShaderRegister = 0; // start index of the shader registers in the range
-  descriptorTableRanges[0].RegisterSpace = 0; // space 0. can usually be zero
-  descriptorTableRanges[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // this appends the range to the end of the root signature descriptor tables
+  mDrawContext->mDescTableRanges.emplace_back(1);
+  vector<D3D12_DESCRIPTOR_RANGE>& descTableRanges = mDrawContext->mDescTableRanges.back();
+
+  descTableRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV; // this is a range of shader resource views (descriptors)
+  descTableRanges[0].NumDescriptors = 1; // we only have one texture right now, so the range is only 1
+  descTableRanges[0].BaseShaderRegister = 0; // start index of the shader registers in the range
+  descTableRanges[0].RegisterSpace = 0; // space 0. can usually be zero
+  descTableRanges[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // this appends the range to the end of the root signature descriptor tables
 
   // create a descriptor table
   D3D12_ROOT_DESCRIPTOR_TABLE descriptorTable;
-  descriptorTable.NumDescriptorRanges = _countof(descriptorTableRanges); // we only have one range
-  descriptorTable.pDescriptorRanges = &descriptorTableRanges[0]; // the pointer to the beginning of our ranges array
+  descriptorTable.NumDescriptorRanges = descTableRanges.size(); // we only have one range
+  descriptorTable.pDescriptorRanges = descTableRanges.data(); // the pointer to the beginning of our ranges array
 
   mDrawContext->mRootParams.emplace_back();
   mDrawContext->mRootParams.back().ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; // this is a descriptor table
   mDrawContext->mRootParams.back().DescriptorTable = descriptorTable; // this is our descriptor table for this root parameter
   mDrawContext->mRootParams.back().ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // our pixel shader will be the only shader accessing this parameter for now
 
-  mTexture->AppendDescHeap(mDevice.Get(), mDescHeap.Get(), mObjs.size());
+  mTexture->AppendDesc(mDevice.Get(), mDescHeap.Get(), mObjs.size() * 2);
 }
 
-void SetCubeGeo(BaseGeometry<Vertex>& geo, XMFLOAT4& color)
+void SetCubeGeo(BaseGeometry<Vertex>& geo)
 {
   geo.mVertices = {
     // front
-    { { -1.0f, +1.0f, -1.0f }, color, { 0.0f, 0.0f, 0.0f }, {0.0f, 0.0f} },
-    { { +1.0f, -1.0f, -1.0f }, color, { 0.0f, 0.0f, 0.0f }, {1.0f, 1.0f} },
-    { { -1.0f, -1.0f, -1.0f }, color, { 0.0f, 0.0f, 0.0f }, {1.0f, 0.0f} },
-    { { +1.0f, +1.0f, -1.0f }, color, { 0.0f, 0.0f, 0.0f }, {0.0f, 1.0f} },
+    { { -1.0f, +1.0f, -1.0f }, { 0.0f, 0.0f, 0.0f }, {0.0f, 0.0f} },
+    { { +1.0f, -1.0f, -1.0f }, { 0.0f, 0.0f, 0.0f }, {1.0f, 1.0f} },
+    { { -1.0f, -1.0f, -1.0f }, { 0.0f, 0.0f, 0.0f }, {1.0f, 0.0f} },
+    { { +1.0f, +1.0f, -1.0f }, { 0.0f, 0.0f, 0.0f }, {0.0f, 1.0f} },
     // right
-    { { +1.0f, -1.0f, -1.0f }, color, { 0.0f, 0.0f, 0.0f }, {0.0f, 0.0f} },
-    { { +1.0f, +1.0f, +1.0f }, color, { 0.0f, 0.0f, 0.0f }, {1.0f, 1.0f} },
-    { { +1.0f, -1.0f, +1.0f }, color, { 0.0f, 0.0f, 0.0f }, {1.0f, 0.0f} },
-    { { +1.0f, +1.0f, -1.0f }, color, { 0.0f, 0.0f, 0.0f }, {0.0f, 1.0f} },
+    { { +1.0f, -1.0f, -1.0f }, { 0.0f, 0.0f, 0.0f }, {0.0f, 0.0f} },
+    { { +1.0f, +1.0f, +1.0f }, { 0.0f, 0.0f, 0.0f }, {1.0f, 1.0f} },
+    { { +1.0f, -1.0f, +1.0f }, { 0.0f, 0.0f, 0.0f }, {1.0f, 0.0f} },
+    { { +1.0f, +1.0f, -1.0f }, { 0.0f, 0.0f, 0.0f }, {0.0f, 1.0f} },
     // left
-    { { -1.0f, +1.0f, +1.0f }, color, { 0.0f, 0.0f, 0.0f }, {0.0f, 0.0f} },
-    { { -1.0f, -1.0f, -1.0f }, color, { 0.0f, 0.0f, 0.0f }, {1.0f, 1.0f} },
-    { { -1.0f, -1.0f, +1.0f }, color, { 0.0f, 0.0f, 0.0f }, {1.0f, 0.0f} },
-    { { -1.0f, +1.0f, -1.0f }, color, { 0.0f, 0.0f, 0.0f }, {0.0f, 1.0f} },
+    { { -1.0f, +1.0f, +1.0f }, { 0.0f, 0.0f, 0.0f }, {0.0f, 0.0f} },
+    { { -1.0f, -1.0f, -1.0f }, { 0.0f, 0.0f, 0.0f }, {1.0f, 1.0f} },
+    { { -1.0f, -1.0f, +1.0f }, { 0.0f, 0.0f, 0.0f }, {1.0f, 0.0f} },
+    { { -1.0f, +1.0f, -1.0f }, { 0.0f, 0.0f, 0.0f }, {0.0f, 1.0f} },
     // back
-    { { +1.0f, +1.0f, +1.0f }, color, { 0.0f, 0.0f, 0.0f }, {0.0f, 0.0f} },
-    { { -1.0f, -1.0f, +1.0f }, color, { 0.0f, 0.0f, 0.0f }, {1.0f, 1.0f} },
-    { { +1.0f, -1.0f, +1.0f }, color, { 0.0f, 0.0f, 0.0f }, {1.0f, 0.0f} },
-    { { -1.0f, +1.0f, +1.0f }, color, { 0.0f, 0.0f, 0.0f }, {0.0f, 1.0f} },
+    { { +1.0f, +1.0f, +1.0f }, { 0.0f, 0.0f, 0.0f }, {0.0f, 0.0f} },
+    { { -1.0f, -1.0f, +1.0f }, { 0.0f, 0.0f, 0.0f }, {1.0f, 1.0f} },
+    { { +1.0f, -1.0f, +1.0f }, { 0.0f, 0.0f, 0.0f }, {1.0f, 0.0f} },
+    { { -1.0f, +1.0f, +1.0f }, { 0.0f, 0.0f, 0.0f }, {0.0f, 1.0f} },
     // top
-    { { -1.0f, +1.0f, -1.0f }, color, { 0.0f, 0.0f, 0.0f }, {0.0f, 0.0f} },
-    { { +1.0f, +1.0f, +1.0f }, color, { 0.0f, 0.0f, 0.0f }, {1.0f, 1.0f} },
-    { { +1.0f, +1.0f, -1.0f }, color, { 0.0f, 0.0f, 0.0f }, {1.0f, 0.0f} },
-    { { -1.0f, +1.0f, +1.0f }, color, { 0.0f, 0.0f, 0.0f }, {0.0f, 1.0f} },
+    { { -1.0f, +1.0f, -1.0f }, { 0.0f, 0.0f, 0.0f }, {0.0f, 0.0f} },
+    { { +1.0f, +1.0f, +1.0f }, { 0.0f, 0.0f, 0.0f }, {1.0f, 1.0f} },
+    { { +1.0f, +1.0f, -1.0f }, { 0.0f, 0.0f, 0.0f }, {1.0f, 0.0f} },
+    { { -1.0f, +1.0f, +1.0f }, { 0.0f, 0.0f, 0.0f }, {0.0f, 1.0f} },
     // bottom
-    { { +1.0f, -1.0f, +1.0f }, color, { 0.0f, 0.0f, 0.0f }, {0.0f, 0.0f} },
-    { { -1.0f, -1.0f, -1.0f }, color, { 0.0f, 0.0f, 0.0f }, {1.0f, 1.0f} },
-    { { +1.0f, -1.0f, -1.0f }, color, { 0.0f, 0.0f, 0.0f }, {1.0f, 0.0f} },
-    { { -1.0f, -1.0f, +1.0f }, color, { 0.0f, 0.0f, 0.0f }, {0.0f, 1.0f} },
+    { { +1.0f, -1.0f, +1.0f }, { 0.0f, 0.0f, 0.0f }, {0.0f, 0.0f} },
+    { { -1.0f, -1.0f, -1.0f }, { 0.0f, 0.0f, 0.0f }, {1.0f, 1.0f} },
+    { { +1.0f, -1.0f, -1.0f }, { 0.0f, 0.0f, 0.0f }, {1.0f, 0.0f} },
+    { { -1.0f, -1.0f, +1.0f }, { 0.0f, 0.0f, 0.0f }, {0.0f, 1.0f} },
   };
   geo.mIndices = {
     // ffront face

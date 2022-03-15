@@ -68,7 +68,7 @@ void BaseImage::Upload(ID3D12Device* device, ID3D12GraphicsCommandList* commandL
 
 }
 
-void BaseImage::AppendDescHeap(ID3D12Device* device, ID3D12DescriptorHeap* descHeap, int offset)
+void BaseImage::AppendDesc(ID3D12Device* device, ID3D12DescriptorHeap* descHeap, int offset)
 {
   auto handle = CD3DX12_CPU_DESCRIPTOR_HANDLE(descHeap->GetCPUDescriptorHandleForHeapStart());
   handle.Offset(offset, device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));

@@ -11,7 +11,6 @@ using namespace std;
 
 struct Vertex {
   XMFLOAT3 pos;
-  XMFLOAT4 color;
   XMFLOAT3 normal;
   XMFLOAT2 texCoord;
 };
@@ -22,10 +21,17 @@ struct GlobalConsts {
   XMFLOAT4X4 RSInvT = Identity4x4();
   XMFLOAT4 LightDir = {};
   XMFLOAT4 EyePos = {};
-  XMFLOAT4 TexBlend = {};
 };
 
-void SetCubeGeo(BaseGeometry<Vertex>& geo, XMFLOAT4& color);
+struct BaseMaterialConsts {
+  XMFLOAT4 Ka = { 0.6f, 0.6f, 0.6f, 1.0f }; // Ambient Color Constant
+  XMFLOAT4 Kd = { 0.8f, 0.8f, 0.8f, 1.0f }; // Diffuse Color Constant
+  XMFLOAT4 Ks = { 0.5f, 0.5f, 0.5f, 1.0f }; // Specular Color Constant
+  float Ns = 323.999994f; // Shiniess
+  bool IsTextured = false; // Whether applied texture
+};
+
+void SetCubeGeo(BaseGeometry<Vertex>& geo);
 
 class MyApp : public BaseApp {
 public:
@@ -37,15 +43,16 @@ public:
   void Update();
 
   ComPtr<ID3D12DescriptorHeap> mDescHeap;
-  D3D12_DESCRIPTOR_RANGE mDescTableRanges[1];
 
   unique_ptr<BaseUploadHeap<GlobalConsts>> mConstBuffer;
+  unique_ptr<BaseUploadHeap<BaseMaterialConsts>> mMatBuffer;
   unique_ptr<BaseImage> mTexture;
 
   unique_ptr<BaseDrawContext> mDrawContext;
 
   void InitConstBuffer();
   void InitTextureBuffer();
+  void InitMatBuffer();
   void LoadObj();
 
 };

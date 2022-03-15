@@ -25,7 +25,7 @@ public:
 
   ~BaseImage();
 
-  void AppendDescHeap(ID3D12Device* device, ID3D12DescriptorHeap* descHeap, int offset=0);
+  void AppendDesc(ID3D12Device* device, ID3D12DescriptorHeap* descHeap, int offset=0);
   void Read(const string& filepath);
   void Upload(ID3D12Device* device, ID3D12GraphicsCommandList* commandList);
 };
