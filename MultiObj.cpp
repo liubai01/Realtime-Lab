@@ -81,8 +81,10 @@ MyApp::MyApp(HINSTANCE hInstance) : BaseApp(hInstance) {
 
   Flush(mDrawContext->mCommandList.Get());
 
+  InitShadowDepth();
+
   D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
-  heapDesc.NumDescriptors = mObjs.size() * 2 + 1; // three global constant buffer + one texture
+  heapDesc.NumDescriptors = mObjs.size() * 2 + 2; // three global constant buffer + one texture
   heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
   heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 
@@ -175,10 +177,10 @@ void MyApp::Start() {
   for (size_t i = 0; i < mObjs.size(); ++i)
   {
     if (i == 0) {
-      mMatBuffer->mData.Kd = {1.0f, 0.0f, 0.0f, 1.0f};
+      mMatBuffer->mData.Kd = {0.8f, 0.0f, 0.0f, 1.0f};
     }
     else if (i == 2) {
-      mMatBuffer->mData.Kd = { 0.0f, 0.0f, 1.0f, 1.0f };
+      mMatBuffer->mData.Kd = { 0.0f, 0.0f, 0.8f, 1.0f };
     }
     else if (i == 3) {
       mMatBuffer->mData.Kd = { 0.5f, 0.5f, 0.5f, 1.0f };
@@ -195,8 +197,122 @@ void MyApp::Start() {
 }
 
 void MyApp::Render() {
-  mDrawContext->ResetCommandList();
+  RenderShadowMap();
+  RenderObjects();
+  Swap();
+}
 
+D3D12_CPU_DESCRIPTOR_HANDLE MyApp::ShadowDepthBufferView() const
+{
+  CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(mShadowDsDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
+  return dsvHandle;
+}
+
+void MyApp::InitShadowDepth()
+{
+  // Create a depth stencil descriptor heap so we can get a pointer to the depth stencil buffer
+  D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = {};
+  dsvHeapDesc.NumDescriptors = 1;
+  dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+  dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+  HRESULT hr = mDevice->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(mShadowDsDescriptorHeap.GetAddressOf()));
+  if (FAILED(hr))
+  {
+    mIsRunning = false;
+    return;
+  }
+
+  D3D12_DEPTH_STENCIL_VIEW_DESC depthStencilDesc = {};
+  depthStencilDesc.Format = DXGI_FORMAT_D32_FLOAT;
+  depthStencilDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+  depthStencilDesc.Flags = D3D12_DSV_FLAG_NONE;
+
+  D3D12_CLEAR_VALUE depthOptimizedClearValue = {};
+  depthOptimizedClearValue.Format = DXGI_FORMAT_D32_FLOAT;
+  depthOptimizedClearValue.DepthStencil.Depth = 1.0f;
+  depthOptimizedClearValue.DepthStencil.Stencil = 0;
+
+  auto hprop = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+  auto rdesc = CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_D32_FLOAT, 1024.0f, 768.0f, 1, 0, 1, 0, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
+  mDevice->CreateCommittedResource(
+    &hprop,
+    D3D12_HEAP_FLAG_NONE,
+    &rdesc,
+    D3D12_RESOURCE_STATE_DEPTH_WRITE,
+    &depthOptimizedClearValue,
+    IID_PPV_ARGS(mShadowDepthStencilBuffer.GetAddressOf())
+  );
+  mShadowDsDescriptorHeap->SetName(L"Shadow Depth/Stencil Resource Heap");
+
+  mDevice->CreateDepthStencilView(
+    mShadowDepthStencilBuffer.Get(),
+    &depthStencilDesc,
+    mShadowDsDescriptorHeap->GetCPUDescriptorHandleForHeapStart()
+  );
+}
+
+void MyApp::RenderShadowMap()
+{
+  XMMATRIX proj = XMMatrixPerspectiveFovLH(0.25f * 3.1415926535f,  static_cast<float>(mWidth) / mHeight, 1.0f, 1000.0f);
+  MatrixBuild(mSMPos, proj);
+
+  mDrawContext->ResetCommandList();
+  ID3D12GraphicsCommandList* commandList = mDrawContext->mCommandList.Get();
+  commandList->SetGraphicsRootSignature(mDrawContext->mRootSig.Get());
+  commandList->RSSetViewports(1, &mViewport);
+  commandList->RSSetScissorRects(1, &mScissorRect);
+
+  D3D12_CPU_DESCRIPTOR_HANDLE dsv = ShadowDepthBufferView();
+
+  // Clear the back buffer and depth buffer.
+  const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
+  commandList->ClearDepthStencilView(dsv, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+
+  // Specify the buffers we are going to render to.
+
+  commandList->OMSetRenderTargets(0, nullptr, false, &dsv);
+
+  ID3D12DescriptorHeap* descriptorHeaps[] = { mDescHeap.Get() };
+  commandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
+
+  // texture handle to 2 (root param [2])
+  auto handle = CD3DX12_GPU_DESCRIPTOR_HANDLE(mDescHeap->GetGPUDescriptorHandleForHeapStart());
+  handle.Offset(mObjs.size() * 2, mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
+  commandList->SetGraphicsRootDescriptorTable(2, handle);
+
+  handle = CD3DX12_GPU_DESCRIPTOR_HANDLE(mDescHeap->GetGPUDescriptorHandleForHeapStart());
+  for (auto& obj : mObjs)
+  {
+    auto handleMat = CD3DX12_GPU_DESCRIPTOR_HANDLE(handle);
+    handleMat.Offset(mObjs.size(), mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
+    D3D12_INDEX_BUFFER_VIEW ibView = obj.mIndexBufferView;
+    D3D12_VERTEX_BUFFER_VIEW vbView = obj.mVertexBufferView;
+
+    // constant buffer handle to 0 (root param [0])
+    commandList->SetGraphicsRootDescriptorTable(0, handle);
+    commandList->SetGraphicsRootDescriptorTable(1, handleMat);
+
+    commandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    commandList->IASetVertexBuffers(0, 1, &vbView);
+    commandList->IASetIndexBuffer(&ibView);
+
+    commandList->DrawIndexedInstanced(
+      obj.mNumIndex,
+      1, 0, 0, 0
+    );
+
+    handle.Offset(1, mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
+  };
+
+  Flush(mDrawContext->mCommandList.Get());
+}
+
+void MyApp::RenderObjects()
+{
+  XMMATRIX proj = XMMatrixPerspectiveFovLH(0.25f * 3.1415926535f, static_cast<float>(mWidth) / mHeight, 1.0f, 1000.0f);
+  MatrixBuild(mViewPos, proj);
+
+  mDrawContext->ResetCommandList();
   ID3D12GraphicsCommandList* commandList = mDrawContext->mCommandList.Get();
 
   commandList->SetGraphicsRootSignature(mDrawContext->mRootSig.Get());
@@ -214,6 +330,16 @@ void MyApp::Render() {
     &trans
   );
 
+  trans = CD3DX12_RESOURCE_BARRIER::Transition(
+    mShadowDepthStencilBuffer.Get(),
+    D3D12_RESOURCE_STATE_DEPTH_WRITE,
+    D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE
+  );
+  commandList->ResourceBarrier(
+    1,
+    &trans
+  );
+
   // Clear the back buffer and depth buffer.
   const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
   commandList->ClearRenderTargetView(CurrentBackBufferView(), clearColor, 0, nullptr);
@@ -224,7 +350,7 @@ void MyApp::Render() {
   D3D12_CPU_DESCRIPTOR_HANDLE dsv = DepthBufferView();
   commandList->OMSetRenderTargets(1, &rtv, false, &dsv);
 
-  ID3D12DescriptorHeap* descriptorHeaps[] = { mDescHeap.Get()};
+  ID3D12DescriptorHeap* descriptorHeaps[] = { mDescHeap.Get() };
   commandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 
   // texture handle to 2 (root param [2])
@@ -239,7 +365,7 @@ void MyApp::Render() {
     handleMat.Offset(mObjs.size(), mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
     D3D12_INDEX_BUFFER_VIEW ibView = obj.mIndexBufferView;
     D3D12_VERTEX_BUFFER_VIEW vbView = obj.mVertexBufferView;
-    
+
     // constant buffer handle to 0 (root param [0])
     commandList->SetGraphicsRootDescriptorTable(0, handle);
     commandList->SetGraphicsRootDescriptorTable(1, handleMat);
@@ -264,41 +390,28 @@ void MyApp::Render() {
   );
   commandList->ResourceBarrier(1, &trans);
 
+  trans = CD3DX12_RESOURCE_BARRIER::Transition(
+    mShadowDepthStencilBuffer.Get(),
+    D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+    D3D12_RESOURCE_STATE_DEPTH_WRITE 
+  );
+  commandList->ResourceBarrier(
+    1,
+    &trans
+  );
+
   Flush(mDrawContext->mCommandList.Get());
-  Swap();
 }
 
-void MyApp::Update() {
-  XMFLOAT4X4 mView = Identity4x4();
-
-  static float mTheta = 1.5f * XM_PI;
-  float mPhi = XM_PIDIV4;
-  float mRadius = 20.0f;
-
-  mTheta += XM_PI * mTimeDelta * 0.1f;
-
-  // Convert Spherical to Cartesian coordinates.
-  float x = mRadius * sinf(mPhi) * cosf(mTheta);
-  float z = mRadius * sinf(mPhi) * sinf(mTheta);
-  float y = mRadius * cosf(mPhi);
-
-
-  XMVECTOR view_dir = XMVectorSet(x, y, z, 0);
-  XMVECTOR light_dir = XMVectorSet(1.0f, y / 10.0f, 1.0f, 0);
-  XMStoreFloat4(&mConstBuffer->mData.LightDir, XMVector3Normalize(light_dir));
-
+void MyApp::MatrixBuild(XMVECTOR& viewPos, XMMATRIX& proj)
+{
   // Build the view matrix.
-  //XMVECTOR pos = XMVectorSet(x, y, z, 1.0f);
-  XMVECTOR pos = view_dir;
   XMVECTOR target = XMVectorZero();
   XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
-  XMStoreFloat4(&mConstBuffer->mData.EyePos, pos);
+  XMStoreFloat4(&mConstBuffer->mData.EyePos, viewPos);
 
-  XMMATRIX view = XMMatrixLookAtLH(pos, target, up);
-  XMStoreFloat4x4(&mView, view);
-
-  XMMATRIX proj = XMLoadFloat4x4(&mProj);
+  XMMATRIX view = XMMatrixLookAtLH(viewPos, target, up);
 
   // copy our ConstantBuffer instance to the mapped constant buffer resource
   for (size_t i = 0; i < mObjs.size(); ++i)
@@ -312,6 +425,37 @@ void MyApp::Update() {
 
     mConstBuffer->Upload(i);
   }
+}
+
+void MyApp::Update() {
+
+  static float mTheta = 1.5f * XM_PI;
+  float mPhi = XM_PIDIV4;
+  float mRadius = 20.0f;
+
+  mTheta += XM_PI * mTimeDelta * 0.1f;
+
+  // Convert Spherical to Cartesian coordinates.
+  float x = mRadius * sinf(mPhi) * cosf(mTheta);
+  float z = mRadius * sinf(mPhi) * sinf(mTheta);
+  float y = mRadius * cosf(mPhi);
+
+
+  mViewPos = XMVectorSet(x, y, z, 0);
+  //mLightDir = XMVector3Normalize(XMVectorSet(1.0f, 1.8f, 1.0f, 0.0f));
+  mLightDir = XMVector3Normalize(XMVectorSet(-x / mRadius, 1.0f, z / mRadius, 0.0f));
+  mSMPos = mLightDir * 25.0f;
+
+  XMStoreFloat4(&mConstBuffer->mData.LightDir, mLightDir);
+
+  XMVECTOR target = XMVectorZero();
+  XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+  XMMATRIX view = XMMatrixLookAtLH(mSMPos, target, up);
+  XMMATRIX proj = XMMatrixPerspectiveFovLH(0.25f * 3.1415926535f, 1024.f / 768.f, 1.0f, 1000.0f);
+
+  XMMATRIX viewProj = view * proj;
+  XMStoreFloat4x4(&mConstBuffer->mData.ShadowViewProj, XMMatrixTranspose(viewProj));
+
 }
 
 void MyApp::InitMatBuffer()
@@ -381,7 +525,7 @@ void MyApp::InitTextureBuffer()
   vector<D3D12_DESCRIPTOR_RANGE>& descTableRanges = mDrawContext->mDescTableRanges.back();
 
   descTableRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV; // this is a range of shader resource views (descriptors)
-  descTableRanges[0].NumDescriptors = 1; // we only have one texture right now, so the range is only 1
+  descTableRanges[0].NumDescriptors = 2; // we only have one texture right now, so the range is only 1
   descTableRanges[0].BaseShaderRegister = 0; // start index of the shader registers in the range
   descTableRanges[0].RegisterSpace = 0; // space 0. can usually be zero
   descTableRanges[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // this appends the range to the end of the root signature descriptor tables
@@ -397,6 +541,16 @@ void MyApp::InitTextureBuffer()
   mDrawContext->mRootParams.back().ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; // our pixel shader will be the only shader accessing this parameter for now
 
   mTexture->AppendDesc(mDevice.Get(), mDescHeap.Get(), mObjs.size() * 2);
+
+  auto handle = CD3DX12_CPU_DESCRIPTOR_HANDLE(mDescHeap->GetCPUDescriptorHandleForHeapStart());
+  handle.Offset(mObjs.size() * 2 + 1, mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
+  // now we create a shader resource view (descriptor that points to the texture and describes it)
+  D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+  srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+  srvDesc.Format = DXGI_FORMAT_R32_FLOAT;
+  srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+  srvDesc.Texture2D.MipLevels = 1;
+  mDevice->CreateShaderResourceView(mShadowDepthStencilBuffer.Get(), &srvDesc, handle);
 }
 
 void SetCubeGeo(BaseGeometry<Vertex>& geo)

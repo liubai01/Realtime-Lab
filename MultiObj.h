@@ -21,6 +21,7 @@ struct GlobalConsts {
   XMFLOAT4X4 RSInvT = Identity4x4();
   XMFLOAT4 LightDir = {};
   XMFLOAT4 EyePos = {};
+  XMFLOAT4X4 ShadowViewProj = Identity4x4();
 };
 
 struct BaseMaterialConsts {
@@ -35,12 +36,15 @@ void SetCubeGeo(BaseGeometry<Vertex>& geo);
 
 class MyApp : public BaseApp {
 public:
-  vector<Vertex> mvList;
   MyApp(HINSTANCE hInstance);
 
   void Start();
   void Render();
   void Update();
+
+  void RenderShadowMap();
+  void RenderObjects();
+  void MatrixBuild(XMVECTOR& viewPos, XMMATRIX& proj);
 
   ComPtr<ID3D12DescriptorHeap> mDescHeap;
 
@@ -49,6 +53,17 @@ public:
   unique_ptr<BaseImage> mTexture;
 
   unique_ptr<BaseDrawContext> mDrawContext;
+
+  XMVECTOR mLightDir;
+  XMVECTOR mViewPos;
+  XMVECTOR mSMPos;
+  
+  // Shadow map depth buffer
+  ComPtr<ID3D12Resource> mShadowDepthStencilBuffer;
+  ComPtr<ID3D12DescriptorHeap> mShadowDsDescriptorHeap;
+
+  D3D12_CPU_DESCRIPTOR_HANDLE ShadowDepthBufferView() const;
+  void InitShadowDepth();
 
   void InitConstBuffer();
   void InitTextureBuffer();
