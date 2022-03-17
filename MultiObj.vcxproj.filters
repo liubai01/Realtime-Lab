@@ -22,6 +22,9 @@
     <Filter Include="Header Files\ThirdParty">
       <UniqueIdentifier>{1bff1885-dddd-4872-8b13-871086bff4eb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\ThirdParty\ImGUI">
+      <UniqueIdentifier>{e316a0b9-6bbe-47e8-af09-45df2a51716e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MultiObj.cpp">
@@ -53,6 +56,21 @@
     </ClCompile>
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ThirdParty\ImGUI\imgui_draw.cpp">
+      <Filter>Header Files\ThirdParty\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="ThirdParty\ImGUI\imgui_tables.cpp">
+      <Filter>Header Files\ThirdParty\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="ThirdParty\ImGUI\imgui_widgets.cpp">
+      <Filter>Header Files\ThirdParty\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="ThirdParty\ImGUI\imgui.cpp">
+      <Filter>Header Files\ThirdParty\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="ThirdParty\ImGUI\imgui_impl_dx12.cpp">
+      <Filter>Header Files\ThirdParty\ImGUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -94,6 +112,27 @@
     </ClInclude>
     <ClInclude Include="d3dx12.h">
       <Filter>Header Files\ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="ThirdParty\ImGUI\imgui_internal.h">
+      <Filter>Header Files\ThirdParty\ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="ThirdParty\ImGUI\imstb_rectpack.h">
+      <Filter>Header Files\ThirdParty\ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="ThirdParty\ImGUI\imstb_textedit.h">
+      <Filter>Header Files\ThirdParty\ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="ThirdParty\ImGUI\imstb_truetype.h">
+      <Filter>Header Files\ThirdParty\ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="ThirdParty\ImGUI\imconfig.h">
+      <Filter>Header Files\ThirdParty\ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="ThirdParty\ImGUI\imgui.h">
+      <Filter>Header Files\ThirdParty\ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="ThirdParty\ImGUI\imgui_impl_dx12.h">
+      <Filter>Header Files\ThirdParty\ImGUI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

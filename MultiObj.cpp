@@ -27,6 +27,7 @@ SOFTWARE.
 
 #include "MultiObj.h"
 
+
 #define TINYOBJLOADER_IMPLEMENTATION // define this in only *one* .cc
 // Optional. define TINYOBJLOADER_USE_MAPBOX_EARCUT gives robust trinagulation. Requires C++11
 //#define TINYOBJLOADER_USE_MAPBOX_EARCUT
@@ -253,11 +254,14 @@ void MyApp::InitShadowDepth()
 
 void MyApp::RenderShadowMap()
 {
+  
   XMMATRIX proj = XMMatrixPerspectiveFovLH(0.25f * 3.1415926535f,  static_cast<float>(mWidth) / mHeight, 1.0f, 1000.0f);
   MatrixBuild(mSMPos, proj);
 
   mDrawContext->ResetCommandList();
+  
   ID3D12GraphicsCommandList* commandList = mDrawContext->mCommandList.Get();
+  mCommandQueue->BeginEvent(1, "ShadowMap", sizeof("ShadowMap"));
   commandList->SetGraphicsRootSignature(mDrawContext->mRootSig.Get());
   commandList->RSSetViewports(1, &mViewport);
   commandList->RSSetScissorRects(1, &mScissorRect);
@@ -305,6 +309,8 @@ void MyApp::RenderShadowMap()
   };
 
   Flush(mDrawContext->mCommandList.Get());
+
+  mCommandQueue->EndEvent();
 }
 
 void MyApp::RenderObjects()

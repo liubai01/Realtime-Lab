@@ -86,7 +86,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;ImTextureID=ImU64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
@@ -149,6 +149,11 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MultiObj.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
+    <ClCompile Include="ThirdParty\ImGUI\imgui.cpp" />
+    <ClCompile Include="ThirdParty\ImGUI\imgui_draw.cpp" />
+    <ClCompile Include="ThirdParty\ImGUI\imgui_impl_dx12.cpp" />
+    <ClCompile Include="ThirdParty\ImGUI\imgui_tables.cpp" />
+    <ClCompile Include="ThirdParty\ImGUI\imgui_widgets.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BaseApp.h" />
@@ -163,6 +168,13 @@
     <ClInclude Include="MultiObj.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="ShaderManager.h" />
+    <ClInclude Include="ThirdParty\ImGUI\imconfig.h" />
+    <ClInclude Include="ThirdParty\ImGUI\imgui.h" />
+    <ClInclude Include="ThirdParty\ImGUI\imgui_impl_dx12.h" />
+    <ClInclude Include="ThirdParty\ImGUI\imgui_internal.h" />
+    <ClInclude Include="ThirdParty\ImGUI\imstb_rectpack.h" />
+    <ClInclude Include="ThirdParty\ImGUI\imstb_textedit.h" />
+    <ClInclude Include="ThirdParty\ImGUI\imstb_truetype.h" />
     <ClInclude Include="ThirdParty\tiny_obj_loader.h" />
   </ItemGroup>
   <ItemGroup>
@@ -185,6 +197,5 @@
     <Image Include="Asset\grass.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets">
-  </ImportGroup>
+  <ImportGroup Label="ExtensionTargets" />
 </Project>

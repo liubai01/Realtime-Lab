@@ -39,24 +39,36 @@ float4 main(VertexOut pin) : SV_TARGET
 		(1.0f - pin.PosSM.y) / 2.0f
 	);
 
-  float sampledDepth = 0.0f;
-	float transformedDepth = 0.0f;
-	float2 nowCoord;
-	float shadow = 0.0f;
-	float2 shadowMapSize = float2(1024.0f, 768.0f);
-	int n = 3;
-
 	float4 N = float4(pin.Norm, 0.0f);
 	float bias = max(.005 * (1 - dot(N, gLightDir)), .0005);
+
+  float sampledDepth = t2.Sample(s1, shadowCoord) + bias;
+	float transformedDepth = pin.PosSM.z / pin.PosSM.w;
+	float2 nowCoord;
+	float shadow = 0.0f;
+	float2 shadowMapSize = float2(1024.0f, 1024.0f);
+	int n = 5;
+
+
+	float dist = (transformedDepth - sampledDepth) / sampledDepth;
+	float dialte = 2.0f;
+	//dialte = clamp(dialte, 0.5f, 20.0f);
+
 	for (int x = -n; x <= n; ++x) {
 		for (int y = -n; y <= n; ++y) {
-			nowCoord = shadowCoord + float2(x / shadowMapSize.x, y / shadowMapSize.y);
-			float sampledDepth = t2.Sample(s1, nowCoord) + bias;
-			float transformedDepth = pin.PosSM.z / pin.PosSM.w;
+			nowCoord = shadowCoord + float2(x / shadowMapSize.x, y / shadowMapSize.y) * dialte;
+			sampledDepth = t2.Sample(s1, nowCoord) + bias;
 			shadow += sampledDepth > transformedDepth;
+
+			// update dialte
+			//dist = (transformedDepth - sampledDepth) / sampledDepth;
+			//dialte = 3000.0f * dist * 0.01f + dialte * 0.99f;
+			//dialte = clamp(dialte, 0.5f, 20.0f);
 		}
 	}
 	shadow /= (2 * n + 1) * (2 * n + 1);
+	// threshold and transparency
+	shadow = 1.0f - (1.0f - shadow) / 1.0f;
 
 	//float sampledDepth = t2.Sample(s1, shadowCoord) + 0.0015f;
 	//float transformedDepth = pin.PosSM.z / pin.PosSM.w;
@@ -71,17 +83,13 @@ float4 main(VertexOut pin) : SV_TARGET
 	float4 Fs = Ks;
 
 	if (IsTextured) {
-		//float4 sampleDepth = t2.Sample(s1, pin.Coord);
-		//sampleDepth.x = (sampleDepth.x - 0.8) / 0.4;
-		//float4 grayVis = float4(sampleDepth.x, sampleDepth.x, sampleDepth.x, 1.0f);
-		//Fd = grayVis;
-		//Fa = grayVis;
 		Fd = t1.Sample(s1, pin.Coord);
 		Fa = t1.Sample(s1, pin.Coord);
 	}
 
 	// Diffuse
   float4 ret = max(dot(gLightDir, N), 0.0f) * Fd * id;
+	ret *= shadow;
 
 	// Ambient
 	ret += Fa * ia;
@@ -89,11 +97,11 @@ float4 main(VertexOut pin) : SV_TARGET
 	// Specular
 	float4 V = normalize(gEyePos - pin.PosW);
 	float4 H = (V + gLightDir) / length(V + gLightDir);
-	ret += pow(max(dot(N, H), 0), Ns) * Fs * ims;
+	ret += pow(max(dot(N, H), 0), Ns) * Fs * ims * shadow;
 
 	// Gamma Correction
-	float vis = 1.0f - (shadow < 0.1f) * 0.5f;
-	ret *= vis;
+	
+	//float vis = dialte / 10.0f;
 	//ret.x = vis;
 	//ret.y = vis;
 	//ret.z = vis;
