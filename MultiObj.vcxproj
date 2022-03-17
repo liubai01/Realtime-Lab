@@ -142,6 +142,7 @@
     <ClCompile Include="BaseApp.cpp" />
     <ClCompile Include="BaseDrawContext.cpp" />
     <ClCompile Include="BaseImage.cpp" />
+    <ClCompile Include="BaseMainHeap.cpp" />
     <ClCompile Include="BaseRenderingObj.cpp" />
     <ClCompile Include="BaseUploadHeap.cpp" />
     <ClCompile Include="DebugOut.cpp" />
@@ -152,6 +153,7 @@
     <ClCompile Include="ThirdParty\ImGUI\imgui.cpp" />
     <ClCompile Include="ThirdParty\ImGUI\imgui_draw.cpp" />
     <ClCompile Include="ThirdParty\ImGUI\imgui_impl_dx12.cpp" />
+    <ClCompile Include="ThirdParty\ImGUI\imgui_impl_win32.cpp" />
     <ClCompile Include="ThirdParty\ImGUI\imgui_tables.cpp" />
     <ClCompile Include="ThirdParty\ImGUI\imgui_widgets.cpp" />
   </ItemGroup>
@@ -159,6 +161,7 @@
     <ClInclude Include="BaseApp.h" />
     <ClInclude Include="BaseDrawContext.h" />
     <ClInclude Include="BaseImage.h" />
+    <ClInclude Include="BaseMainHeap.h" />
     <ClInclude Include="BaseRenderingObj.h" />
     <ClInclude Include="BaseUploadHeap.h" />
     <ClInclude Include="d3dx12.h" />
@@ -171,6 +174,7 @@
     <ClInclude Include="ThirdParty\ImGUI\imconfig.h" />
     <ClInclude Include="ThirdParty\ImGUI\imgui.h" />
     <ClInclude Include="ThirdParty\ImGUI\imgui_impl_dx12.h" />
+    <ClInclude Include="ThirdParty\ImGUI\imgui_impl_win32.h" />
     <ClInclude Include="ThirdParty\ImGUI\imgui_internal.h" />
     <ClInclude Include="ThirdParty\ImGUI\imstb_rectpack.h" />
     <ClInclude Include="ThirdParty\ImGUI\imstb_textedit.h" />

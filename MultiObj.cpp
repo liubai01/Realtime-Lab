@@ -27,11 +27,12 @@ SOFTWARE.
 
 #include "MultiObj.h"
 
-
 #define TINYOBJLOADER_IMPLEMENTATION // define this in only *one* .cc
 // Optional. define TINYOBJLOADER_USE_MAPBOX_EARCUT gives robust trinagulation. Requires C++11
 //#define TINYOBJLOADER_USE_MAPBOX_EARCUT
 #include "ThirdParty/tiny_obj_loader.h"
+
+
 
 MyApp::MyApp(HINSTANCE hInstance) : BaseApp(hInstance) {
   mDrawContext = make_unique<BaseDrawContext>(mDevice.Get());
@@ -92,11 +93,31 @@ MyApp::MyApp(HINSTANCE hInstance) : BaseApp(hInstance) {
   HRESULT hr = mDevice->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(mDescHeap.GetAddressOf()));
   ThrowIfFailed(hr);
 
+  heapDesc = {};
+  heapDesc.NumDescriptors = 1; // the UI heap only need one descriptor
+  heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+  heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+
+  hr = mDevice->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(mUIDescHeap.GetAddressOf()));
+  ThrowIfFailed(hr);
+
+  mClearColor = ImVec4(0.5f, 0.5f, 0.5f, 1.00f);
+
+  ImGui_ImplDX12_Init(mDevice.Get(), mFrameCnt,
+    DXGI_FORMAT_R8G8B8A8_UNORM, mUIDescHeap.Get(),
+    mUIDescHeap->GetCPUDescriptorHandleForHeapStart(),
+    mUIDescHeap->GetGPUDescriptorHandleForHeapStart());
+
   InitConstBuffer();
   InitMatBuffer();
   InitTextureBuffer();
 
   mDrawContext->Init();
+}
+
+MyApp::~MyApp()
+{
+  ImGui_ImplDX12_Shutdown();
 }
 
 void MyApp::LoadObj()
@@ -200,7 +221,31 @@ void MyApp::Start() {
 void MyApp::Render() {
   RenderShadowMap();
   RenderObjects();
+  RenderUI();
   Swap();
+}
+
+void MyApp::RenderUI() {
+  ID3D12GraphicsCommandList* commandList = mDrawContext->mCommandList.Get();
+  HRESULT hr = mDrawContext->mCommandAlloc->Reset();
+  commandList->Reset(mDrawContext->mCommandAlloc.Get(), nullptr);
+
+  ImGui::Render();
+
+
+  D3D12_CPU_DESCRIPTOR_HANDLE rtv = CurrentBackBufferView();
+  commandList->OMSetRenderTargets(1, &rtv, false, nullptr);
+  commandList->SetDescriptorHeaps(1, mUIDescHeap.GetAddressOf());
+  ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList);
+
+  auto trans = CD3DX12_RESOURCE_BARRIER::Transition(
+    mRenderTargets[mFrameIdx].Get(),
+    D3D12_RESOURCE_STATE_RENDER_TARGET,
+    D3D12_RESOURCE_STATE_PRESENT
+  );
+  commandList->ResourceBarrier(1, &trans);
+
+  Flush(mDrawContext->mCommandList.Get());
 }
 
 D3D12_CPU_DESCRIPTOR_HANDLE MyApp::ShadowDepthBufferView() const
@@ -389,12 +434,13 @@ void MyApp::RenderObjects()
   }
 
   // Indicate a state transition on the resource usage.
-  trans = CD3DX12_RESOURCE_BARRIER::Transition(
-    mRenderTargets[mFrameIdx].Get(),
-    D3D12_RESOURCE_STATE_RENDER_TARGET,
-    D3D12_RESOURCE_STATE_PRESENT
-  );
-  commandList->ResourceBarrier(1, &trans);
+  //trans = CD3DX12_RESOURCE_BARRIER::Transition(
+  //  mRenderTargets[mFrameIdx].Get(),
+  //  D3D12_RESOURCE_STATE_RENDER_TARGET,
+  //  D3D12_RESOURCE_STATE_PRESENT
+  //);
+  //commandList->ResourceBarrier(1, &trans);
+  // not transform back now because we still would like to reneder UI
 
   trans = CD3DX12_RESOURCE_BARRIER::Transition(
     mShadowDepthStencilBuffer.Get(),
@@ -406,6 +452,7 @@ void MyApp::RenderObjects()
     &trans
   );
 
+  // Not flush due to UI
   Flush(mDrawContext->mCommandList.Get());
 }
 
@@ -461,6 +508,31 @@ void MyApp::Update() {
 
   XMMATRIX viewProj = view * proj;
   XMStoreFloat4x4(&mConstBuffer->mData.ShadowViewProj, XMMatrixTranspose(viewProj));
+
+  // Start the Dear ImGui frame
+  ImGui_ImplDX12_NewFrame();
+  ImGui_ImplWin32_NewFrame();
+  ImGui::NewFrame();
+
+  static float f = 0.0f;
+  static int counter = 0;
+
+  ImGui::Begin("Control Pannel");
+
+  ImGui::Text("Shadow mapping demo");               
+
+  ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+  ImGui::ColorEdit3("clear color", (float*)&mClearColor); // Edit 3 floats representing a color
+  mMatBuffer->mData.Kd = { mClearColor.x, mClearColor.y, mClearColor.z, mClearColor.w };
+  mMatBuffer->Upload(3);
+
+  if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+    counter++;
+  ImGui::SameLine();
+  ImGui::Text("counter = %d", counter);
+
+  ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+  ImGui::End();
 
 }
 

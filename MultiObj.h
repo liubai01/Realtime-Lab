@@ -7,6 +7,10 @@
 #include "BaseImage.h"
 #include <memory>
 
+#include "ThirdParty/ImGUI/imgui.h"
+#include "ThirdParty/ImGUI/imgui_impl_win32.h"
+#include "ThirdParty/ImGUI/imgui_impl_dx12.h"
+
 using namespace std;
 
 struct Vertex {
@@ -25,7 +29,7 @@ struct GlobalConsts {
 };
 
 struct BaseMaterialConsts {
-  XMFLOAT4 Ka = { 0.6f, 0.6f, 0.6f, 1.0f }; // Ambient Color Constant
+  XMFLOAT4 Ka = { 0.8f, 0.8f, 0.8f, 1.0f }; // Ambient Color Constant
   XMFLOAT4 Kd = { 0.8f, 0.8f, 0.8f, 1.0f }; // Diffuse Color Constant
   XMFLOAT4 Ks = { 0.5f, 0.5f, 0.5f, 1.0f }; // Specular Color Constant
   float Ns = 323.999994f; // Shiniess
@@ -37,6 +41,7 @@ void SetCubeGeo(BaseGeometry<Vertex>& geo);
 class MyApp : public BaseApp {
 public:
   MyApp(HINSTANCE hInstance);
+  ~MyApp();
 
   void Start();
   void Render();
@@ -44,15 +49,18 @@ public:
 
   void RenderShadowMap();
   void RenderObjects();
+  void RenderUI();
   void MatrixBuild(XMVECTOR& viewPos, XMMATRIX& proj);
 
   ComPtr<ID3D12DescriptorHeap> mDescHeap;
+  ComPtr<ID3D12DescriptorHeap> mUIDescHeap;
 
   unique_ptr<BaseUploadHeap<GlobalConsts>> mConstBuffer;
   unique_ptr<BaseUploadHeap<BaseMaterialConsts>> mMatBuffer;
   unique_ptr<BaseImage> mTexture;
 
   unique_ptr<BaseDrawContext> mDrawContext;
+  //unique_ptr<BaseDrawContext> mUIDrawContext;
 
   XMVECTOR mLightDir;
   XMVECTOR mViewPos;
@@ -63,11 +71,14 @@ public:
   ComPtr<ID3D12DescriptorHeap> mShadowDsDescriptorHeap;
 
   D3D12_CPU_DESCRIPTOR_HANDLE ShadowDepthBufferView() const;
-  void InitShadowDepth();
 
+
+  void InitShadowDepth();
   void InitConstBuffer();
   void InitTextureBuffer();
   void InitMatBuffer();
   void LoadObj();
 
+
+  ImVec4 mClearColor;
 };

@@ -4,6 +4,9 @@
 #include <DirectXMath.h>
 #include <DirectXPackedVector.h>
 
+#include "ThirdParty/ImGUI/imgui.h"
+#include "ThirdParty/ImGUI/imgui_impl_win32.h"
+#include "ThirdParty/ImGUI/imgui_impl_dx12.h"
 
 // Link necessary d3d12 libraries.
 #pragma comment(lib,"d3dcompiler.lib")
@@ -12,8 +15,13 @@
 
 using namespace DirectX;
 
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
 LRESULT CALLBACK BaseApp::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
+  if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
+    return true;
+
   if (msg == WM_DESTROY)
   {
     // Inform mainloop to exit
@@ -38,11 +46,14 @@ BaseApp::BaseApp(HINSTANCE hInstance)
   mTimer = clock();
 
   // Initialize the objects required for dumping in Shader, Geometry, etc.
+  
   InitWindow(hInstance);
   InitDevice();
   InitCommandQueue();
   InitFence();
   InitSwapChain();
+
+  InitImGUI();
 
   InitView();
   InitDepth();
@@ -52,6 +63,10 @@ BaseApp::BaseApp(HINSTANCE hInstance)
 BaseApp::~BaseApp()
 {
   CloseHandle(mFenceEvent);
+
+  //ImGui_ImplDX12_Shutdown();
+  ImGui_ImplWin32_Shutdown();
+  ImGui::DestroyContext();
 }
 
 void BaseApp::Run()
@@ -84,6 +99,16 @@ void BaseApp::Run()
     Update();
     Render();
   }
+}
+
+void BaseApp::InitImGUI()
+{
+  IMGUI_CHECKVERSION();
+  ImGui::CreateContext();
+  ImGuiIO& io = ImGui::GetIO(); (void)io;
+
+  ImGui::StyleColorsDark();
+  ImGui_ImplWin32_Init(mHwnd);
 }
 
 void BaseApp::InitView()
@@ -236,6 +261,14 @@ void BaseApp::InitWindow(HINSTANCE hInstance)
     hInstance, // hInstance
     NULL // lpParam
   );
+
+  // Client Rectangle is not exactly the same as mWidth and mHeight you specify
+  // Windows 10 windows may vary a litte bit pixels
+  // It should be aligned with GetClientRect
+  RECT rect = { 0, 0, 0, 0 };
+  GetClientRect(mHwnd, &rect);
+  mHeight = rect.bottom;
+  mWidth = rect.right;
 
   ShowWindow(mHwnd, SW_SHOW);
   UpdateWindow(mHwnd);

@@ -68,7 +68,8 @@ float4 main(VertexOut pin) : SV_TARGET
 	}
 	shadow /= (2 * n + 1) * (2 * n + 1);
 	// threshold and transparency
-	shadow = 1.0f - (1.0f - shadow) / 1.0f;
+	float faceAway = dot(gLightDir, N) < 0;
+	shadow = 1.0f - (1.0f - shadow) * (1.0f - faceAway) / 1.0f;
 
 	//float sampledDepth = t2.Sample(s1, shadowCoord) + 0.0015f;
 	//float transformedDepth = pin.PosSM.z / pin.PosSM.w;
@@ -99,9 +100,9 @@ float4 main(VertexOut pin) : SV_TARGET
 	float4 H = (V + gLightDir) / length(V + gLightDir);
 	ret += pow(max(dot(N, H), 0), Ns) * Fs * ims * shadow;
 
+
 	// Gamma Correction
-	
-	//float vis = dialte / 10.0f;
+	//float vis = faceAway;
 	//ret.x = vis;
 	//ret.y = vis;
 	//ret.z = vis;

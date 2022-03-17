@@ -38,6 +38,7 @@ public:
 
   static LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
+  void InitImGUI();
   void InitWindow(HINSTANCE hInstance);
   void InitDevice();
   void InitCommandQueue();
