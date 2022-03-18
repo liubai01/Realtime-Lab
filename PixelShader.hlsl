@@ -46,7 +46,7 @@ float4 main(VertexOut pin) : SV_TARGET
 	float transformedDepth = pin.PosSM.z / pin.PosSM.w;
 	float2 nowCoord;
 	float shadow = 0.0f;
-	float2 shadowMapSize = float2(1024.0f, 1024.0f);
+	float2 shadowMapSize = float2(1024.0f, 768.0f);
 	int n = 5;
 
 
@@ -103,9 +103,9 @@ float4 main(VertexOut pin) : SV_TARGET
 
 	// Gamma Correction
 	//float vis = faceAway;
-	//ret.x = vis;
-	//ret.y = vis;
-	//ret.z = vis;
+	//ret.x = shadowCoord.x;
+	//ret.y = shadowCoord.y;
+	//ret.z = 0.0f;
 	ret = pow(ret, 2.2f);
 
 	return ret;

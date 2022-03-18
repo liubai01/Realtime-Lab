@@ -65,6 +65,9 @@ public:
   XMVECTOR mLightDir;
   XMVECTOR mViewPos;
   XMVECTOR mSMPos;
+
+  float mShadowWidth;
+  float mShadowHeight;
   
   // Shadow map depth buffer
   ComPtr<ID3D12Resource> mShadowDepthStencilBuffer;

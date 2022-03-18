@@ -35,6 +35,8 @@ SOFTWARE.
 
 
 MyApp::MyApp(HINSTANCE hInstance) : BaseApp(hInstance) {
+  mShadowWidth = 1024.0f * 2.0f;
+  mShadowHeight = 768.0f * 2.0f;
   mDrawContext = make_unique<BaseDrawContext>(mDevice.Get());
 
   // Set input layout
@@ -279,7 +281,7 @@ void MyApp::InitShadowDepth()
   depthOptimizedClearValue.DepthStencil.Stencil = 0;
 
   auto hprop = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
-  auto rdesc = CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_D32_FLOAT, 1024.0f, 768.0f, 1, 0, 1, 0, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
+  auto rdesc = CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_D32_FLOAT, mShadowWidth, mShadowHeight, 1, 0, 1, 0, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
   mDevice->CreateCommittedResource(
     &hprop,
     D3D12_HEAP_FLAG_NONE,
@@ -299,8 +301,23 @@ void MyApp::InitShadowDepth()
 
 void MyApp::RenderShadowMap()
 {
-  
-  XMMATRIX proj = XMMatrixPerspectiveFovLH(0.25f * 3.1415926535f,  static_cast<float>(mWidth) / mHeight, 1.0f, 1000.0f);
+  D3D12_VIEWPORT viewport; // area that output from rasterizer will be stretched to.
+  D3D12_RECT scissorRect; // the area to draw in. pixels outside that area will not be drawn onto
+  // Fill out the Viewport
+  viewport.TopLeftX = 0;
+  viewport.TopLeftY = 0;
+  viewport.Width = mShadowWidth;
+  viewport.Height = mShadowHeight;
+  viewport.MinDepth = 0.0f;
+  viewport.MaxDepth = 1.0f;
+
+  // Fill out a scissor rect
+  scissorRect.left = 0;
+  scissorRect.top = 0;
+  scissorRect.right = mShadowWidth;
+  scissorRect.bottom = mShadowHeight;
+
+  XMMATRIX proj = XMMatrixPerspectiveFovLH(0.25f * 3.1415926535f,  static_cast<float>(mShadowWidth) / mShadowHeight, 1.0f, 1000.0f);
   MatrixBuild(mSMPos, proj);
 
   mDrawContext->ResetCommandList();
@@ -308,8 +325,8 @@ void MyApp::RenderShadowMap()
   ID3D12GraphicsCommandList* commandList = mDrawContext->mCommandList.Get();
   mCommandQueue->BeginEvent(1, "ShadowMap", sizeof("ShadowMap"));
   commandList->SetGraphicsRootSignature(mDrawContext->mRootSig.Get());
-  commandList->RSSetViewports(1, &mViewport);
-  commandList->RSSetScissorRects(1, &mScissorRect);
+  commandList->RSSetViewports(1, &viewport);
+  commandList->RSSetScissorRects(1, &scissorRect);
 
   D3D12_CPU_DESCRIPTOR_HANDLE dsv = ShadowDepthBufferView();
 
@@ -481,7 +498,6 @@ void MyApp::MatrixBuild(XMVECTOR& viewPos, XMMATRIX& proj)
 }
 
 void MyApp::Update() {
-
   static float mTheta = 1.5f * XM_PI;
   float mPhi = XM_PIDIV4;
   float mRadius = 20.0f;
@@ -504,7 +520,7 @@ void MyApp::Update() {
   XMVECTOR target = XMVectorZero();
   XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
   XMMATRIX view = XMMatrixLookAtLH(mSMPos, target, up);
-  XMMATRIX proj = XMMatrixPerspectiveFovLH(0.25f * 3.1415926535f, 1024.f / 768.f, 1.0f, 1000.0f);
+  XMMATRIX proj = XMMatrixPerspectiveFovLH(0.25f * 3.1415926535f, static_cast<float>(mShadowWidth) / mShadowHeight, 1.0f, 1000.0f);
 
   XMMATRIX viewProj = view * proj;
   XMStoreFloat4x4(&mConstBuffer->mData.ShadowViewProj, XMMatrixTranspose(viewProj));
