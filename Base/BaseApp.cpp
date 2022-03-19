@@ -1,12 +1,12 @@
 #include "BaseApp.h"
-#include "DebugOut.h"
+#include "../DebugOut.h"
 #include <D3DCompiler.h>
 #include <DirectXMath.h>
 #include <DirectXPackedVector.h>
 
-#include "ThirdParty/ImGUI/imgui.h"
-#include "ThirdParty/ImGUI/imgui_impl_win32.h"
-#include "ThirdParty/ImGUI/imgui_impl_dx12.h"
+#include "../ThirdParty/ImGUI/imgui.h"
+#include "../ThirdParty/ImGUI/imgui_impl_win32.h"
+#include "../ThirdParty/ImGUI/imgui_impl_dx12.h"
 
 // Link necessary d3d12 libraries.
 #pragma comment(lib,"d3dcompiler.lib")

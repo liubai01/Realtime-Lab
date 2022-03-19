@@ -3,11 +3,11 @@
 #include <wrl.h>
 #include <wincodec.h>
 #include <windows.h>
-#include "d3dx12.h"
+#include "../ThirdParty/d3dx12.h"
 #include <dxgi1_4.h>
 #include <vector>
 #include <string>
-#include "DebugOut.h"
+#include "../DebugOut.h"
 
 using Microsoft::WRL::ComPtr;
 using namespace std;

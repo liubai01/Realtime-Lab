@@ -1,10 +1,10 @@
 #pragma once
 #include <windows.h>
 #include "DebugOut.h"
-#include "BaseApp.h"
-#include "BaseGeometry.h"
-#include "BaseUploadHeap.h"
-#include "BaseImage.h"
+#include "Base/BaseApp.h"
+#include "Base/BaseGeometry.h"
+#include "Base/BaseUploadHeap.h"
+#include "Base/BaseImage.h"
 #include <memory>
 
 #include "ThirdParty/ImGUI/imgui.h"

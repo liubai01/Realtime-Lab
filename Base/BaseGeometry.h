@@ -4,10 +4,10 @@
 #include <DirectXMath.h>
 #include <DirectXPackedVector.h>
 #include <windows.h>
-#include "d3dx12.h"
+#include "../ThirdParty/d3dx12.h"
 #include <wrl.h>
 #include <string>
-#include "DebugOut.h"
+#include "../DebugOut.h"
 
 
 using namespace DirectX;

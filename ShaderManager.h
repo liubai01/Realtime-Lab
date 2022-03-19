@@ -2,7 +2,7 @@
 
 #include <windows.h>
 #include <wrl.h>
-#include "d3dx12.h"
+#include "ThirdParty/d3dx12.h"
 #include <string>
 #include <memory>
 #include <unordered_map>

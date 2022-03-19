@@ -1,9 +1,9 @@
 #pragma once
 
 #include <windows.h>
-#include "d3dx12.h"
+#include "../ThirdParty/d3dx12.h"
 #include <wrl.h>
-#include "DebugOut.h"
+#include "../DebugOut.h"
 
 using Microsoft::WRL::ComPtr;
 

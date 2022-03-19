@@ -1,5 +1,5 @@
 #include "BaseImage.h"
-#include "DebugOut.h"
+#include "../DebugOut.h"
 
 
 void BaseImage::Read(const string& filepath) {

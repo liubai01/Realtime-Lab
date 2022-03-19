@@ -140,15 +140,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BaseApp.cpp" />
-    <ClCompile Include="BaseDrawContext.cpp" />
-    <ClCompile Include="BaseImage.cpp" />
-    <ClCompile Include="BaseMainHeap.cpp" />
-    <ClCompile Include="BaseRenderingObj.cpp" />
-    <ClCompile Include="BaseUploadHeap.cpp" />
+    <ClCompile Include="Base\BaseApp.cpp" />
     <ClCompile Include="Base\BaseCamera.cpp" />
+    <ClCompile Include="Base\BaseDrawContext.cpp" />
+    <ClCompile Include="Base\BaseGeometry.cpp" />
+    <ClCompile Include="Base\BaseImage.cpp" />
+    <ClCompile Include="Base\BaseMainHeap.cpp" />
+    <ClCompile Include="Base\BaseRenderingObj.cpp" />
+    <ClCompile Include="Base\BaseUploadHeap.cpp" />
+    <ClCompile Include="Core\CoreApp.cpp" />
     <ClCompile Include="DebugOut.cpp" />
-    <ClCompile Include="BaseGeometry.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MultiObj.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
@@ -160,20 +161,21 @@
     <ClCompile Include="ThirdParty\ImGUI\imgui_widgets.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BaseApp.h" />
-    <ClInclude Include="BaseDrawContext.h" />
-    <ClInclude Include="BaseImage.h" />
-    <ClInclude Include="BaseMainHeap.h" />
-    <ClInclude Include="BaseRenderingObj.h" />
-    <ClInclude Include="BaseUploadHeap.h" />
+    <ClInclude Include="Base\BaseApp.h" />
     <ClInclude Include="Base\BaseCamera.h" />
-    <ClInclude Include="d3dx12.h" />
+    <ClInclude Include="Base\BaseDrawContext.h" />
+    <ClInclude Include="Base\BaseGeometry.h" />
+    <ClInclude Include="Base\BaseImage.h" />
+    <ClInclude Include="Base\BaseMainHeap.h" />
+    <ClInclude Include="Base\BaseRenderingObj.h" />
+    <ClInclude Include="Base\BaseUploadHeap.h" />
+    <ClInclude Include="Core\CoreApp.h" />
     <ClInclude Include="DebugOut.h" />
-    <ClInclude Include="BaseGeometry.h" />
     <ClInclude Include="MathUtils.h" />
     <ClInclude Include="MultiObj.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="ShaderManager.h" />
+    <ClInclude Include="ThirdParty\d3dx12.h" />
     <ClInclude Include="ThirdParty\ImGUI\imconfig.h" />
     <ClInclude Include="ThirdParty\ImGUI\imgui.h" />
     <ClInclude Include="ThirdParty\ImGUI\imgui_impl_dx12.h" />

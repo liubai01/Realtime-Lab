@@ -1,5 +1,5 @@
 #include "BaseMainHeap.h"
-#include "DebugOut.h"
+#include "../DebugOut.h"
 
 BaseMainHeap::BaseMainHeap(ID3D12Device* device, int maxNumDesc)
 {

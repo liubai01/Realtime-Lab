@@ -2,7 +2,7 @@
 
 #include <DirectXMath.h>
 #include <DirectXPackedVector.h>
-#include "d3dx12.h"
+#include "../ThirdParty/d3dx12.h"
 #include <wrl.h>
 #include "BaseGeometry.h"
 

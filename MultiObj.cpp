@@ -514,12 +514,6 @@ void MyApp::Update() {
   XMVECTOR target = XMVectorZero();
   XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
   XMMATRIX view = XMMatrixLookAtLH(mSMPos, target, up);
-  //XMMATRIX proj = XMMatrixPerspectiveFovLH(
-  //  0.25f * 3.1415926535f,
-  //  static_cast<float>(mShadowMapCamera->mWidth) / mShadowMapCamera->mHeight, 
-  //  1.0f, 
-  //  1000.0f
-  //);
 
   XMMATRIX proj = XMLoadFloat4x4(&mShadowMapCamera->mProj);
   XMMATRIX viewProj = view * proj;

@@ -31,33 +31,21 @@
     <Filter Include="Source Files\ThirdParty\ImGUI">
       <UniqueIdentifier>{1ae9bb38-19c5-4fcb-8ea7-b32aca2b2b26}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Core">
+      <UniqueIdentifier>{688ac4f2-fc39-4157-90f0-fde56534b7d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core">
+      <UniqueIdentifier>{282c9305-8f0a-47ff-a87a-6018ceefa380}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MultiObj.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="BaseApp.cpp">
-      <Filter>Source Files\Base</Filter>
-    </ClCompile>
     <ClCompile Include="DebugOut.cpp">
       <Filter>Source Files\Base</Filter>
     </ClCompile>
     <ClCompile Include="ShaderManager.cpp">
-      <Filter>Source Files\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="BaseGeometry.cpp">
-      <Filter>Source Files\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="BaseRenderingObj.cpp">
-      <Filter>Source Files\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="BaseUploadHeap.cpp">
-      <Filter>Source Files\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="BaseImage.cpp">
-      <Filter>Source Files\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="BaseDrawContext.cpp">
       <Filter>Source Files\Base</Filter>
     </ClCompile>
     <ClCompile Include="Main.cpp">
@@ -81,27 +69,39 @@
     <ClCompile Include="ThirdParty\ImGUI\imgui_tables.cpp">
       <Filter>Source Files\ThirdParty\ImGUI</Filter>
     </ClCompile>
-    <ClCompile Include="BaseMainHeap.cpp">
-      <Filter>Source Files\Base</Filter>
-    </ClCompile>
     <ClCompile Include="Base\BaseCamera.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\BaseApp.cpp">
+      <Filter>Source Files\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\BaseDrawContext.cpp">
+      <Filter>Source Files\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\BaseGeometry.cpp">
+      <Filter>Source Files\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\BaseImage.cpp">
+      <Filter>Source Files\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\BaseMainHeap.cpp">
+      <Filter>Source Files\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\BaseRenderingObj.cpp">
+      <Filter>Source Files\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\BaseUploadHeap.cpp">
+      <Filter>Source Files\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\CoreApp.cpp">
+      <Filter>Source Files\Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="BaseApp.h">
-      <Filter>Header Files\Base</Filter>
-    </ClInclude>
     <ClInclude Include="DebugOut.h">
-      <Filter>Header Files\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="BaseGeometry.h">
-      <Filter>Header Files\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="BaseRenderingObj.h">
       <Filter>Header Files\Base</Filter>
     </ClInclude>
     <ClInclude Include="MathUtils.h">
@@ -113,19 +113,7 @@
     <ClInclude Include="MultiObj.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="BaseUploadHeap.h">
-      <Filter>Header Files\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="BaseImage.h">
-      <Filter>Header Files\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="BaseDrawContext.h">
-      <Filter>Header Files\Base</Filter>
-    </ClInclude>
     <ClInclude Include="ThirdParty\tiny_obj_loader.h">
-      <Filter>Header Files\ThirdParty</Filter>
-    </ClInclude>
-    <ClInclude Include="d3dx12.h">
       <Filter>Header Files\ThirdParty</Filter>
     </ClInclude>
     <ClInclude Include="ThirdParty\ImGUI\imgui_internal.h">
@@ -152,11 +140,35 @@
     <ClInclude Include="ThirdParty\ImGUI\imgui_impl_win32.h">
       <Filter>Header Files\ThirdParty\ImGUI</Filter>
     </ClInclude>
-    <ClInclude Include="BaseMainHeap.h">
+    <ClInclude Include="Base\BaseApp.h">
       <Filter>Header Files\Base</Filter>
     </ClInclude>
     <ClInclude Include="Base\BaseCamera.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\BaseUploadHeap.h">
+      <Filter>Header Files\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\BaseDrawContext.h">
+      <Filter>Header Files\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\BaseGeometry.h">
+      <Filter>Header Files\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\BaseImage.h">
+      <Filter>Header Files\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\BaseMainHeap.h">
+      <Filter>Header Files\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\BaseRenderingObj.h">
+      <Filter>Header Files\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="ThirdParty\d3dx12.h">
+      <Filter>Header Files\ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\CoreApp.h">
+      <Filter>Header Files\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

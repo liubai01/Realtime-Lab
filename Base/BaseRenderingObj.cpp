@@ -1,5 +1,5 @@
 #include "BaseRenderingObj.h"
-#include "MathUtils.h"
+#include "../MathUtils.h"
 
 void BaseRenderingObj::SetPos(float x, float y, float z)
 {

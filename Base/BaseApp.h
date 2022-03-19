@@ -1,7 +1,7 @@
 #pragma once
 
 #include <windows.h>
-#include "d3dx12.h"
+#include "../ThirdParty/d3dx12.h"
 #include <wrl.h>
 #include <vector>
 #include <dxgi1_4.h>
@@ -9,14 +9,14 @@
 #include <memory>
 #include <DirectXMath.h>
 #include <DirectXPackedVector.h>
-#include "ShaderManager.h"
-#include "DebugOut.h"
+#include "../ShaderManager.h"
+#include "../DebugOut.h"
 #include "BaseGeometry.h"
 #include "BaseRenderingObj.h"
-#include "MathUtils.h"
+#include "../MathUtils.h"
 #include <time.h>
 #include "BaseDrawContext.h"
-#include "Base/BaseCamera.h"
+#include "BaseCamera.h"
 
 using namespace DirectX;
 using namespace DirectX::PackedVector;

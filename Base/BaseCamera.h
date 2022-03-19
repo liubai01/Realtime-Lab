@@ -1,6 +1,6 @@
 #pragma once
 #include <windows.h>
-#include "../d3dx12.h"
+#include "../ThirdParty/d3dx12.h"
 #include <wrl.h>
 #include <vector>
 #include <dxgi1_4.h>
@@ -21,7 +21,6 @@ using namespace std;
 class BaseCamera
 {
 public:
-
   BaseCamera(float width, float height, float FovAngleY=0.25f * 3.1415925f, float nearZ=1.0f, float FarZ=1000.0f);
 
   D3D12_VIEWPORT mViewport;    // area that output from rasterizer will be stretched to.
