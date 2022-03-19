@@ -169,8 +169,8 @@ namespace tinyobj {
                               // We'll use -1)
     bool clamp;               // -clamp (default false)
     char imfchan;  // -imfchan (the default for bump is 'l' and for decal is 'm')
-    bool blendu;   // -blendu (default on)
-    bool blendv;   // -blendv (default on)
+    bool blendu = true;   // -blendu (default on)
+    bool blendv = true;   // -blendv (default on)
     real_t bump_multiplier;  // -bm (for bump maps only, default 1.0)
 
     // extension

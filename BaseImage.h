@@ -18,10 +18,10 @@ public:
   ComPtr<ID3D12Resource> mTextureBuffer;
   ComPtr<ID3D12Resource> mTextureUploadHeap;
 
-  D3D12_RESOURCE_DESC mTextureDesc;
-  int mImageBytesPerRow;
-  int mImageSize;
-  BYTE* mImageData;
+  D3D12_RESOURCE_DESC mTextureDesc = {};
+  int mImageBytesPerRow = -1;
+  int mImageSize = -1;
+  BYTE* mImageData = nullptr;
 
   ~BaseImage();
 

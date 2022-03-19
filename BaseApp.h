@@ -16,6 +16,7 @@
 #include "MathUtils.h"
 #include <time.h>
 #include "BaseDrawContext.h"
+#include "Base/BaseCamera.h"
 
 using namespace DirectX;
 using namespace DirectX::PackedVector;
@@ -27,7 +28,7 @@ class BaseApp
 {
 public:
   BaseApp(HINSTANCE hInstance);
-  ~BaseApp();
+  virtual ~BaseApp();
   void Run();
   virtual void Update() = 0;
   virtual void Render() = 0;
@@ -61,8 +62,8 @@ public:
   ComPtr<ID3D12DescriptorHeap> mRtvDescriptorHeap;
   vector<ComPtr<ID3D12Resource>> mRenderTargets;
 
-  int mWidth = 1024;
-  int mHeight = 768;
+  int mWidth = 1440;
+  int mHeight = 900;
   HWND mHwnd;
 
   clock_t mTimer;
@@ -82,10 +83,7 @@ public:
   ComPtr<ID3D12Resource> mDepthStencilBuffer;
   ComPtr<ID3D12DescriptorHeap> mDsDescriptorHeap;
 
-  D3D12_VIEWPORT mViewport; // area that output from rasterizer will be stretched to.
-  D3D12_RECT mScissorRect; // the area to draw in. pixels outside that area will not be drawn onto
-  XMFLOAT4X4 mProj = Identity4x4();
-  void InitView();
+  unique_ptr<BaseCamera> mMainCamera;
 };
 
 

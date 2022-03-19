@@ -55,16 +55,16 @@ BaseApp::BaseApp(HINSTANCE hInstance)
 
   InitImGUI();
 
-  InitView();
   InitDepth();
   InitRTV();
+
+  mMainCamera = make_unique<BaseCamera>(static_cast<float>(mWidth), static_cast<float>(mHeight));
 }
 
 BaseApp::~BaseApp()
 {
   CloseHandle(mFenceEvent);
 
-  //ImGui_ImplDX12_Shutdown();
   ImGui_ImplWin32_Shutdown();
   ImGui::DestroyContext();
 }
@@ -111,25 +111,6 @@ void BaseApp::InitImGUI()
   ImGui_ImplWin32_Init(mHwnd);
 }
 
-void BaseApp::InitView()
-{
-  // Fill out the Viewport
-  mViewport.TopLeftX = 0;
-  mViewport.TopLeftY = 0;
-  mViewport.Width = static_cast<float>(mWidth);
-  mViewport.Height = static_cast<float>(mHeight);
-  mViewport.MinDepth = 0.0f;
-  mViewport.MaxDepth = 1.0f;
-
-  // Fill out a scissor rect
-  mScissorRect.left = 0;
-  mScissorRect.top = 0;
-  mScissorRect.right = mWidth;
-  mScissorRect.bottom = mHeight;
-
-  XMMATRIX P = XMMatrixPerspectiveFovLH(0.25f * 3.1415926535f, static_cast<float>(mWidth) / mHeight, 1.0f, 1000.0f);
-  XMStoreFloat4x4(&mProj, P);
-}
 
 void BaseApp::Flush(ID3D12GraphicsCommandList* commandList)
 {

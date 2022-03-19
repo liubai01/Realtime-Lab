@@ -35,8 +35,7 @@ SOFTWARE.
 
 
 MyApp::MyApp(HINSTANCE hInstance) : BaseApp(hInstance) {
-  mShadowWidth = 1024.0f * 2.0f;
-  mShadowHeight = 768.0f * 2.0f;
+  mShadowMapCamera = make_unique<BaseCamera>(1024.0f * 2.0f, 768.0f * 2.0f);
   mDrawContext = make_unique<BaseDrawContext>(mDevice.Get());
 
   // Set input layout
@@ -95,21 +94,7 @@ MyApp::MyApp(HINSTANCE hInstance) : BaseApp(hInstance) {
   HRESULT hr = mDevice->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(mDescHeap.GetAddressOf()));
   ThrowIfFailed(hr);
 
-  heapDesc = {};
-  heapDesc.NumDescriptors = 1; // the UI heap only need one descriptor
-  heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-  heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-
-  hr = mDevice->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(mUIDescHeap.GetAddressOf()));
-  ThrowIfFailed(hr);
-
-  mClearColor = ImVec4(0.5f, 0.5f, 0.5f, 1.00f);
-
-  ImGui_ImplDX12_Init(mDevice.Get(), mFrameCnt,
-    DXGI_FORMAT_R8G8B8A8_UNORM, mUIDescHeap.Get(),
-    mUIDescHeap->GetCPUDescriptorHandleForHeapStart(),
-    mUIDescHeap->GetGPUDescriptorHandleForHeapStart());
-
+  InitUI();
   InitConstBuffer();
   InitMatBuffer();
   InitTextureBuffer();
@@ -147,8 +132,7 @@ void MyApp::LoadObj()
   auto& shapes = reader.GetShapes();
   auto& materials = reader.GetMaterials();
 
-
-  //assert(shapes.size() == 1);
+  assert(shapes.size() == 1);
 
   // Loop over vertices
   Vertex vout = {};
@@ -188,7 +172,7 @@ void MyApp::LoadObj()
     index_offset += fv;
 
   }
-  dout::printf("Index num: %d\n", shapes[0].mesh.num_face_vertices.size());
+  //dout::printf("Index num: %d\n", shapes[0].mesh.num_face_vertices.size());
 
   bunny.mName = "Bunny";
   BaseRenderingObj* obj = RegisterGeo(bunny, mDrawContext);
@@ -218,6 +202,24 @@ void MyApp::Start() {
     }
     mMatBuffer->Upload(i);
   }
+}
+
+void MyApp::InitUI()
+{
+  D3D12_DESCRIPTOR_HEAP_DESC  heapDesc = {};
+  heapDesc.NumDescriptors = 1; // the UI heap only need one descriptor
+  heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+  heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+
+  HRESULT hr = mDevice->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(mUIDescHeap.GetAddressOf()));
+  ThrowIfFailed(hr);
+
+  mClearColor = ImVec4(0.5f, 0.5f, 0.5f, 1.00f);
+
+  ImGui_ImplDX12_Init(mDevice.Get(), mFrameCnt,
+    DXGI_FORMAT_R8G8B8A8_UNORM, mUIDescHeap.Get(),
+    mUIDescHeap->GetCPUDescriptorHandleForHeapStart(),
+    mUIDescHeap->GetGPUDescriptorHandleForHeapStart());
 }
 
 void MyApp::Render() {
@@ -281,7 +283,13 @@ void MyApp::InitShadowDepth()
   depthOptimizedClearValue.DepthStencil.Stencil = 0;
 
   auto hprop = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
-  auto rdesc = CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_D32_FLOAT, mShadowWidth, mShadowHeight, 1, 0, 1, 0, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
+  auto rdesc = CD3DX12_RESOURCE_DESC::Tex2D(
+    DXGI_FORMAT_D32_FLOAT, 
+    static_cast<UINT64>(mShadowMapCamera->mWidth), 
+    static_cast<UINT>(mShadowMapCamera->mHeight),
+    1, 0, 1, 0, 
+    D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL
+  );
   mDevice->CreateCommittedResource(
     &hprop,
     D3D12_HEAP_FLAG_NONE,
@@ -301,23 +309,9 @@ void MyApp::InitShadowDepth()
 
 void MyApp::RenderShadowMap()
 {
-  D3D12_VIEWPORT viewport; // area that output from rasterizer will be stretched to.
-  D3D12_RECT scissorRect; // the area to draw in. pixels outside that area will not be drawn onto
-  // Fill out the Viewport
-  viewport.TopLeftX = 0;
-  viewport.TopLeftY = 0;
-  viewport.Width = mShadowWidth;
-  viewport.Height = mShadowHeight;
-  viewport.MinDepth = 0.0f;
-  viewport.MaxDepth = 1.0f;
-
-  // Fill out a scissor rect
-  scissorRect.left = 0;
-  scissorRect.top = 0;
-  scissorRect.right = mShadowWidth;
-  scissorRect.bottom = mShadowHeight;
-
-  XMMATRIX proj = XMMatrixPerspectiveFovLH(0.25f * 3.1415926535f,  static_cast<float>(mShadowWidth) / mShadowHeight, 1.0f, 1000.0f);
+  D3D12_VIEWPORT viewport = mShadowMapCamera->mViewport; // area that output from rasterizer will be stretched to.
+  D3D12_RECT scissorRect = mShadowMapCamera->mScissorRect; // the area to draw in. pixels outside that area will not be drawn onto
+  XMMATRIX proj = XMLoadFloat4x4(&mShadowMapCamera->mProj);
   MatrixBuild(mSMPos, proj);
 
   mDrawContext->ResetCommandList();
@@ -384,8 +378,8 @@ void MyApp::RenderObjects()
   ID3D12GraphicsCommandList* commandList = mDrawContext->mCommandList.Get();
 
   commandList->SetGraphicsRootSignature(mDrawContext->mRootSig.Get());
-  commandList->RSSetViewports(1, &mViewport);
-  commandList->RSSetScissorRects(1, &mScissorRect);
+  commandList->RSSetViewports(1, &mMainCamera->mViewport);
+  commandList->RSSetScissorRects(1, &mMainCamera->mScissorRect);
 
   //// Indicate a state transition on the resource usage.
   auto trans = CD3DX12_RESOURCE_BARRIER::Transition(
@@ -520,8 +514,14 @@ void MyApp::Update() {
   XMVECTOR target = XMVectorZero();
   XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
   XMMATRIX view = XMMatrixLookAtLH(mSMPos, target, up);
-  XMMATRIX proj = XMMatrixPerspectiveFovLH(0.25f * 3.1415926535f, static_cast<float>(mShadowWidth) / mShadowHeight, 1.0f, 1000.0f);
+  //XMMATRIX proj = XMMatrixPerspectiveFovLH(
+  //  0.25f * 3.1415926535f,
+  //  static_cast<float>(mShadowMapCamera->mWidth) / mShadowMapCamera->mHeight, 
+  //  1.0f, 
+  //  1000.0f
+  //);
 
+  XMMATRIX proj = XMLoadFloat4x4(&mShadowMapCamera->mProj);
   XMMATRIX viewProj = view * proj;
   XMStoreFloat4x4(&mConstBuffer->mData.ShadowViewProj, XMMatrixTranspose(viewProj));
 
@@ -548,6 +548,11 @@ void MyApp::Update() {
   ImGui::Text("counter = %d", counter);
 
   ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+
+  //auto handle = CD3DX12_GPU_DESCRIPTOR_HANDLE(mUIDescHeap->GetGPUDescriptorHandleForHeapStart());
+  //handle.Offset(1, mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
+  //ImGui::Image((ImTextureID) handle.ptr, ImVec2( mShadowWidth / 10.0f, mShadowHeight / 10.0f));
+
   ImGui::End();
 
 }

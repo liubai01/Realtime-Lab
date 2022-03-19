@@ -38,10 +38,10 @@ struct BaseMaterialConsts {
 
 void SetCubeGeo(BaseGeometry<Vertex>& geo);
 
-class MyApp : public BaseApp {
+__declspec(align(16)) class MyApp : public BaseApp {
 public:
   MyApp(HINSTANCE hInstance);
-  ~MyApp();
+  virtual ~MyApp();
 
   void Start();
   void Render();
@@ -66,8 +66,7 @@ public:
   XMVECTOR mViewPos;
   XMVECTOR mSMPos;
 
-  float mShadowWidth;
-  float mShadowHeight;
+  unique_ptr<BaseCamera> mShadowMapCamera;
   
   // Shadow map depth buffer
   ComPtr<ID3D12Resource> mShadowDepthStencilBuffer;
@@ -75,13 +74,23 @@ public:
 
   D3D12_CPU_DESCRIPTOR_HANDLE ShadowDepthBufferView() const;
 
-
+  void InitUI();
   void InitShadowDepth();
   void InitConstBuffer();
   void InitTextureBuffer();
   void InitMatBuffer();
   void LoadObj();
 
+  void* operator new(size_t i)
+  {
+    return _mm_malloc(i, 16);
+  }
+
+  void operator delete(void* p)
+  {
+    _mm_free(p);
+  }
 
   ImVec4 mClearColor;
+  
 };

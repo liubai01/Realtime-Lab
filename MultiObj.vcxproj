@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -88,6 +88,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;ImTextureID=ImU64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -145,6 +146,7 @@
     <ClCompile Include="BaseMainHeap.cpp" />
     <ClCompile Include="BaseRenderingObj.cpp" />
     <ClCompile Include="BaseUploadHeap.cpp" />
+    <ClCompile Include="Base\BaseCamera.cpp" />
     <ClCompile Include="DebugOut.cpp" />
     <ClCompile Include="BaseGeometry.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -164,6 +166,7 @@
     <ClInclude Include="BaseMainHeap.h" />
     <ClInclude Include="BaseRenderingObj.h" />
     <ClInclude Include="BaseUploadHeap.h" />
+    <ClInclude Include="Base\BaseCamera.h" />
     <ClInclude Include="d3dx12.h" />
     <ClInclude Include="DebugOut.h" />
     <ClInclude Include="BaseGeometry.h" />
