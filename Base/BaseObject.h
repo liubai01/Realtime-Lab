@@ -9,7 +9,7 @@
 using namespace DirectX;
 using Microsoft::WRL::ComPtr;
 
-class BaseRenderingObj
+class BaseObject
 {
 public:
 
@@ -48,14 +48,14 @@ private:
 };
 
 template <class T>
-void BaseRenderingObj::UploadGeo(BaseGeometry<T>& geo, ID3D12Device* device, ID3D12GraphicsCommandList* commandList)
+void BaseObject::UploadGeo(BaseGeometry<T>& geo, ID3D12Device* device, ID3D12GraphicsCommandList* commandList)
 {
   UploadVertex(geo, device, commandList);
   UploadIndex(geo, device, commandList);
 }
 
 template <class T>
-void BaseRenderingObj::UploadVertex(BaseGeometry<T>& geo, ID3D12Device* device, ID3D12GraphicsCommandList* commandList)
+void BaseObject::UploadVertex(BaseGeometry<T>& geo, ID3D12Device* device, ID3D12GraphicsCommandList* commandList)
 {
   int vBufferSize = sizeof(T) * geo.mVertices.size();
 
@@ -124,7 +124,7 @@ void BaseRenderingObj::UploadVertex(BaseGeometry<T>& geo, ID3D12Device* device, 
 }
 
 template <class T>
-void BaseRenderingObj::UploadIndex(BaseGeometry<T>& geo, ID3D12Device* device, ID3D12GraphicsCommandList* commandList)
+void BaseObject::UploadIndex(BaseGeometry<T>& geo, ID3D12Device* device, ID3D12GraphicsCommandList* commandList)
 {
   int iBufferSize = sizeof(DWORD) * geo.mIndices.size();
 

@@ -9,10 +9,10 @@
 #include <memory>
 #include <DirectXMath.h>
 #include <DirectXPackedVector.h>
-#include "../ShaderManager.h"
+#include "BaseShaderManager.h"
 #include "../DebugOut.h"
 #include "BaseGeometry.h"
-#include "BaseRenderingObj.h"
+#include "BaseObject.h"
 #include "../MathUtils.h"
 #include <time.h>
 #include "BaseDrawContext.h"
@@ -69,9 +69,9 @@ public:
   clock_t mTimer;
   float mTimeDelta;
 
-  vector<BaseRenderingObj> mObjs;
+  vector<BaseObject> mObjs;
   template<typename V>
-  BaseRenderingObj* RegisterGeo(BaseGeometry<V>& geo, unique_ptr<BaseDrawContext>& drawContext);
+  BaseObject* RegisterGeo(BaseGeometry<V>& geo, unique_ptr<BaseDrawContext>& drawContext);
 
   ComPtr<IDXGIFactory4> mDxgiFactory;
   ComPtr<IDXGISwapChain3> mSwapChain;
@@ -88,7 +88,7 @@ public:
 
 
 template<typename V>
-BaseRenderingObj* BaseApp::RegisterGeo(BaseGeometry<V>& geo, unique_ptr<BaseDrawContext>& drawContext) {
+BaseObject* BaseApp::RegisterGeo(BaseGeometry<V>& geo, unique_ptr<BaseDrawContext>& drawContext) {
   mObjs.emplace_back();
   auto& obj = mObjs.back();
 

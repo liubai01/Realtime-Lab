@@ -19,7 +19,6 @@ CoreApp::CoreApp(HINSTANCE hInstance) : BaseApp(hInstance)
 
 void CoreApp::Update()
 {
-
 }
 
 void CoreApp::Render()

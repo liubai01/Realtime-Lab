@@ -1,12 +1,12 @@
-#include "ShaderManager.h"
-#include "DebugOut.h"
+#include "BaseShaderManager.h"
+#include "../DebugOut.h"
 #include <D3DCompiler.h>
 
 #pragma region Shader
 
-void ShaderManager::AddVertexShader(string name, string entry)
+void BaseShaderManager::AddVertexShader(string name, string entry)
 {
-  unique_ptr<Shader> vertexShader(new Shader());
+  unique_ptr<BaseShader> vertexShader(new BaseShader());
   ComPtr<ID3DBlob> errorBuff;
 
   std::wstring stemp = std::wstring(name.begin(), name.end());
@@ -33,9 +33,9 @@ void ShaderManager::AddVertexShader(string name, string entry)
   mName2Shader["VS"] = move(vertexShader);
 }
 
-void ShaderManager::AddPixelShader(string name, string entry)
+void BaseShaderManager::AddPixelShader(string name, string entry)
 {
-  unique_ptr<Shader> pixelShader(new Shader());
+  unique_ptr<BaseShader> pixelShader(new BaseShader());
   ComPtr<ID3DBlob> errorBuff;
 
   std::wstring stemp = std::wstring(name.begin(), name.end());
@@ -63,7 +63,7 @@ void ShaderManager::AddPixelShader(string name, string entry)
   mName2Shader["PS"] = move(pixelShader);
 }
 
-D3D12_SHADER_BYTECODE ShaderManager::VertexShaderByteCode()
+D3D12_SHADER_BYTECODE BaseShaderManager::VertexShaderByteCode()
 {
   auto f = mName2Shader.find("VS");
 
@@ -76,7 +76,7 @@ D3D12_SHADER_BYTECODE ShaderManager::VertexShaderByteCode()
   return { nullptr, 0 };
 }
 
-D3D12_SHADER_BYTECODE ShaderManager::PixelShaderByteCode()
+D3D12_SHADER_BYTECODE BaseShaderManager::PixelShaderByteCode()
 {
   auto f = mName2Shader.find("PS");
 

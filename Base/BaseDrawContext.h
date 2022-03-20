@@ -8,7 +8,7 @@
 #include <memory>
 #include <DirectXMath.h>
 #include <DirectXPackedVector.h>
-#include "../ShaderManager.h"
+#include "BaseShaderManager.h"
 #include "../DebugOut.h"
 #include "../MathUtils.h"
 
@@ -33,7 +33,7 @@ public:
   D3D12_INPUT_LAYOUT_DESC mInputLayoutDesc;
 
   ComPtr<ID3D12PipelineState> mPSO;
-  ShaderManager mShader;
+  BaseShaderManager mShader;
   
   BaseDrawContext(ID3D12Device* device);
 

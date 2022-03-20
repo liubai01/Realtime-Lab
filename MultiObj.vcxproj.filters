@@ -45,9 +45,6 @@
     <ClCompile Include="DebugOut.cpp">
       <Filter>Source Files\Base</Filter>
     </ClCompile>
-    <ClCompile Include="ShaderManager.cpp">
-      <Filter>Source Files\Base</Filter>
-    </ClCompile>
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -87,7 +84,7 @@
     <ClCompile Include="Base\BaseMainHeap.cpp">
       <Filter>Source Files\Base</Filter>
     </ClCompile>
-    <ClCompile Include="Base\BaseRenderingObj.cpp">
+    <ClCompile Include="Base\BaseObject.cpp">
       <Filter>Source Files\Base</Filter>
     </ClCompile>
     <ClCompile Include="Base\BaseUploadHeap.cpp">
@@ -95,6 +92,9 @@
     </ClCompile>
     <ClCompile Include="Core\CoreApp.cpp">
       <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\BaseShaderManager.cpp">
+      <Filter>Source Files\Base</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -105,9 +105,6 @@
       <Filter>Header Files\Base</Filter>
     </ClInclude>
     <ClInclude Include="MathUtils.h">
-      <Filter>Header Files\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderManager.h">
       <Filter>Header Files\Base</Filter>
     </ClInclude>
     <ClInclude Include="MultiObj.h">
@@ -161,7 +158,7 @@
     <ClInclude Include="Base\BaseMainHeap.h">
       <Filter>Header Files\Base</Filter>
     </ClInclude>
-    <ClInclude Include="Base\BaseRenderingObj.h">
+    <ClInclude Include="Base\BaseObject.h">
       <Filter>Header Files\Base</Filter>
     </ClInclude>
     <ClInclude Include="ThirdParty\d3dx12.h">
@@ -169,6 +166,9 @@
     </ClInclude>
     <ClInclude Include="Core\CoreApp.h">
       <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\BaseShaderManager.h">
+      <Filter>Header Files\Base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

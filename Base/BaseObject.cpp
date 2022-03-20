@@ -1,22 +1,22 @@
-#include "BaseRenderingObj.h"
+#include "BaseObject.h"
 #include "../MathUtils.h"
 
-void BaseRenderingObj::SetPos(float x, float y, float z)
+void BaseObject::SetPos(float x, float y, float z)
 {
   mPosition = XMFLOAT4(x, y, z, 0.0f);
 }
 
-void BaseRenderingObj::SetRot(float x, float y, float z)
+void BaseObject::SetRot(float x, float y, float z)
 {
   mRotation = XMFLOAT4(x, y, z, 0.0f);
 }
 
-void BaseRenderingObj::SetScale(float x, float y, float z)
+void BaseObject::SetScale(float x, float y, float z)
 {
   mScale = XMFLOAT4(x, y, z, 0.0f);
 }
 
-XMMATRIX BaseRenderingObj::GetWorldMatrix()
+XMMATRIX BaseObject::GetWorldMatrix()
 {
   XMFLOAT4X4 tmp = Identity4x4();
   XMMATRIX ret = XMLoadFloat4x4(&tmp);
@@ -48,7 +48,7 @@ XMMATRIX BaseRenderingObj::GetWorldMatrix()
   return ret;
 }
 
-XMMATRIX BaseRenderingObj::GetRSInvT()
+XMMATRIX BaseObject::GetRSInvT()
 {
   XMFLOAT4X4 tmp = Identity4x4();
   XMMATRIX ret = XMLoadFloat4x4(&tmp);

@@ -62,7 +62,7 @@
 //  cube.mName = "Cube Red";
 //  SetCubeGeo(cube);
 //
-//  BaseRenderingObj* obj = RegisterGeo(cube, mDrawContext);
+//  BaseObject* obj = RegisterGeo(cube, mDrawContext);
 //  obj->SetPos(4.0f, 4.0f, 0.0f);
 //  obj->SetRot(XM_PI / 4.0f, 0.0f, 0.0f);
 //
@@ -175,7 +175,7 @@
 //  //dout::printf("Index num: %d\n", shapes[0].mesh.num_face_vertices.size());
 //
 //  bunny.mName = "Bunny";
-//  BaseRenderingObj* obj = RegisterGeo(bunny, mDrawContext);
+//  BaseObject* obj = RegisterGeo(bunny, mDrawContext);
 //  obj->SetScale(4.0f, 4.0f, 4.0f);
 //}
 //
@@ -579,6 +579,7 @@
 //}
 //
 //void MyApp::InitConstBuffer()
+//{
 //{
 //  // global desc
 //  // create a descriptor range (descriptor table) and fill it out

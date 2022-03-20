@@ -2,7 +2,7 @@
 
 #include <windows.h>
 #include <wrl.h>
-#include "ThirdParty/d3dx12.h"
+#include "../ThirdParty/d3dx12.h"
 #include <string>
 #include <memory>
 #include <unordered_map>
@@ -10,14 +10,14 @@
 using namespace std;
 using Microsoft::WRL::ComPtr;
 
-class Shader
+class BaseShader
 {
 public:
   ComPtr<ID3DBlob> shaderCPU;
   D3D12_SHADER_BYTECODE byteCode;
 };
 
-class ShaderManager
+class BaseShaderManager
 {
 public:
   void AddVertexShader(string name, string entry = "main");
@@ -27,6 +27,6 @@ public:
   D3D12_SHADER_BYTECODE PixelShaderByteCode();
 
 private:
-  unordered_map<string, unique_ptr<Shader>> mName2Shader;
+  unordered_map<string, unique_ptr<BaseShader>> mName2Shader;
 };
 
