@@ -119,6 +119,7 @@ void BaseDrawContext::Init()
 {
   if (!mHasInited)
   {
+    mHasInited = true;
     // Invoke after dumping in Shader, Geometry, etc.
     InitRootSig();
     InitInputLayout();

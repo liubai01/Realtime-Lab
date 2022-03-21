@@ -66,6 +66,11 @@ void BaseUploadHeap<T>::Upload()
 template<class T>
 void BaseUploadHeap<T>::RegisiterHeap(BaseMainHeap* mainHeap)
 {
+  if (mHandle)
+  {
+    mMainHeap->FreeHeapHandle(*mHandle);
+    delete mHandle;
+  }
   mHandle = new BaseDescHeapHandle(mainHeap->GetNewHeapHandle());
 
   D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};

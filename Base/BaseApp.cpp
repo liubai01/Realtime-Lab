@@ -12,6 +12,9 @@
 #pragma comment(lib,"d3dcompiler.lib")
 #pragma comment(lib, "D3D12.lib")
 #pragma comment(lib, "dxgi.lib")
+//#pragma comment(lib, "dxguid.lib")
+
+//#include <dxgidebug.h>
 
 using namespace DirectX;
 
@@ -71,6 +74,12 @@ BaseApp::~BaseApp()
 
   ImGui_ImplWin32_Shutdown();
   ImGui::DestroyContext();
+
+  //ComPtr<ID3D12DebugDevice> debug = D3D12GetDebugInterface();
+  //debug->ReportLiveDeviceObjects(D3D12_RLDO_DETAIL);
+  //ComPtr<IDXGIDebug> debug;
+  //mDevice->QueryInterface(debug.GetAddressOf());
+  //debug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_DETAIL);
 }
 
 void BaseApp::Run()

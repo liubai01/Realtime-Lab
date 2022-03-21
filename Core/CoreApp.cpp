@@ -115,8 +115,6 @@ void CoreApp::Render()
     1,
     &trans
   );
-
-  // Not flush due to UI
   Flush(mDrawContext->mCommandList.Get());
   Swap();
 }
