@@ -4,6 +4,7 @@
 #include "../ThirdParty/d3dx12.h"
 #include <wrl.h>
 #include "../DebugOut.h"
+#include "BaseMainHeap.h"
 
 using Microsoft::WRL::ComPtr;
 
@@ -14,15 +15,21 @@ public:
   BaseUploadHeap(ID3D12Device* device);
   ~BaseUploadHeap();
 
-  //void AppendDesc(ID3D12Device* device, ID3D12DescriptorHeap* descHeap, int offset=0);
+  void RegisiterHeap(BaseMainHeap* mainHeap);
   void Upload();
 
   ComPtr<ID3D12Resource> mUploadHeap;
   T mData;
 
+  BaseDescHeapHandle* GetHandle();
+
 private: 
   UINT8* mCPUAddr;
   int mBlockSize;
+  BaseDescHeapHandle* mHandle;
+  BaseMainHeap* mMainHeap;
+
+  ID3D12Device* mDevice;
 };
 
 template<class T>
@@ -45,12 +52,38 @@ BaseUploadHeap<T>::BaseUploadHeap(ID3D12Device* device)
 
   ZeroMemory(&mData, sizeof(mData));
   memcpy(mCPUAddr, &mData, sizeof(mData));
+
+  mHandle = nullptr;
+  mDevice = device;
 }
 
 template<class T>
 void BaseUploadHeap<T>::Upload()
 {
   memcpy(mCPUAddr, &mData, sizeof(T));
+}
+
+template<class T>
+void BaseUploadHeap<T>::RegisiterHeap(BaseMainHeap* mainHeap)
+{
+  mHandle = new BaseDescHeapHandle(mainHeap->GetNewHeapHandle());
+
+  D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
+  cbvDesc.BufferLocation = mUploadHeap->GetGPUVirtualAddress();
+  cbvDesc.SizeInBytes = mBlockSize;    // CB size is required to be 256-byte aligned.
+  mDevice->CreateConstantBufferView(&cbvDesc, mHandle->GetCPUHandle());
+
+  mMainHeap = mainHeap;
+}
+
+template<class T>
+BaseDescHeapHandle* BaseUploadHeap<T>::GetHandle()
+{
+  if (mHandle == nullptr)
+  {
+    dout::printf("[BaseUploadHeap] The buffer has not been registered in heap.");
+  }
+  return mHandle;
 }
 
 //template<class T>
@@ -77,4 +110,9 @@ BaseUploadHeap<T>::~BaseUploadHeap()
     mUploadHeap->Unmap(0, nullptr);
   }
   mCPUAddr = nullptr;
+  if (mHandle)
+  {
+    mMainHeap->FreeHeapHandle(*mHandle);
+    delete mHandle;
+  }
 }

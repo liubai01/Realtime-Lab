@@ -5,16 +5,58 @@
 #include <vector>
 #include <dxgi1_4.h>
 #include <unordered_map>
+#include <queue>
 #include <memory>
 
 using Microsoft::WRL::ComPtr;
 using namespace std;
 
+// refer to: https://alextardif.com/D3D11To12P2.html
+class BaseDescHeapHandle
+{
+public:
+  BaseDescHeapHandle()
+  {
+    mCPUHandle.ptr = NULL;
+    mGPUHandle.ptr = NULL;
+    mHeapIndex = 0;
+  }
+
+  D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandle() { return mCPUHandle; }
+  D3D12_GPU_DESCRIPTOR_HANDLE GetGPUHandle() { return mGPUHandle; }
+  UINT32 GetHeapIndex() { return mHeapIndex; }
+
+  void SetCPUHandle(D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle) { mCPUHandle = cpuHandle; }
+  void SetGPUHandle(D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle) { mGPUHandle = gpuHandle; }
+  void SetHeapIndex(UINT32 heapIndex) { mHeapIndex = heapIndex; }
+
+  bool IsValid() { return mCPUHandle.ptr != NULL; }
+  bool IsReferencedByShader() { return mGPUHandle.ptr != NULL; }
+
+private:
+  D3D12_CPU_DESCRIPTOR_HANDLE mCPUHandle;
+  D3D12_GPU_DESCRIPTOR_HANDLE mGPUHandle;
+  UINT32 mHeapIndex;
+};
+
 class BaseMainHeap
 {
 public:
   BaseMainHeap(ID3D12Device* device, int maxNumDesc=64);
+  ~BaseMainHeap();
+
+  BaseDescHeapHandle GetNewHeapHandle();
+  void FreeHeapHandle(BaseDescHeapHandle handle);
 
   ComPtr<ID3D12DescriptorHeap> mDescHeap;
+private:
+  queue<UINT32> mFreeDescriptors;
+  UINT32 mCurrentDescriptorIndex;
+  UINT32 mActiveHandleCount;
+
+  UINT32 mMaxDesc;
+  D3D12_CPU_DESCRIPTOR_HANDLE mDescriptorHeapCPUStart;
+  D3D12_GPU_DESCRIPTOR_HANDLE mDescriptorHeapGPUStart;
+  UINT32 mDescriptorSize;
 };
 

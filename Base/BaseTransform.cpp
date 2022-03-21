@@ -1,6 +1,25 @@
 #include "BaseTransform.h"
 #include "../MathUtils.h"
 
+BaseTransform::BaseTransform(ID3D12Device* device) : mBuffer(device)
+{
+
+}
+
+BaseDescHeapHandle BaseTransform::GetTransformHandle()
+{
+  XMStoreFloat4x4(&mBuffer.mData.World, XMMatrixTranspose(GetWorldMatrix()));
+  XMStoreFloat4x4(&mBuffer.mData.RSInvT, XMMatrixTranspose(GetRSInvT()));
+  mBuffer.Upload();
+
+  return *mBuffer.GetHandle();
+}
+
+void BaseTransform::RegisterHandle(BaseMainHeap* heap)
+{
+  mBuffer.RegisiterHeap(heap);
+}
+
 void BaseTransform::SetPos(float x, float y, float z)
 {
   mPosition = XMFLOAT4(x, y, z, 0.0f);

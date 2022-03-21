@@ -70,7 +70,7 @@ public:
   clock_t mTimer;
   float mTimeDelta;
 
-  unordered_map<string, shared_ptr<BaseObject>> mObjs;
+  unordered_map<string, shared_ptr<BaseObject>>* mObjs;
 
   ComPtr<IDXGIFactory4> mDxgiFactory;
   ComPtr<IDXGISwapChain3> mSwapChain;
@@ -84,6 +84,7 @@ public:
 
   unique_ptr<BaseCamera> mMainCamera;
 
+  BaseMainHeap* mMainHeap;
   shared_ptr<BaseObject> CreateObject(const string& name);
 };
 

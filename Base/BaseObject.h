@@ -17,7 +17,8 @@ using namespace std;
 class BaseObject
 {
 public:
-  BaseObject(const string& name) : mName(name) {}
+  BaseObject(const string& name, ID3D12Device* device) : mName(name), mTransform(device) {
+  }
 
   string mName;
   BaseTransform mTransform;

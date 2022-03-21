@@ -59,10 +59,14 @@ BaseApp::BaseApp(HINSTANCE hInstance)
   InitRTV();
 
   mMainCamera = make_unique<BaseCamera>(static_cast<float>(mWidth), static_cast<float>(mHeight));
+  mMainHeap = new BaseMainHeap(mDevice.Get());
+  mObjs = new unordered_map<string, shared_ptr<BaseObject>>();
 }
 
 BaseApp::~BaseApp()
 {
+  delete mObjs;
+  delete mMainHeap;
   CloseHandle(mFenceEvent);
 
   ImGui_ImplWin32_Shutdown();
@@ -393,13 +397,16 @@ D3D12_CPU_DESCRIPTOR_HANDLE BaseApp::DepthBufferView() const
 
 shared_ptr<BaseObject> BaseApp::CreateObject(const string& name)
 {
-  auto f = mObjs.find(name);
-  if (f != mObjs.end())
+  auto f = mObjs->find(name);
+  if (f != mObjs->end())
   {
     dout::printf("[BaseApp] Create Object Name %s Repeated!", name);
     return nullptr;
   }
-  mObjs[name] = make_shared<BaseObject>(name);
+  shared_ptr<BaseObject> obj = make_shared<BaseObject>(name, mDevice.Get());
+  obj->mTransform.RegisterHandle(mMainHeap);
 
-  return mObjs[name];
+  (*mObjs)[name] = obj;
+
+  return obj;
 }

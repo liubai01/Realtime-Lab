@@ -8,7 +8,6 @@ CoreApp::CoreApp(HINSTANCE hInstance) : BaseApp(hInstance)
   mDrawContext = make_unique<BaseDrawContext>(mDevice.Get());
   mUploadCmdList = make_unique<BaseDirectCommandList>(mDevice.Get());
 
-
   // Set input layout
   mDrawContext->mInputLayout =
   {
@@ -37,8 +36,9 @@ void CoreApp::Update()
 
 void CoreApp::Render()
 {
+  // Upload geoemetry(vertices, indices) if it has not been uploaded before
   mUploadCmdList->ResetCommandList();
-  for (auto& elem : mObjs)
+  for (auto& elem : *mObjs)
   {
     shared_ptr<BaseObject>& obj = elem.second;
     for (auto component : obj->mComponents)
@@ -81,7 +81,7 @@ void CoreApp::Render()
   commandList->ClearDepthStencilView(dsv, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
   commandList->OMSetRenderTargets(1, &rtv, false, &dsv);
-  for (auto& elem : mObjs)
+  for (auto& elem : *mObjs)
   {
     shared_ptr<BaseObject>& obj = elem.second;
     for (auto component : obj->mComponents)

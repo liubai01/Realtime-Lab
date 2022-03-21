@@ -70,7 +70,7 @@ CoreGeometry GetCubeGeometry()
     norms.push_back(&v.normal);
   }
 
-  geo.ComputeNormal(pos, norms);
+  geo.ComputeNormal();
 
   return geo;
 }

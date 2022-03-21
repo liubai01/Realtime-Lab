@@ -12,5 +12,7 @@ struct CoreVertex {
 
 class CoreGeometry : public BaseGeometry<CoreVertex>
 {
+public:
+  void ComputeNormal();
 };
 

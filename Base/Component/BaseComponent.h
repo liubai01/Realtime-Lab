@@ -9,5 +9,7 @@ class BaseComponent
 {
 public:
   BaseComponentType mComponentType;
+
+  virtual void Update() {}
 };
 
