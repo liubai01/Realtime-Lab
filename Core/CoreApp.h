@@ -6,6 +6,7 @@
 #include "../Base/BaseGeometry.h"
 #include "../Base/BaseUploadHeap.h"
 #include "../Base/BaseImage.h"
+#include "../Base/BaseDirectCommandList.h"
 #include <memory>
 
 #include "../ThirdParty/ImGUI/imgui.h"
@@ -17,6 +18,7 @@ __declspec(align(16)) class CoreApp : public BaseApp
 {
 public:
   unique_ptr<BaseDrawContext> mDrawContext;
+  unique_ptr<BaseDirectCommandList> mUploadCmdList;
 
   CoreApp(HINSTANCE hInstance);
 

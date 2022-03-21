@@ -11,6 +11,7 @@
 #include "BaseShaderManager.h"
 #include "../DebugOut.h"
 #include "../MathUtils.h"
+#include "BaseDirectCommandList.h"
 
 using namespace DirectX;
 using namespace DirectX::PackedVector;
@@ -18,15 +19,13 @@ using namespace DirectX::PackedVector;
 using Microsoft::WRL::ComPtr;
 using namespace std;
 
-class BaseDrawContext
+class BaseDrawContext: public BaseDirectCommandList
 {
 public:
-  ComPtr<ID3D12CommandAllocator> mCommandAlloc;
-  ComPtr<ID3D12GraphicsCommandList> mCommandList;
-
-
-  vector<vector<D3D12_DESCRIPTOR_RANGE>> mDescTableRanges;
   vector<D3D12_ROOT_PARAMETER> mRootParams;
+  // root params would carry a pointer to descriptor range, which is stored here
+  vector<vector<D3D12_DESCRIPTOR_RANGE>> mDescTableRanges;
+
   ComPtr<ID3D12RootSignature> mRootSig;
 
   vector<D3D12_INPUT_ELEMENT_DESC> mInputLayout;
@@ -42,8 +41,6 @@ public:
 
 private:
   ID3D12Device* mDevice;
-
-  void InitCommandList();
 
   void InitRootSig();
   void InitInputLayout();

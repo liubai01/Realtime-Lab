@@ -142,6 +142,7 @@
   <ItemGroup>
     <ClCompile Include="Base\BaseApp.cpp" />
     <ClCompile Include="Base\BaseCamera.cpp" />
+    <ClCompile Include="Base\BaseDirectCommandList.cpp" />
     <ClCompile Include="Base\BaseDrawContext.cpp" />
     <ClCompile Include="Base\BaseGeometry.cpp" />
     <ClCompile Include="Base\BaseImage.cpp" />
@@ -168,6 +169,7 @@
   <ItemGroup>
     <ClInclude Include="Base\BaseApp.h" />
     <ClInclude Include="Base\BaseCamera.h" />
+    <ClInclude Include="Base\BaseDirectCommandList.h" />
     <ClInclude Include="Base\BaseDrawContext.h" />
     <ClInclude Include="Base\BaseGeometry.h" />
     <ClInclude Include="Base\BaseImage.h" />

@@ -1,30 +1,9 @@
 #include "BaseDrawContext.h"
 
-BaseDrawContext::BaseDrawContext(ID3D12Device* device)
+BaseDrawContext::BaseDrawContext(ID3D12Device* device) : BaseDirectCommandList(device)
 {
   mDevice = device;
-  InitCommandList();
-}
-
-void BaseDrawContext::InitCommandList()
-{
-  HRESULT hr = mDevice->CreateCommandAllocator(
-    D3D12_COMMAND_LIST_TYPE_DIRECT,
-    IID_PPV_ARGS(mCommandAlloc.GetAddressOf())
-  );
-
-  ThrowIfFailed(hr);
-
-  hr = mDevice->CreateCommandList(
-    0,
-    D3D12_COMMAND_LIST_TYPE_DIRECT,
-    mCommandAlloc.Get(),
-    nullptr,
-    IID_PPV_ARGS(mCommandList.GetAddressOf())
-  );
-  ThrowIfFailed(hr);
-
-  mCommandList->Close();
+  mInputLayoutDesc = {};
 }
 
 void BaseDrawContext::InitRootSig()
@@ -138,19 +117,18 @@ void BaseDrawContext::Init()
 
 void BaseDrawContext::ResetCommandList()
 {
-  // Reuse the memory associated with command recording.
-  // We can only reset when the associated command lists have finished execution on the GPU.
+  // Overload because PSO should be carried when resetting commandlist 
   HRESULT hr = mCommandAlloc->Reset();
   if (FAILED(hr))
   {
-    dout::printf("Command Allocated Failed!");
+    dout::printf("[BaseDrawContext] Command Allocated Failed!");
   }
+  ThrowIfFailed(hr);
 
-  // A command list can be reset after it has been added to the command queue via ExecuteCommandList.
-  // Reusing the command list reuses memory.
   hr = mCommandList->Reset(mCommandAlloc.Get(), mPSO.Get());
   if (FAILED(hr))
   {
-    dout::printf("Command List Failed!");
+    dout::printf("[BaseDrawContext] Command List Failed!");
   }
+  ThrowIfFailed(hr);
 }

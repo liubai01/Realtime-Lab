@@ -6,6 +6,7 @@
 CoreApp::CoreApp(HINSTANCE hInstance) : BaseApp(hInstance)
 {
   mDrawContext = make_unique<BaseDrawContext>(mDevice.Get());
+  mUploadCmdList = make_unique<BaseDirectCommandList>(mDevice.Get());
 
 
   //// Set input layout
@@ -22,12 +23,16 @@ CoreApp::CoreApp(HINSTANCE hInstance) : BaseApp(hInstance)
 
 void CoreApp::Start()
 {
+  mUploadCmdList->ResetCommandList();
+
   shared_ptr<BaseObject> cubeObj = CreateObject("Cube Red");
   shared_ptr<BaseMeshComponent> meshComponent = make_shared<BaseMeshComponent>();
   cubeObj->AddComponent(meshComponent);
 
   CoreGeometry cubeGeo = GetCubeGeometry();
-  meshComponent->UploadGeo(cubeGeo, mDevice.Get(), mDrawContext->mCommandList.Get());
+  meshComponent->UploadGeo(cubeGeo, mDevice.Get(), mUploadCmdList->mCommandList.Get());
+
+  Enqueue(mUploadCmdList->mCommandList.Get());
 }
 
 void CoreApp::Update()
