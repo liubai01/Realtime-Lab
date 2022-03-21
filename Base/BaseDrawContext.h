@@ -26,12 +26,9 @@ public:
   // root params would carry a pointer to descriptor range, which is stored here
   vector<vector<D3D12_DESCRIPTOR_RANGE>> mDescTableRanges;
 
-  ComPtr<ID3D12RootSignature> mRootSig;
+  
 
   vector<D3D12_INPUT_ELEMENT_DESC> mInputLayout;
-  D3D12_INPUT_LAYOUT_DESC mInputLayoutDesc;
-
-  ComPtr<ID3D12PipelineState> mPSO;
   BaseShaderManager mShader;
   
   BaseDrawContext(ID3D12Device* device);
@@ -39,8 +36,15 @@ public:
   void Init();
   void ResetCommandList();
 
+  ID3D12RootSignature* GetRootSig();
+
 private:
+  ComPtr<ID3D12RootSignature> mRootSig;
+  ComPtr<ID3D12PipelineState> mPSO;
+  D3D12_INPUT_LAYOUT_DESC mInputLayoutDesc;
+
   ID3D12Device* mDevice;
+  bool mHasInited;
 
   void InitRootSig();
   void InitInputLayout();

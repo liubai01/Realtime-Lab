@@ -153,6 +153,7 @@
     <ClCompile Include="Base\BaseUploadHeap.cpp" />
     <ClCompile Include="Base\Component\BaseComponent.cpp" />
     <ClCompile Include="Base\Component\BaseMeshComponent.cpp" />
+    <ClCompile Include="Core\Component\CoreMeshComponent.cpp" />
     <ClCompile Include="Core\CoreApp.cpp" />
     <ClCompile Include="Core\CoreGeometry.cpp" />
     <ClCompile Include="Core\CoreGeometryUtils.cpp" />
@@ -180,6 +181,7 @@
     <ClInclude Include="Base\BaseUploadHeap.h" />
     <ClInclude Include="Base\Component\BaseComponent.h" />
     <ClInclude Include="Base\Component\BaseMeshComponent.h" />
+    <ClInclude Include="Core\Component\CoreMeshComponent.h" />
     <ClInclude Include="Core\CoreApp.h" />
     <ClInclude Include="Core\CoreGeometry.h" />
     <ClInclude Include="Core\CoreGeometryUtils.h" />
@@ -199,6 +201,12 @@
     <ClInclude Include="ThirdParty\tiny_obj_loader.h" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="Core\Shader\ShadowMapPixelShader.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Core\Shader\ShadowMapVertexShader.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="PixelShader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>

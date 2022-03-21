@@ -7,6 +7,9 @@ struct CoreVertex {
   XMFLOAT2 texCoord;
 };
 
+
+//#define CoreGeometry BaseGeometry<CoreVertex>
+
 class CoreGeometry : public BaseGeometry<CoreVertex>
 {
 };

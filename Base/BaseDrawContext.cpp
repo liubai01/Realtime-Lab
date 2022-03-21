@@ -2,8 +2,16 @@
 
 BaseDrawContext::BaseDrawContext(ID3D12Device* device) : BaseDirectCommandList(device)
 {
+  mHasInited = false;
   mDevice = device;
   mInputLayoutDesc = {};
+}
+
+ID3D12RootSignature* BaseDrawContext::GetRootSig()
+{
+  Init();
+
+  return mRootSig.Get();
 }
 
 void BaseDrawContext::InitRootSig()
@@ -109,14 +117,18 @@ void BaseDrawContext::InitPSO()
 
 void BaseDrawContext::Init()
 {
-  // Invoke after dumping in Shader, Geometry, etc.
-  InitRootSig();
-  InitInputLayout();
-  InitPSO();
+  if (!mHasInited)
+  {
+    // Invoke after dumping in Shader, Geometry, etc.
+    InitRootSig();
+    InitInputLayout();
+    InitPSO();
+  }
 }
 
 void BaseDrawContext::ResetCommandList()
 {
+  Init();
   // Overload because PSO should be carried when resetting commandlist 
   HRESULT hr = mCommandAlloc->Reset();
   if (FAILED(hr))

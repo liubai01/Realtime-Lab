@@ -15,7 +15,7 @@ using Microsoft::WRL::ComPtr;
 class BaseMeshComponent : public BaseComponent
 {
 public:
-  int mNumIndex = 0;
+  //int mNumIndex = 0;
 
   BaseMeshComponent();
 
@@ -175,5 +175,5 @@ void BaseMeshComponent::UploadIndex(BaseGeometry<T>& geo, ID3D12Device* device, 
   mIndexBufferView.Format = DXGI_FORMAT_R32_UINT; // 32-bit unsigned integer (this is what a dword is, double word, a word is 2 bytes)
   mIndexBufferView.SizeInBytes = iBufferSize;
 
-  mNumIndex = geo.mIndices.size();
+  //mNumIndex = geo.mIndices.size();
 }

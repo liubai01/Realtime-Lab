@@ -43,6 +43,15 @@
     <Filter Include="Source Files\Base\Component">
       <UniqueIdentifier>{fd765d43-6285-4bd6-ab28-7d8697295982}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Core\Component">
+      <UniqueIdentifier>{a660c845-d308-45ef-9712-23f8e6c6df1f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core\Component">
+      <UniqueIdentifier>{af5bf9a6-d0f5-44d6-a401-8f8ffe69828e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\Shader">
+      <UniqueIdentifier>{20d3664c-898a-4f93-a728-7a49091c7526}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MultiObj.cpp">
@@ -71,9 +80,6 @@
     </ClCompile>
     <ClCompile Include="ThirdParty\ImGUI\imgui_tables.cpp">
       <Filter>Source Files\ThirdParty\ImGUI</Filter>
-    </ClCompile>
-    <ClCompile Include="Base\BaseCamera.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Base\BaseApp.cpp">
       <Filter>Source Files\Base</Filter>
@@ -118,6 +124,12 @@
       <Filter>Source Files\Core</Filter>
     </ClCompile>
     <ClCompile Include="Base\BaseDirectCommandList.cpp">
+      <Filter>Source Files\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Component\CoreMeshComponent.cpp">
+      <Filter>Source Files\Core\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\BaseCamera.cpp">
       <Filter>Source Files\Base</Filter>
     </ClCompile>
   </ItemGroup>
@@ -212,6 +224,9 @@
     <ClInclude Include="Base\BaseDirectCommandList.h">
       <Filter>Header Files\Base</Filter>
     </ClInclude>
+    <ClInclude Include="Core\Component\CoreMeshComponent.h">
+      <Filter>Header Files\Core\Component</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="VertexShader.hlsl">
@@ -219,6 +234,12 @@
     </FxCompile>
     <FxCompile Include="PixelShader.hlsl">
       <Filter>Source Files</Filter>
+    </FxCompile>
+    <FxCompile Include="Core\Shader\ShadowMapPixelShader.hlsl">
+      <Filter>Source Files\Core\Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Core\Shader\ShadowMapVertexShader.hlsl">
+      <Filter>Source Files\Core\Shader</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
