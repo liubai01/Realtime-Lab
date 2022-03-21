@@ -148,8 +148,13 @@
     <ClCompile Include="Base\BaseMainHeap.cpp" />
     <ClCompile Include="Base\BaseObject.cpp" />
     <ClCompile Include="Base\BaseShaderManager.cpp" />
+    <ClCompile Include="Base\BaseTransform.cpp" />
     <ClCompile Include="Base\BaseUploadHeap.cpp" />
+    <ClCompile Include="Base\Component\BaseComponent.cpp" />
+    <ClCompile Include="Base\Component\BaseMeshComponent.cpp" />
+    <ClCompile Include="CoreGeometryUtils.cpp" />
     <ClCompile Include="Core\CoreApp.cpp" />
+    <ClCompile Include="Core\CoreGeometry.cpp" />
     <ClCompile Include="DebugOut.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MultiObj.cpp" />
@@ -169,8 +174,13 @@
     <ClInclude Include="Base\BaseMainHeap.h" />
     <ClInclude Include="Base\BaseObject.h" />
     <ClInclude Include="Base\BaseShaderManager.h" />
+    <ClInclude Include="Base\BaseTransform.h" />
     <ClInclude Include="Base\BaseUploadHeap.h" />
+    <ClInclude Include="Base\Component\BaseComponent.h" />
+    <ClInclude Include="Base\Component\BaseMeshComponent.h" />
     <ClInclude Include="Core\CoreApp.h" />
+    <ClInclude Include="Core\CoreGeometry.h" />
+    <ClInclude Include="Core\CoreGeometryUtils.h" />
     <ClInclude Include="DebugOut.h" />
     <ClInclude Include="MathUtils.h" />
     <ClInclude Include="MultiObj.h" />

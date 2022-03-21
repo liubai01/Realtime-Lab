@@ -34,6 +34,7 @@ public:
   virtual void Render() = 0;
   virtual void Start() {};
 
+  void Enqueue(ID3D12GraphicsCommandList* commandList);
   void Flush(ID3D12GraphicsCommandList* commandList);
   void Swap();
 
@@ -69,9 +70,7 @@ public:
   clock_t mTimer;
   float mTimeDelta;
 
-  vector<BaseObject> mObjs;
-  template<typename V>
-  BaseObject* RegisterGeo(BaseGeometry<V>& geo, unique_ptr<BaseDrawContext>& drawContext);
+  unordered_map<string, shared_ptr<BaseObject>> mObjs;
 
   ComPtr<IDXGIFactory4> mDxgiFactory;
   ComPtr<IDXGISwapChain3> mSwapChain;
@@ -84,15 +83,17 @@ public:
   ComPtr<ID3D12DescriptorHeap> mDsDescriptorHeap;
 
   unique_ptr<BaseCamera> mMainCamera;
+
+  shared_ptr<BaseObject> CreateObject(const string& name);
 };
 
 
-template<typename V>
-BaseObject* BaseApp::RegisterGeo(BaseGeometry<V>& geo, unique_ptr<BaseDrawContext>& drawContext) {
-  mObjs.emplace_back();
-  auto& obj = mObjs.back();
-
-  obj.UploadGeo(geo, mDevice.Get(), drawContext->mCommandList.Get());
-
-  return &obj;
-}
+//template<typename V>
+//BaseObject* BaseApp::RegisterGeo(BaseGeometry<V>& geo, unique_ptr<BaseDrawContext>& drawContext) {
+//  mObjs.emplace_back();
+//  auto& obj = mObjs.back();
+//
+//  obj.UploadGeo(geo, mDevice.Get(), drawContext->mCommandList.Get());
+//
+//  return &obj;
+//}

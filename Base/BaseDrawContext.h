@@ -38,7 +38,6 @@ public:
   BaseDrawContext(ID3D12Device* device);
 
   void Init();
-
   void ResetCommandList();
 
 private:

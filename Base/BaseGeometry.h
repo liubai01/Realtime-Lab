@@ -19,8 +19,8 @@ template <class T>
 class BaseGeometry
 {
 public:
-  // name
-  std::string mName = "Geo";
+  // Name for debugging (set the name of resource heap, etc.)
+  std::string mName = "Geometry";
 
   vector<T> mVertices = {};
   vector<DWORD> mIndices = {};

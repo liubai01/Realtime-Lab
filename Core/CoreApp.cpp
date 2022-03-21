@@ -1,9 +1,12 @@
 #include "CoreApp.h"
 
+#include "../Base/Component/BaseMeshComponent.h"
+#include "CoreGeometryUtils.h"
 
 CoreApp::CoreApp(HINSTANCE hInstance) : BaseApp(hInstance)
 {
   mDrawContext = make_unique<BaseDrawContext>(mDevice.Get());
+
 
   //// Set input layout
   //mDrawContext->mInputLayout =
@@ -15,6 +18,16 @@ CoreApp::CoreApp(HINSTANCE hInstance) : BaseApp(hInstance)
 
   //mDrawContext->mShader.AddVertexShader("VertexShader.hlsl");
   //mDrawContext->mShader.AddPixelShader("PixelShader.hlsl");
+}
+
+void CoreApp::Start()
+{
+  shared_ptr<BaseObject> cubeObj = CreateObject("Cube Red");
+  shared_ptr<BaseMeshComponent> meshComponent = make_shared<BaseMeshComponent>();
+  cubeObj->AddComponent(meshComponent);
+
+  CoreGeometry cubeGeo = GetCubeGeometry();
+  meshComponent->UploadGeo(cubeGeo, mDevice.Get(), mDrawContext->mCommandList.Get());
 }
 
 void CoreApp::Update()

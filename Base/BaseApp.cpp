@@ -146,6 +146,26 @@ void BaseApp::Flush(ID3D12GraphicsCommandList* commandList)
 
 }
 
+void BaseApp::Enqueue(ID3D12GraphicsCommandList* commandList)
+{
+  // Done recording commands.
+  HRESULT hr = commandList->Close();
+  ThrowIfFailed(hr);
+
+  // Add the command list to the queue for execution.
+  ID3D12CommandList* cmdsLists[] = { commandList };
+  mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
+
+  ++mExpectedFenceValue[mFrameIdx];
+  hr = mCommandQueue->Signal(mFence[mFrameIdx].Get(), mExpectedFenceValue[mFrameIdx]);
+
+  if (FAILED(hr))
+  {
+    mIsRunning = false;
+    return;
+  }
+}
+
 void BaseApp::Swap() {
   // present the current backbuffer
   HRESULT hr = mSwapChain->Present(0, 0);
@@ -369,4 +389,17 @@ D3D12_CPU_DESCRIPTOR_HANDLE BaseApp::DepthBufferView() const
 {
   CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(mDsDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
   return dsvHandle;
+}
+
+shared_ptr<BaseObject> BaseApp::CreateObject(const string& name)
+{
+  auto f = mObjs.find(name);
+  if (f != mObjs.end())
+  {
+    dout::printf("[BaseApp] Create Object Name %s Repeated!", name);
+    return nullptr;
+  }
+  mObjs[name] = make_shared<BaseObject>(name);
+
+  return mObjs[name];
 }

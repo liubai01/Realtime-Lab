@@ -37,6 +37,12 @@
     <Filter Include="Source Files\Core">
       <UniqueIdentifier>{282c9305-8f0a-47ff-a87a-6018ceefa380}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Base\Component">
+      <UniqueIdentifier>{26117c94-991a-4141-9fbb-af1e0138ee1b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Base\Component">
+      <UniqueIdentifier>{fd765d43-6285-4bd6-ab28-7d8697295982}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MultiObj.cpp">
@@ -95,6 +101,21 @@
     </ClCompile>
     <ClCompile Include="Base\BaseShaderManager.cpp">
       <Filter>Source Files\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\BaseTransform.cpp">
+      <Filter>Source Files\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\Component\BaseComponent.cpp">
+      <Filter>Source Files\Base\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\Component\BaseMeshComponent.cpp">
+      <Filter>Source Files\Base\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\CoreGeometry.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="CoreGeometryUtils.cpp">
+      <Filter>Source Files\Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -169,6 +190,21 @@
     </ClInclude>
     <ClInclude Include="Base\BaseShaderManager.h">
       <Filter>Header Files\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\BaseTransform.h">
+      <Filter>Header Files\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\Component\BaseComponent.h">
+      <Filter>Header Files\Base\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\Component\BaseMeshComponent.h">
+      <Filter>Header Files\Base\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\CoreGeometryUtils.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\CoreGeometry.h">
+      <Filter>Header Files\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -20,6 +20,7 @@ public:
 
   CoreApp(HINSTANCE hInstance);
 
+  void Start();
   void Update();
   void Render();
 
