@@ -114,7 +114,7 @@
     <ClCompile Include="Core\CoreGeometry.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
-    <ClCompile Include="CoreGeometryUtils.cpp">
+    <ClCompile Include="Core\CoreGeometryUtils.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
   </ItemGroup>

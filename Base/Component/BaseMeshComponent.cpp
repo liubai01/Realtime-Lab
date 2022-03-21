@@ -1,5 +1,7 @@
 #include "BaseMeshComponent.h"
+
+
 BaseMeshComponent::BaseMeshComponent()
 {
-  mComponentType = BASE_COMPONENT_MESH;
+  mComponentType = BaseComponentType::BASE_COMPONENT_MESH;
 }

@@ -152,9 +152,9 @@
     <ClCompile Include="Base\BaseUploadHeap.cpp" />
     <ClCompile Include="Base\Component\BaseComponent.cpp" />
     <ClCompile Include="Base\Component\BaseMeshComponent.cpp" />
-    <ClCompile Include="CoreGeometryUtils.cpp" />
     <ClCompile Include="Core\CoreApp.cpp" />
     <ClCompile Include="Core\CoreGeometry.cpp" />
+    <ClCompile Include="Core\CoreGeometryUtils.cpp" />
     <ClCompile Include="DebugOut.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MultiObj.cpp" />
