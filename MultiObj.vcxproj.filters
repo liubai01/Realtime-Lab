@@ -52,6 +52,9 @@
     <Filter Include="Source Files\Core\Shader">
       <UniqueIdentifier>{20d3664c-898a-4f93-a728-7a49091c7526}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Base\Heap">
+      <UniqueIdentifier>{d89e49fd-9578-414d-bd17-714c0bdf5aa5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MultiObj.cpp">
@@ -132,6 +135,12 @@
     <ClCompile Include="Base\BaseCamera.cpp">
       <Filter>Source Files\Base</Filter>
     </ClCompile>
+    <ClCompile Include="Base\BaseDescHeapHandle.cpp">
+      <Filter>Source Files\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\BaseRuntimeHeap.cpp">
+      <Filter>Source Files\Base</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -179,9 +188,6 @@
     <ClInclude Include="Base\BaseCamera.h">
       <Filter>Header Files\Base</Filter>
     </ClInclude>
-    <ClInclude Include="Base\BaseUploadHeap.h">
-      <Filter>Header Files\Base</Filter>
-    </ClInclude>
     <ClInclude Include="Base\BaseDrawContext.h">
       <Filter>Header Files\Base</Filter>
     </ClInclude>
@@ -189,9 +195,6 @@
       <Filter>Header Files\Base</Filter>
     </ClInclude>
     <ClInclude Include="Base\BaseImage.h">
-      <Filter>Header Files\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="Base\BaseMainHeap.h">
       <Filter>Header Files\Base</Filter>
     </ClInclude>
     <ClInclude Include="Base\BaseObject.h">
@@ -226,6 +229,18 @@
     </ClInclude>
     <ClInclude Include="Core\Component\CoreMeshComponent.h">
       <Filter>Header Files\Core\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\BaseDescHeapHandle.h">
+      <Filter>Header Files\Base\Heap</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\BaseMainHeap.h">
+      <Filter>Header Files\Base\Heap</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\BaseRuntimeHeap.h">
+      <Filter>Header Files\Base\Heap</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\BaseUploadHeap.h">
+      <Filter>Header Files\Base\Heap</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -142,12 +142,14 @@
   <ItemGroup>
     <ClCompile Include="Base\BaseApp.cpp" />
     <ClCompile Include="Base\BaseCamera.cpp" />
+    <ClCompile Include="Base\BaseDescHeapHandle.cpp" />
     <ClCompile Include="Base\BaseDirectCommandList.cpp" />
     <ClCompile Include="Base\BaseDrawContext.cpp" />
     <ClCompile Include="Base\BaseGeometry.cpp" />
     <ClCompile Include="Base\BaseImage.cpp" />
     <ClCompile Include="Base\BaseMainHeap.cpp" />
     <ClCompile Include="Base\BaseObject.cpp" />
+    <ClCompile Include="Base\BaseRuntimeHeap.cpp" />
     <ClCompile Include="Base\BaseShaderManager.cpp" />
     <ClCompile Include="Base\BaseTransform.cpp" />
     <ClCompile Include="Base\BaseUploadHeap.cpp" />
@@ -170,12 +172,14 @@
   <ItemGroup>
     <ClInclude Include="Base\BaseApp.h" />
     <ClInclude Include="Base\BaseCamera.h" />
+    <ClInclude Include="Base\BaseDescHeapHandle.h" />
     <ClInclude Include="Base\BaseDirectCommandList.h" />
     <ClInclude Include="Base\BaseDrawContext.h" />
     <ClInclude Include="Base\BaseGeometry.h" />
     <ClInclude Include="Base\BaseImage.h" />
     <ClInclude Include="Base\BaseMainHeap.h" />
     <ClInclude Include="Base\BaseObject.h" />
+    <ClInclude Include="Base\BaseRuntimeHeap.h" />
     <ClInclude Include="Base\BaseShaderManager.h" />
     <ClInclude Include="Base\BaseTransform.h" />
     <ClInclude Include="Base\BaseUploadHeap.h" />

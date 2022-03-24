@@ -63,6 +63,7 @@ BaseApp::BaseApp(HINSTANCE hInstance)
 
   mMainCamera = make_unique<BaseCamera>(static_cast<float>(mWidth), static_cast<float>(mHeight));
   mMainHeap = new BaseMainHeap(mDevice.Get());
+  mRuntimeHeap = new BaseRuntimeHeap(mDevice.Get());
   mObjs = new unordered_map<string, shared_ptr<BaseObject>>();
 }
 
@@ -70,6 +71,7 @@ BaseApp::~BaseApp()
 {
   delete mObjs;
   delete mMainHeap;
+  delete mRuntimeHeap;
   CloseHandle(mFenceEvent);
 
   ImGui_ImplWin32_Shutdown();
@@ -413,7 +415,7 @@ shared_ptr<BaseObject> BaseApp::CreateObject(const string& name)
     return nullptr;
   }
   shared_ptr<BaseObject> obj = make_shared<BaseObject>(name, mDevice.Get());
-  obj->mTransform.RegisterHandle(mMainHeap);
+  obj->mTransform.RegisterMainHandle(mMainHeap);
 
   (*mObjs)[name] = obj;
 

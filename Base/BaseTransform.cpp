@@ -3,21 +3,43 @@
 
 BaseTransform::BaseTransform(ID3D12Device* device) : mBuffer(device)
 {
-
+  mDevice = device;
+  mRuntimeRegistered = false;
 }
 
-BaseDescHeapHandle BaseTransform::GetTransformHandle()
+BaseDescHeapHandle BaseTransform::GetHandle()
 {
+  if (!mRuntimeRegistered)
+  {
+    dout::printf("[BaseTransform] The runtime handle has not been registered.");
+  }
   XMStoreFloat4x4(&mBuffer.mData.World, XMMatrixTranspose(GetWorldMatrix()));
   XMStoreFloat4x4(&mBuffer.mData.RSInvT, XMMatrixTranspose(GetRSInvT()));
   mBuffer.Upload();
 
-  return *mBuffer.GetHandle();
+  return mRuntimeHandle;
 }
 
-void BaseTransform::RegisterHandle(BaseMainHeap* heap)
+void BaseTransform::RegisterMainHandle(BaseMainHeap* heap)
 {
   mBuffer.RegisiterHeap(heap);
+}
+
+void BaseTransform::RegisterRuntimeHandle(BaseRuntimeHeap* heap)
+{
+  if (!mBuffer.GetHandle())
+  {
+    dout::printf("[BaseTransform] Could not register runtime heap handle before on main heap.");
+  }
+  
+  mRuntimeHandle = heap->GetHeapHandleBlock(1);
+  mDevice->CopyDescriptorsSimple(
+    1, 
+    mRuntimeHandle.GetCPUHandle(), 
+    mBuffer.GetHandle()->GetCPUHandle(),
+    D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV
+  );
+  mRuntimeRegistered = true;
 }
 
 void BaseTransform::SetPos(float x, float y, float z)

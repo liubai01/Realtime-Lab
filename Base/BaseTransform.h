@@ -4,6 +4,7 @@
 #include "../ThirdParty/d3dx12.h"
 #include "BaseUploadHeap.h"
 #include "BaseMainHeap.h"
+#include "BaseRuntimeHeap.h"
 #include <wrl.h>
 #include "../MathUtils.h"
 
@@ -27,15 +28,18 @@ public:
   XMMATRIX GetWorldMatrix();
   XMMATRIX GetRSInvT();
 
-  BaseDescHeapHandle GetTransformHandle();
-  void RegisterHandle(BaseMainHeap* heap);
+  bool mRuntimeRegistered;
+  BaseDescHeapHandle GetHandle();
+  BaseDescHeapHandle mRuntimeHandle;
 
+  void RegisterMainHandle(BaseMainHeap* heap);
+  void RegisterRuntimeHandle(BaseRuntimeHeap* heap);
 
   XMFLOAT4 mPosition = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
   XMFLOAT4 mRotation = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
   XMFLOAT4 mScale = XMFLOAT4(1.0f, 1.0f, 1.0f, 0.0f);
 private:
-
+  ID3D12Device* mDevice;
   BaseUploadHeap<BaseTransformConstant> mBuffer;
 };
 

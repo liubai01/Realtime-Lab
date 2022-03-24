@@ -36,11 +36,15 @@ void CoreApp::Update()
 
 void CoreApp::Render()
 {
-  // Upload geoemetry(vertices, indices) if it has not been uploaded before
+  // 1. Upload geoemetry(vertices, indices) if it has not been uploaded before
+  // 2. Register constant buffer
   mUploadCmdList->ResetCommandList();
+  mRuntimeHeap->Reset();
   for (auto& elem : *mObjs)
   {
     shared_ptr<BaseObject>& obj = elem.second;
+    obj->mTransform.RegisterRuntimeHandle(mRuntimeHeap);
+
     for (auto component : obj->mComponents)
     {
       if (component->mComponentType == BaseComponentType::BASE_COMPONENT_MESH)

@@ -17,6 +17,7 @@
 #include <time.h>
 #include "BaseDrawContext.h"
 #include "BaseCamera.h"
+#include "BaseRuntimeHeap.h"
 
 using namespace DirectX;
 using namespace DirectX::PackedVector;
@@ -85,16 +86,7 @@ public:
   unique_ptr<BaseCamera> mMainCamera;
 
   BaseMainHeap* mMainHeap;
+  BaseRuntimeHeap* mRuntimeHeap;
+
   shared_ptr<BaseObject> CreateObject(const string& name);
 };
-
-
-//template<typename V>
-//BaseObject* BaseApp::RegisterGeo(BaseGeometry<V>& geo, unique_ptr<BaseDrawContext>& drawContext) {
-//  mObjs.emplace_back();
-//  auto& obj = mObjs.back();
-//
-//  obj.UploadGeo(geo, mDevice.Get(), drawContext->mCommandList.Get());
-//
-//  return &obj;
-//}
