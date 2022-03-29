@@ -7,6 +7,7 @@
 #include "BaseRuntimeHeap.h"
 #include <wrl.h>
 #include "../MathUtils.h"
+#include "BaseStagedBuffer.h"
 
 using namespace DirectX;
 using Microsoft::WRL::ComPtr;
@@ -16,7 +17,7 @@ struct BaseTransformConstant {
     XMFLOAT4X4 RSInvT = Identity4x4();
 };
 
-class BaseTransform
+class BaseTransform : public BaseStagedBuffer<BaseTransformConstant>
 {
 public:
   BaseTransform(ID3D12Device* device);
@@ -28,18 +29,10 @@ public:
   XMMATRIX GetWorldMatrix();
   XMMATRIX GetRSInvT();
 
-  bool mRuntimeRegistered;
-  BaseDescHeapHandle GetHandle();
-  BaseDescHeapHandle mRuntimeHandle;
-
-  void RegisterMainHandle(BaseMainHeap* heap);
-  void RegisterRuntimeHandle(BaseRuntimeHeap* heap);
+  void Upload();
 
   XMFLOAT4 mPosition = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
   XMFLOAT4 mRotation = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
   XMFLOAT4 mScale = XMFLOAT4(1.0f, 1.0f, 1.0f, 0.0f);
-private:
-  ID3D12Device* mDevice;
-  BaseUploadHeap<BaseTransformConstant> mBuffer;
 };
 

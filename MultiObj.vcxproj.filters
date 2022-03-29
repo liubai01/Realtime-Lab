@@ -55,6 +55,9 @@
     <Filter Include="Header Files\Base\Heap">
       <UniqueIdentifier>{d89e49fd-9578-414d-bd17-714c0bdf5aa5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Base\Heap">
+      <UniqueIdentifier>{1e995a78-d0ae-433f-9f63-36a0f7c8aa9f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MultiObj.cpp">
@@ -96,13 +99,7 @@
     <ClCompile Include="Base\BaseImage.cpp">
       <Filter>Source Files\Base</Filter>
     </ClCompile>
-    <ClCompile Include="Base\BaseMainHeap.cpp">
-      <Filter>Source Files\Base</Filter>
-    </ClCompile>
     <ClCompile Include="Base\BaseObject.cpp">
-      <Filter>Source Files\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="Base\BaseUploadHeap.cpp">
       <Filter>Source Files\Base</Filter>
     </ClCompile>
     <ClCompile Include="Core\CoreApp.cpp">
@@ -136,10 +133,19 @@
       <Filter>Source Files\Base</Filter>
     </ClCompile>
     <ClCompile Include="Base\BaseDescHeapHandle.cpp">
-      <Filter>Source Files\Base</Filter>
+      <Filter>Source Files\Base\Heap</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\BaseMainHeap.cpp">
+      <Filter>Source Files\Base\Heap</Filter>
     </ClCompile>
     <ClCompile Include="Base\BaseRuntimeHeap.cpp">
-      <Filter>Source Files\Base</Filter>
+      <Filter>Source Files\Base\Heap</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\BaseUploadHeap.cpp">
+      <Filter>Source Files\Base\Heap</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\BaseStagedBuffer.cpp">
+      <Filter>Source Files\Base\Heap</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -240,6 +246,9 @@
       <Filter>Header Files\Base\Heap</Filter>
     </ClInclude>
     <ClInclude Include="Base\BaseUploadHeap.h">
+      <Filter>Header Files\Base\Heap</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\BaseStagedBuffer.h">
       <Filter>Header Files\Base\Heap</Filter>
     </ClInclude>
   </ItemGroup>

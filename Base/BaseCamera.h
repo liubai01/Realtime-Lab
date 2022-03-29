@@ -18,6 +18,10 @@ using namespace DirectX::PackedVector;
 using Microsoft::WRL::ComPtr;
 using namespace std;
 
+//struct BaseTransformConstant {
+//  XMFLOAT4X4 ViewProj = Identity4x4();
+//};
+
 class BaseCamera
 {
 public:
@@ -29,5 +33,8 @@ public:
 
   float mWidth;
   float mHeight;
+
+private:
+
 };
 

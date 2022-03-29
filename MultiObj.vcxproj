@@ -151,6 +151,7 @@
     <ClCompile Include="Base\BaseObject.cpp" />
     <ClCompile Include="Base\BaseRuntimeHeap.cpp" />
     <ClCompile Include="Base\BaseShaderManager.cpp" />
+    <ClCompile Include="Base\BaseStagedBuffer.cpp" />
     <ClCompile Include="Base\BaseTransform.cpp" />
     <ClCompile Include="Base\BaseUploadHeap.cpp" />
     <ClCompile Include="Base\Component\BaseComponent.cpp" />
@@ -181,6 +182,7 @@
     <ClInclude Include="Base\BaseObject.h" />
     <ClInclude Include="Base\BaseRuntimeHeap.h" />
     <ClInclude Include="Base\BaseShaderManager.h" />
+    <ClInclude Include="Base\BaseStagedBuffer.h" />
     <ClInclude Include="Base\BaseTransform.h" />
     <ClInclude Include="Base\BaseUploadHeap.h" />
     <ClInclude Include="Base\Component\BaseComponent.h" />

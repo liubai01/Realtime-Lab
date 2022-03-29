@@ -36,10 +36,11 @@ void CoreApp::Update()
 
 void CoreApp::Render()
 {
+  mRuntimeHeap->Reset();
+
   // 1. Upload geoemetry(vertices, indices) if it has not been uploaded before
   // 2. Register constant buffer
   mUploadCmdList->ResetCommandList();
-  mRuntimeHeap->Reset();
   for (auto& elem : *mObjs)
   {
     shared_ptr<BaseObject>& obj = elem.second;
