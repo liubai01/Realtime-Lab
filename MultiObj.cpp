@@ -592,7 +592,7 @@
 //  descTableRanges[0].BaseShaderRegister = 0; // start index of the shader registers in the range
 //  descTableRanges[0].RegisterSpace = 0; // space 0. can usually be zero
 //  descTableRanges[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // this appends the range to the end of the root signature descriptor tables
-//
+// 
 //  // create a descriptor table
 //  D3D12_ROOT_DESCRIPTOR_TABLE descriptorTable;
 //  descriptorTable.NumDescriptorRanges = descTableRanges.size(); // we only have one range

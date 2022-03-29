@@ -61,14 +61,17 @@ BaseApp::BaseApp(HINSTANCE hInstance)
   InitDepth();
   InitRTV();
 
-  mMainCamera = make_unique<BaseCamera>(static_cast<float>(mWidth), static_cast<float>(mHeight));
   mMainHeap = new BaseMainHeap(mDevice.Get());
   mRuntimeHeap = new BaseRuntimeHeap(mDevice.Get());
   mObjs = new unordered_map<string, shared_ptr<BaseObject>>();
+
+  mMainCamera = new BaseCamera(mDevice.Get(), static_cast<float>(mWidth), static_cast<float>(mHeight));
+  mMainCamera->RegisterMainHandle(mMainHeap);
 }
 
 BaseApp::~BaseApp()
 {
+  delete mMainCamera;
   delete mObjs;
   delete mMainHeap;
   delete mRuntimeHeap;

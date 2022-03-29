@@ -18,6 +18,31 @@ CoreApp::CoreApp(HINSTANCE hInstance) : BaseApp(hInstance)
 
   mDrawContext->mShader.AddVertexShader("Core\\Shader\\ShadowMapVertexShader.hlsl");
   mDrawContext->mShader.AddPixelShader("Core\\Shader\\ShadowMapPixelShader.hlsl");
+
+  // one for transform buffer, one for camera buffer
+  for (int i = 0; i < 2; ++i)
+  {
+    mDrawContext->mDescTableRanges.emplace_back(1);
+    vector<D3D12_DESCRIPTOR_RANGE>& descTableRanges = mDrawContext->mDescTableRanges.back();
+
+    descTableRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV; // this is a range of constant buffer views (descriptors)
+    descTableRanges[0].NumDescriptors = 1; // we only have one constant buffer, so the range is only 1
+    descTableRanges[0].BaseShaderRegister = i; // start index of the shader registers in the range
+    descTableRanges[0].RegisterSpace = 0; // space 0. can usually be zero
+    descTableRanges[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // this appends the range to the end of the root signature descriptor tables
+
+    // create a descriptor table
+    D3D12_ROOT_DESCRIPTOR_TABLE descriptorTable;
+    descriptorTable.NumDescriptorRanges = descTableRanges.size(); // we only have one range
+    descriptorTable.pDescriptorRanges = descTableRanges.data(); // the pointer to the beginning of our ranges array
+
+    // create a root parameter and fill it out
+    mDrawContext->mRootParams.emplace_back();
+    mDrawContext->mRootParams.back().ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; // this is a descriptor table
+    mDrawContext->mRootParams.back().DescriptorTable = descriptorTable; // this is our descriptor table for this root parameter
+    mDrawContext->mRootParams.back().ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+  }
+  mMainCamera->SetPos(5.0f, 5.0f, 5.0f);
 }
 
 void CoreApp::Start()
@@ -39,7 +64,7 @@ void CoreApp::Render()
   mRuntimeHeap->Reset();
 
   // 1. Upload geoemetry(vertices, indices) if it has not been uploaded before
-  // 2. Register constant buffer
+  // 2. Register transform constant buffer
   mUploadCmdList->ResetCommandList();
   for (auto& elem : *mObjs)
   {
@@ -86,9 +111,16 @@ void CoreApp::Render()
   commandList->ClearDepthStencilView(dsv, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
   commandList->OMSetRenderTargets(1, &rtv, false, &dsv);
+
+  ID3D12DescriptorHeap* descriptorHeaps[] = { mRuntimeHeap->mDescHeap.Get() };
+  commandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
+
+  mMainCamera->RegisterRuntimeHandle(mRuntimeHeap);
+  commandList->SetGraphicsRootDescriptorTable(1, mMainCamera->GetHandle().GetGPUHandle());
   for (auto& elem : *mObjs)
   {
     shared_ptr<BaseObject>& obj = elem.second;
+    commandList->SetGraphicsRootDescriptorTable(0, obj->mTransform.GetHandle().GetGPUHandle());
     for (auto component : obj->mComponents)
     {
       if (component->mComponentType == BaseComponentType::BASE_COMPONENT_MESH)

@@ -83,7 +83,7 @@ public:
   ComPtr<ID3D12Resource> mDepthStencilBuffer;
   ComPtr<ID3D12DescriptorHeap> mDsDescriptorHeap;
 
-  unique_ptr<BaseCamera> mMainCamera;
+  BaseCamera* mMainCamera;
 
   BaseMainHeap* mMainHeap;
   BaseRuntimeHeap* mRuntimeHeap;
