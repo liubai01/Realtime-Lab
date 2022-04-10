@@ -7,6 +7,7 @@ CoreApp::CoreApp(HINSTANCE hInstance) : BaseApp(hInstance)
 {
   mDrawContext = make_unique<BaseDrawContext>(mDevice.Get());
   mUploadCmdList = make_unique<BaseDirectCommandList>(mDevice.Get());
+  mMaterialManager = make_unique<CoreMaterialManager>(mDevice.Get());
 
   // Set input layout
   mDrawContext->mInputLayout =
@@ -19,8 +20,10 @@ CoreApp::CoreApp(HINSTANCE hInstance) : BaseApp(hInstance)
   mDrawContext->mShader.AddVertexShader("Core\\Shader\\ShadowMapVertexShader.hlsl");
   mDrawContext->mShader.AddPixelShader("Core\\Shader\\ShadowMapPixelShader.hlsl");
 
-  // one for transform buffer, one for camera buffer
-  for (int i = 0; i < 2; ++i)
+  // b0: transform buffer
+  // b1: camera buffer
+  // b2: matereial buffer
+  for (int i = 0; i < 3; ++i)
   {
     mDrawContext->mDescTableRanges.emplace_back(1);
     vector<D3D12_DESCRIPTOR_RANGE>& descTableRanges = mDrawContext->mDescTableRanges.back();
@@ -33,7 +36,7 @@ CoreApp::CoreApp(HINSTANCE hInstance) : BaseApp(hInstance)
 
     // create a descriptor table
     D3D12_ROOT_DESCRIPTOR_TABLE descriptorTable;
-    descriptorTable.NumDescriptorRanges = descTableRanges.size(); // we only have one range
+    descriptorTable.NumDescriptorRanges = static_cast<UINT>(descTableRanges.size()); // we only have one range
     descriptorTable.pDescriptorRanges = descTableRanges.data(); // the pointer to the beginning of our ranges array
 
     // create a root parameter and fill it out
@@ -42,21 +45,28 @@ CoreApp::CoreApp(HINSTANCE hInstance) : BaseApp(hInstance)
     mDrawContext->mRootParams.back().DescriptorTable = descriptorTable; // this is our descriptor table for this root parameter
     mDrawContext->mRootParams.back().ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
   }
-  mMainCamera->SetPos(5.0f, 5.0f, 5.0f);
 }
 
 void CoreApp::Start()
 {
+  shared_ptr<CoreMaterial> redMat = CreateMaterial("Red");
+  redMat->mBuffer.mData.Kd = { 1.0f, 0.0f, 0.0f, 1.0f };
+
   shared_ptr<BaseObject> cubeObj = CreateObject("Cube Red");
   shared_ptr<CoreGeometry> cubeGeo = make_shared<CoreGeometry>(GetCubeGeometry());
   shared_ptr<CoreMeshComponent> meshComponent = make_shared<CoreMeshComponent>(cubeGeo);
+  meshComponent->mMat = redMat;
   cubeObj->AddComponent(meshComponent);
-
+  
+  mMainCamera->SetPos(5.0f, 5.0f, 5.0f);
 }
 
 void CoreApp::Update()
 {
-
+    static float timer = 0.0f;
+    timer += mTimeDelta;
+    shared_ptr<BaseObject> cubeObj = (*mObjs)["Cube Red"];
+    cubeObj->mTransform.SetRot(timer, timer * 0.5f, timer);
 }
 
 void CoreApp::Render()
@@ -84,6 +94,8 @@ void CoreApp::Render()
     }
   }
   Enqueue(mUploadCmdList->mCommandList.Get());
+
+  mMaterialManager->RegisterRuntimeHandle(mRuntimeHeap);
 
   mDrawContext->ResetCommandList();
   ID3D12GraphicsCommandList* commandList = mDrawContext->mCommandList.Get();
@@ -126,6 +138,7 @@ void CoreApp::Render()
       if (component->mComponentType == BaseComponentType::BASE_COMPONENT_MESH)
       {
         CoreMeshComponent* com = static_cast<CoreMeshComponent*>(&(*component));
+        commandList->SetGraphicsRootDescriptorTable(2, com->mMat->GetHandle().GetGPUHandle());
 
         D3D12_INDEX_BUFFER_VIEW ibView = com->mIndexBufferView;
         D3D12_VERTEX_BUFFER_VIEW vbView = com->mVertexBufferView;
@@ -135,7 +148,7 @@ void CoreApp::Render()
         commandList->IASetIndexBuffer(&ibView);
 
         commandList->DrawIndexedInstanced(
-          com->mGeo->mIndices.size(),
+          static_cast<UINT>(com->mGeo->mIndices.size()),
           1, 0, 0, 0
         );
       }
@@ -154,4 +167,15 @@ void CoreApp::Render()
   );
   Flush(mDrawContext->mCommandList.Get());
   Swap();
+}
+
+shared_ptr<CoreMaterial> CoreApp::CreateMaterial(const string& name)
+{
+    shared_ptr<CoreMaterial> mat = mMaterialManager->CreateMaterial(name);
+    if (mat != nullptr)
+    {
+        mat->RegisterMainHandle(mMainHeap);
+    }
+
+    return mat;
 }

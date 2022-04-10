@@ -49,9 +49,6 @@
     <Filter Include="Header Files\Core\Component">
       <UniqueIdentifier>{af5bf9a6-d0f5-44d6-a401-8f8ffe69828e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Core\Shader">
-      <UniqueIdentifier>{20d3664c-898a-4f93-a728-7a49091c7526}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Base\Heap">
       <UniqueIdentifier>{d89e49fd-9578-414d-bd17-714c0bdf5aa5}</UniqueIdentifier>
     </Filter>
@@ -146,6 +143,12 @@
     </ClCompile>
     <ClCompile Include="Base\BaseStagedBuffer.cpp">
       <Filter>Source Files\Base\Heap</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\CoreMaterial.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\CoreMaterialManager.cpp">
+      <Filter>Source Files\Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -251,20 +254,12 @@
     <ClInclude Include="Base\BaseStagedBuffer.h">
       <Filter>Header Files\Base\Heap</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="VertexShader.hlsl">
-      <Filter>Source Files</Filter>
-    </FxCompile>
-    <FxCompile Include="PixelShader.hlsl">
-      <Filter>Source Files</Filter>
-    </FxCompile>
-    <FxCompile Include="Core\Shader\ShadowMapPixelShader.hlsl">
-      <Filter>Source Files\Core\Shader</Filter>
-    </FxCompile>
-    <FxCompile Include="Core\Shader\ShadowMapVertexShader.hlsl">
-      <Filter>Source Files\Core\Shader</Filter>
-    </FxCompile>
+    <ClInclude Include="Core\CoreMaterial.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\CoreMaterialManager.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Asset\grass.jpg">

@@ -7,6 +7,7 @@
 #include "../Base/BaseUploadHeap.h"
 #include "../Base/BaseImage.h"
 #include "../Base/BaseDirectCommandList.h"
+#include "CoreMaterialManager.h"
 #include <memory>
 
 #include "../ThirdParty/ImGUI/imgui.h"
@@ -19,8 +20,11 @@ __declspec(align(16)) class CoreApp : public BaseApp
 public:
   unique_ptr<BaseDrawContext> mDrawContext;
   unique_ptr<BaseDirectCommandList> mUploadCmdList;
+  unique_ptr<CoreMaterialManager> mMaterialManager;
 
   CoreApp(HINSTANCE hInstance);
+
+  shared_ptr<CoreMaterial> CreateMaterial(const string& name);
 
   void Start();
   void Update();

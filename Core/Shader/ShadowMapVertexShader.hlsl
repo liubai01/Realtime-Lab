@@ -17,9 +17,19 @@ struct VertexIn
 	float2 Coord: TEXCOORD;
 };
 
-float4 main(VertexIn vin) : SV_POSITION
+struct VertexOut
 {
-	float4 ret = mul(float4(vin.Pos, 1.0f), gWorld);
-	ret = mul(ret, gViewProj);
+	float4 Pos  : SV_POSITION;
+	float4 PosW : POSITION;
+	float3 Norm : NORMAL;
+};
+
+VertexOut main(VertexIn vin)
+{
+	VertexOut ret;
+	ret.PosW = mul(float4(vin.Pos, 1.0f), gWorld);
+	ret.Pos = mul(ret.PosW, gViewProj);
+
+	ret.Norm = normalize(mul(vin.Norm, gRSInvT));
 	return ret;
 }
