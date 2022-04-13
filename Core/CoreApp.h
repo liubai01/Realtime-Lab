@@ -26,8 +26,8 @@ public:
 
   shared_ptr<CoreMaterial> CreateMaterial(const string& name);
 
-  void Start();
-  void Update();
+  virtual void Start();
+  virtual void Update();
   void Render();
 
   void* operator new(size_t i)

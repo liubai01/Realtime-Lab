@@ -1,7 +1,6 @@
 #include "CoreMaterial.h"
 
 CoreMaterial::CoreMaterial(ID3D12Device* device): BaseStagedBuffer(device) {
-	mBuffer.mData.Ka = { 0.8f, 0.8f, 0.8f, 1.0f }; // Ambient Color Constant
 	mBuffer.mData.Kd = { 0.8f, 0.8f, 0.8f, 1.0f }; // Diffuse Color Constant
 	mBuffer.mData.Ks = { 0.5f, 0.5f, 0.5f, 1.0f }; // Specular Color Constant
 	mBuffer.mData.Ns = 323.999994f; // Shiniess

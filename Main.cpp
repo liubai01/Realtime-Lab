@@ -1,9 +1,39 @@
 #include "MultiObj.h"
 #include "Core/CoreApp.h"
+#include "Core/CoreGeometry.h"
+#include "Core/Component/CoreMeshComponent.h"
+#include "Core/CoreGeometryUtils.h"
+
+class MyApp : public CoreApp {
+public:
+    MyApp(HINSTANCE hInstance) : CoreApp(hInstance) {};
+
+    void Start() {
+        shared_ptr<CoreMaterial> redMat = CreateMaterial("Red");
+        redMat->mBuffer.mData.Kd = { 1.0f, 0.0f, 0.0f, 1.0f };
+
+        shared_ptr<BaseObject> cubeObj = CreateObject("Cube Red");
+        shared_ptr<CoreGeometry> cubeGeo = make_shared<CoreGeometry>(GetCubeGeometry());
+        shared_ptr<CoreMeshComponent> meshComponent = make_shared<CoreMeshComponent>(cubeGeo);
+        meshComponent->mMat = redMat;
+        cubeObj->AddComponent(meshComponent);
+
+        mMainCamera->SetPos(5.0f, 5.0f, 5.0f);
+    }
+
+    void Update()
+    {
+        static float timer = 0.0f;
+        timer += mTimeDelta;
+        shared_ptr<BaseObject> cubeObj = (*mObjs)["Cube Red"];
+        cubeObj->mTransform.SetRot(timer, timer * 0.5f, timer);
+    }
+};
+
 
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPTSTR lpCmdLine, _In_ int nShowCmd)
 {
-  BaseApp* app = new CoreApp(hInstance);
+  BaseApp* app = new MyApp(hInstance);
 
   try
   {

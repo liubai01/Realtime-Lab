@@ -11,7 +11,6 @@ using namespace DirectX;
 using namespace DirectX::PackedVector;
 
 struct CoreMaterialConsts {
-  XMFLOAT4 Ka = { 0.8f, 0.8f, 0.8f, 1.0f }; // Ambient Color Constant
   XMFLOAT4 Kd = { 0.8f, 0.8f, 0.8f, 1.0f }; // Diffuse Color Constant
   XMFLOAT4 Ks = { 0.5f, 0.5f, 0.5f, 1.0f }; // Specular Color Constant
   float Ns = 323.999994f; // Shiniess

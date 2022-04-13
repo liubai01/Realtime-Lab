@@ -7,7 +7,6 @@ struct VertexOut
 
 cbuffer matPerObject: register(b2)
 {
-	float4 Ka;
 	float4 Kd;
 	float4 Ks;
 	float Ns;
@@ -28,19 +27,16 @@ float4 main(VertexOut pin) : SV_TARGET
 	float4 gLightDir = normalize(float4(1.0f, 1.0f, 1.0f, 0.0f));
 
 	float4 N = float4(pin.Norm, 0.0f);
-	float4 Fd = Kd;
-	float4 Fa = Ka * Kd;
-	float4 Fs = Ks;
 
-	float4 ret = max(dot(gLightDir, N), 0.0f) * Fd * id;
+	float4 ret = max(dot(gLightDir, N), 0.0f) * Kd * id;
 
 	// Ambient
-	ret += Fa * ia;
+	ret += Kd * ia;
 
 	// Specular
 	float4 V = normalize(gEyePos - pin.PosW);
 	float4 H = (V + gLightDir) / length(V + gLightDir);
-	ret += pow(max(dot(N, H), 0), Ns) * Fs * ims;
+	ret += pow(max(dot(N, H), 0), Ns) * Ks * ims;
 
 	// Gamma Correction
 	ret = pow(ret, 2.2f);
