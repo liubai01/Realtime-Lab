@@ -12,9 +12,6 @@
 #pragma comment(lib,"d3dcompiler.lib")
 #pragma comment(lib, "D3D12.lib")
 #pragma comment(lib, "dxgi.lib")
-//#pragma comment(lib, "dxguid.lib")
-
-//#include <dxgidebug.h>
 
 using namespace DirectX;
 
@@ -80,11 +77,6 @@ BaseApp::~BaseApp()
   ImGui_ImplWin32_Shutdown();
   ImGui::DestroyContext();
 
-  //ComPtr<ID3D12DebugDevice> debug = D3D12GetDebugInterface();
-  //debug->ReportLiveDeviceObjects(D3D12_RLDO_DETAIL);
-  //ComPtr<IDXGIDebug> debug;
-  //mDevice->QueryInterface(debug.GetAddressOf());
-  //debug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_DETAIL);
 }
 
 void BaseApp::Run()
@@ -414,7 +406,7 @@ shared_ptr<BaseObject> BaseApp::CreateObject(const string& name)
   auto f = mObjs->find(name);
   if (f != mObjs->end())
   {
-    dout::printf("[BaseApp] Create Object Name %s Repeated!", name);
+    dout::printf("[BaseApp] Create Object Name %s Repeated!", name.c_str());
     return nullptr;
   }
   shared_ptr<BaseObject> obj = make_shared<BaseObject>(name, mDevice.Get());
@@ -423,4 +415,18 @@ shared_ptr<BaseObject> BaseApp::CreateObject(const string& name)
   (*mObjs)[name] = obj;
 
   return obj;
+}
+
+shared_ptr<BaseObject> BaseApp::GetObject(const string& name)
+{
+    auto f = mObjs->find(name);
+
+    if (f != mObjs->end())
+    {
+        return f->second;
+    }
+
+    dout::printf("[BaseApp] Object %s not found!", name.c_str());
+
+    return nullptr;
 }

@@ -160,6 +160,7 @@
     <ClCompile Include="Core\CoreApp.cpp" />
     <ClCompile Include="Core\CoreGeometry.cpp" />
     <ClCompile Include="Core\CoreGeometryUtils.cpp" />
+    <ClCompile Include="Core\CoreLightManager.cpp" />
     <ClCompile Include="Core\CoreMaterial.cpp" />
     <ClCompile Include="Core\CoreMaterialManager.cpp" />
     <ClCompile Include="DebugOut.cpp" />
@@ -193,6 +194,7 @@
     <ClInclude Include="Core\CoreApp.h" />
     <ClInclude Include="Core\CoreGeometry.h" />
     <ClInclude Include="Core\CoreGeometryUtils.h" />
+    <ClInclude Include="Core\CoreLightManager.h" />
     <ClInclude Include="Core\CoreMaterial.h" />
     <ClInclude Include="Core\CoreMaterialManager.h" />
     <ClInclude Include="DebugOut.h" />

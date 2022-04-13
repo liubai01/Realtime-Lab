@@ -17,7 +17,7 @@ public:
 
   bool mRuntimeRegistered;
   // would be invoked when GetHandle()
-  virtual void Upload() = 0;
+  virtual void Upload() {};
   BaseDescHeapHandle GetHandle();
 
 

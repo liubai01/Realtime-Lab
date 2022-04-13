@@ -5,6 +5,12 @@ struct VertexOut
 	float3 Norm : NORMAL;
 };
 
+cbuffer cbCamera : register(b1)
+{
+	float4x4 gViewProj;
+	float4 gEyePos;
+};
+
 cbuffer matPerObject: register(b2)
 {
 	float4 Kd;
@@ -12,22 +18,17 @@ cbuffer matPerObject: register(b2)
 	float Ns;
 };
 
-cbuffer cbCamera : register(b1)
+cbuffer lightData: register(b3)
 {
-	float4x4 gViewProj;
-	float4 gEyePos;
+	float4 ims;
+	float4 ia;
+	float4 id;
+	float4 gLightDir;
 };
 
 float4 main(VertexOut pin) : SV_TARGET
 {
-	// light coeff (tmp)
-	float4 ims = float4(1.0f, 1.0f, 1.0f, 1.0f); // intensity of specular
-	float4 ia = float4(0.1f, 0.1f, 0.1f, 1.0f); // intensity of ambient
-	float4 id = float4(1.0f, 1.0f, 1.0f, 1.0f); // intensity of diffuse
-	float4 gLightDir = normalize(float4(1.0f, 1.0f, 1.0f, 0.0f));
-
 	float4 N = float4(pin.Norm, 0.0f);
-
 	float4 ret = max(dot(gLightDir, N), 0.0f) * Kd * id;
 
 	// Ambient

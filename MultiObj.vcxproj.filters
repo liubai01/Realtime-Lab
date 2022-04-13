@@ -150,6 +150,9 @@
     <ClCompile Include="Core\CoreMaterialManager.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
+    <ClCompile Include="Core\CoreLightManager.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -258,6 +261,9 @@
       <Filter>Header Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="Core\CoreMaterialManager.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\CoreLightManager.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
   </ItemGroup>

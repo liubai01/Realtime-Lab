@@ -8,6 +8,7 @@
 #include "../Base/BaseImage.h"
 #include "../Base/BaseDirectCommandList.h"
 #include "CoreMaterialManager.h"
+#include "CoreLightManager.h"
 #include <memory>
 
 #include "../ThirdParty/ImGUI/imgui.h"
@@ -21,6 +22,7 @@ public:
   unique_ptr<BaseDrawContext> mDrawContext;
   unique_ptr<BaseDirectCommandList> mUploadCmdList;
   unique_ptr<CoreMaterialManager> mMaterialManager;
+  unique_ptr<CoreLightManager> mLightManager;
 
   CoreApp(HINSTANCE hInstance);
 
@@ -29,6 +31,9 @@ public:
   virtual void Start();
   virtual void Update();
   void Render();
+
+  void UploadGeometry();
+  void RenderObjects();
 
   void* operator new(size_t i)
   {
