@@ -149,6 +149,7 @@
     <ClCompile Include="Base\BaseImage.cpp" />
     <ClCompile Include="Base\BaseMainHeap.cpp" />
     <ClCompile Include="Base\BaseObject.cpp" />
+    <ClCompile Include="Base\BaseRenderTexture.cpp" />
     <ClCompile Include="Base\BaseRuntimeHeap.cpp" />
     <ClCompile Include="Base\BaseShaderManager.cpp" />
     <ClCompile Include="Base\BaseStagedBuffer.cpp" />
@@ -167,6 +168,7 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MultiObj.cpp" />
     <ClCompile Include="ThirdParty\ImGUI\imgui.cpp" />
+    <ClCompile Include="ThirdParty\ImGUI\imgui_demo.cpp" />
     <ClCompile Include="ThirdParty\ImGUI\imgui_draw.cpp" />
     <ClCompile Include="ThirdParty\ImGUI\imgui_impl_dx12.cpp" />
     <ClCompile Include="ThirdParty\ImGUI\imgui_impl_win32.cpp" />
@@ -183,6 +185,7 @@
     <ClInclude Include="Base\BaseImage.h" />
     <ClInclude Include="Base\BaseMainHeap.h" />
     <ClInclude Include="Base\BaseObject.h" />
+    <ClInclude Include="Base\BaseRenderTexture.h" />
     <ClInclude Include="Base\BaseRuntimeHeap.h" />
     <ClInclude Include="Base\BaseShaderManager.h" />
     <ClInclude Include="Base\BaseStagedBuffer.h" />

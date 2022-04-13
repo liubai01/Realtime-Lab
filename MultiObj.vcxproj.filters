@@ -153,6 +153,12 @@
     <ClCompile Include="Core\CoreLightManager.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
+    <ClCompile Include="ThirdParty\ImGUI\imgui_demo.cpp">
+      <Filter>Source Files\ThirdParty\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\BaseRenderTexture.cpp">
+      <Filter>Source Files\Base</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -265,6 +271,9 @@
     </ClInclude>
     <ClInclude Include="Core\CoreLightManager.h">
       <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\BaseRenderTexture.h">
+      <Filter>Header Files\Base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

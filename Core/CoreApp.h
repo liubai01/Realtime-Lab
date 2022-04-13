@@ -34,6 +34,7 @@ public:
 
   void UploadGeometry();
   void RenderObjects();
+  void RenderUI();
 
   void* operator new(size_t i)
   {

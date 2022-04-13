@@ -87,6 +87,7 @@ public:
 
   BaseMainHeap* mMainHeap;
   BaseRuntimeHeap* mRuntimeHeap;
+  BaseRuntimeHeap* mUIRuntimeHeap;
 
   shared_ptr<BaseObject> CreateObject(const string& name);
   shared_ptr<BaseObject> GetObject(const string& name);

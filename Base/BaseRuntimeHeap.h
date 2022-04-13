@@ -13,12 +13,13 @@ public:
   BaseDescHeapHandle GetHeapHandleBlock(UINT32 count);
 
   ComPtr<ID3D12DescriptorHeap> mDescHeap;
-private:
-  UINT32 mMaxDesc;
+
   D3D12_CPU_DESCRIPTOR_HANDLE mDescriptorHeapCPUStart;
   D3D12_GPU_DESCRIPTOR_HANDLE mDescriptorHeapGPUStart;
-  UINT32 mDescriptorSize;
 
+private:
+  UINT32 mMaxDesc;
+  UINT32 mDescriptorSize;
   UINT32 mCurrentDescriptorIndex;
 };
 

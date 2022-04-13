@@ -53,29 +53,32 @@ BaseApp::BaseApp(HINSTANCE hInstance)
   InitFence();
   InitSwapChain();
 
-  InitImGUI();
-
   InitDepth();
   InitRTV();
 
   mMainHeap = new BaseMainHeap(mDevice.Get());
   mRuntimeHeap = new BaseRuntimeHeap(mDevice.Get());
+  mUIRuntimeHeap = new BaseRuntimeHeap(mDevice.Get());
   mObjs = new unordered_map<string, shared_ptr<BaseObject>>();
 
   mMainCamera = new BaseCamera(mDevice.Get(), static_cast<float>(mWidth), static_cast<float>(mHeight));
   mMainCamera->RegisterMainHandle(mMainHeap);
+
+  InitImGUI();
 }
 
 BaseApp::~BaseApp()
 {
+  ImGui_ImplDX12_Shutdown();
+  ImGui_ImplWin32_Shutdown();
+  ImGui::DestroyContext();
+
   delete mMainCamera;
   delete mObjs;
   delete mMainHeap;
   delete mRuntimeHeap;
+  delete mUIRuntimeHeap;
   CloseHandle(mFenceEvent);
-
-  ImGui_ImplWin32_Shutdown();
-  ImGui::DestroyContext();
 
 }
 
@@ -104,8 +107,15 @@ void BaseApp::Run()
       DispatchMessage(&msg);
     }
 
+    // Update ticker
     mTimeDelta = float(clock() - mTimer) / CLOCKS_PER_SEC;
     mTimer = clock();
+
+    // Start the Dear ImGui frame
+    ImGui_ImplDX12_NewFrame();
+    ImGui_ImplWin32_NewFrame();
+    ImGui::NewFrame();
+
     Update();
     Render();
   }
@@ -116,9 +126,16 @@ void BaseApp::InitImGUI()
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
   ImGuiIO& io = ImGui::GetIO(); (void)io;
+  io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
   ImGui::StyleColorsDark();
   ImGui_ImplWin32_Init(mHwnd);
+
+  ImGui_ImplDX12_Init(mDevice.Get(), mFrameCnt,
+    DXGI_FORMAT_R8G8B8A8_UNORM, mUIRuntimeHeap->mDescHeap.Get(),
+      mUIRuntimeHeap->mDescriptorHeapCPUStart,
+      mUIRuntimeHeap->mDescriptorHeapGPUStart
+  );
 }
 
 
