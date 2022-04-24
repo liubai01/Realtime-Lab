@@ -65,6 +65,8 @@ void CoreApp::Update()
 
 void CoreApp::Render()
 {
+  UpdateGUI();
+
   // Set resource to runtime heap
   mRuntimeHeap->Reset();
   mMaterialManager->RegisterRuntimeHandle(mRuntimeHeap);
@@ -138,7 +140,6 @@ void CoreApp::RenderObjects()
     commandList->RSSetScissorRects(1, &mMainCamera->mScissorRect);
 
     // Clear the back buffer and depth buffer.
-    //D3D12_CPU_DESCRIPTOR_HANDLE rtv = CurrentBackBufferView();
     D3D12_CPU_DESCRIPTOR_HANDLE rtv = nowRT->m_rtvDescriptor;
     D3D12_CPU_DESCRIPTOR_HANDLE dsv = DepthBufferView();
 
@@ -185,6 +186,21 @@ void CoreApp::RenderObjects()
 }
 
 void CoreApp::RenderUI()
+{
+    ID3D12GraphicsCommandList* commandList = mDrawContext->mCommandList.Get();
+
+    D3D12_CPU_DESCRIPTOR_HANDLE rtv = CurrentBackBufferView();
+    const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
+    commandList->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
+    commandList->OMSetRenderTargets(1, &rtv, false, nullptr);
+
+    commandList->SetDescriptorHeaps(1, mUIRuntimeHeap->mDescHeap.GetAddressOf());
+
+    ImGui::Render();
+    ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList);
+}
+
+void CoreApp::UpdateGUI()
 {
     if (ImGui::BeginMainMenuBar())
     {
@@ -243,26 +259,23 @@ void CoreApp::RenderUI()
     ImGui::End();
 
     ImGui::Begin("Scene");
-    ImGui::Text("Scene TODO here");
-    
-    BaseRenderTexture* nowRT = &*mMainCamera->mRenderTextures[mFrameIdx];
-    ImGui::Image((ImTextureID) mMainCamera->mRTHandles[mFrameIdx].GetGPUHandle().ptr, ImVec2(nowRT->m_width / 2.0, nowRT->m_height / 2.0));
+
+    ImVec2 vMin = ImGui::GetWindowContentRegionMin();
+    ImVec2 vMax = ImGui::GetWindowContentRegionMax();
+    float height = vMax.y - vMin.y;
+    float width = vMax.x - vMin.x;
+
+    height = max(height, 600);
+    width = max(width, 800);
+
+    //BaseRenderTexture* nowRT = &*mMainCamera->mRenderTextures[mFrameIdx];
+    /*nowRT->SizeResources(static_cast<size_t>(width), static_cast<size_t>(height));*/
+    mMainCamera->SetSize(width, height);
+    ImGui::Image((ImTextureID)mMainCamera->mRTHandles[mFrameIdx].GetGPUHandle().ptr, ImVec2(width, height));
+
     ImGui::End();
 
-
     ImGui::End();
-
-    ID3D12GraphicsCommandList* commandList = mDrawContext->mCommandList.Get();
-
-    D3D12_CPU_DESCRIPTOR_HANDLE rtv = CurrentBackBufferView();
-    const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
-    commandList->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
-    commandList->OMSetRenderTargets(1, &rtv, false, nullptr);
-
-    commandList->SetDescriptorHeaps(1, mUIRuntimeHeap->mDescHeap.GetAddressOf());
-
-    ImGui::Render();
-    ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList);
 }
 
 shared_ptr<CoreMaterial> CoreApp::CreateMaterial(const string& name)

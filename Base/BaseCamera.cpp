@@ -1,57 +1,71 @@
 #include "BaseCamera.h"
 
-BaseCamera::BaseCamera(ID3D12Device* device, BaseRuntimeHeap* mUIHeap, float width, float height, int frameCnt, float FovAngleY, float nearZ, float FarZ) : BaseStagedBuffer(device)
+BaseCamera::BaseCamera(ID3D12Device* device, BaseRuntimeHeap* mUIHeap, float width, float height, int frameCnt, float nearZ, float farZ) : BaseStagedBuffer(device)
 {
-  mWidth = width;
-  mHeight = height;
+    mFrameCnt = frameCnt;
+    mNearZ = nearZ;
+    mFarZ = farZ;
 
-  // Fill out the Viewport
-  mViewport.TopLeftX = 0;
-  mViewport.TopLeftY = 0;
-  mViewport.Width = static_cast<float>(width);
-  mViewport.Height = static_cast<float>(height);
-  mViewport.MinDepth = 0.0f;
-  mViewport.MaxDepth = 1.0f;
+    XMVECTOR pos = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+    XMStoreFloat4(&mPos, pos);
 
-  // Fill out a scissor rect
-  mScissorRect.left = 0;
-  mScissorRect.top = 0;
-  mScissorRect.right = static_cast<long>(width);
-  mScissorRect.bottom = static_cast<long>(height);
+    // Render target views for the BaseRenderTexture
+    D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
+    rtvHeapDesc.NumDescriptors = frameCnt;
+    rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+    rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+    HRESULT hr = device->CreateDescriptorHeap(
+        &rtvHeapDesc,
+        IID_PPV_ARGS(mRtvDescriptorHeap.GetAddressOf())
+    );
 
-  XMMATRIX P = XMMatrixPerspectiveFovLH(0.25f * 3.1415926535f, static_cast<float>(width) / height, nearZ, FarZ);
-  XMStoreFloat4x4(&mProj, P);
+    int rtvDescriptorSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+    CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(mRtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
 
-  XMVECTOR pos = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
-  XMStoreFloat4(&mPos, pos);
+    for (int i = 0; i < frameCnt; ++i)
+    {
+        unique_ptr<BaseRenderTexture> rt = make_unique<BaseRenderTexture>(DXGI_FORMAT_R8G8B8A8_UNORM);
+        BaseDescHeapHandle runtimeHandle = mUIHeap->GetHeapHandleBlock(1);
+        mRTHandles.push_back(runtimeHandle);
 
-  // Render target views for the BaseRenderTexture
-  D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
-  rtvHeapDesc.NumDescriptors = frameCnt;
-  rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-  rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-  HRESULT hr = device->CreateDescriptorHeap(
-      &rtvHeapDesc,
-      IID_PPV_ARGS(mRtvDescriptorHeap.GetAddressOf())
-  );
+        rt->SetClearColor({ 0.0f, 0.2f, 0.4f, 1.0f });
+        rt->SetDevice(device, runtimeHandle.GetCPUHandle(), rtvHandle);
 
-  int rtvDescriptorSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-  CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(mRtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
+        mRenderTextures.emplace_back(move(rt));
+        rtvHandle.Offset(1, rtvDescriptorSize);
+    }
 
-  for (int i = 0; i < frameCnt; ++i)
-  {
-      unique_ptr<BaseRenderTexture> mRT = make_unique<BaseRenderTexture>(DXGI_FORMAT_R8G8B8A8_UNORM);
-      BaseDescHeapHandle runtimeHandle = mUIHeap->GetHeapHandleBlock(1);
-      mRTHandles.push_back(runtimeHandle);
 
-      mRT->SetClearColor({ 0.0f, 0.2f, 0.4f, 1.0f });
-      mRT->SetDevice(device, runtimeHandle.GetCPUHandle(), rtvHandle);
-      mRT->SetWindow(mScissorRect);
+    SetSize(width, height);
+}
 
-      mRenderTextures.emplace_back(move(mRT));
-      rtvHandle.Offset(1, rtvDescriptorSize);
-  }
+void BaseCamera::SetSize(float width, float height)
+{
+    mWidth = width;
+    mHeight = height;
 
+    // Fill out the Viewport
+    mViewport.TopLeftX = 0;
+    mViewport.TopLeftY = 0;
+    mViewport.Width = static_cast<float>(width);
+    mViewport.Height = static_cast<float>(height);
+    mViewport.MinDepth = 0.0f;
+    mViewport.MaxDepth = 1.0f;
+
+    // Fill out a scissor rect
+    mScissorRect.left = 0;
+    mScissorRect.top = 0;
+    mScissorRect.right = static_cast<long>(width);
+    mScissorRect.bottom = static_cast<long>(height);
+
+    XMMATRIX P = XMMatrixPerspectiveFovLH(0.25f * 3.1415926535f, static_cast<float>(width) / height, mNearZ, mFarZ);
+    XMStoreFloat4x4(&mProj, P);
+
+    for (int i = 0; i < mFrameCnt; ++i)
+    {
+        BaseRenderTexture* rt = &*mRenderTextures[i];
+        rt->SetWindow(mScissorRect);
+    }
 }
 
 void BaseCamera::SetPos(float x, float y, float z)

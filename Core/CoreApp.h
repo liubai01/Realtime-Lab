@@ -24,12 +24,16 @@ public:
   unique_ptr<CoreMaterialManager> mMaterialManager;
   unique_ptr<CoreLightManager> mLightManager;
 
+  //float mSceneWidth;
+  //float mSceneHeight;
+
   CoreApp(HINSTANCE hInstance);
 
   shared_ptr<CoreMaterial> CreateMaterial(const string& name);
 
   virtual void Start();
   virtual void Update();
+  void UpdateGUI();
   void Render();
 
   void UploadGeometry();
