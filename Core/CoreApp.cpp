@@ -141,7 +141,7 @@ void CoreApp::RenderObjects()
 
     // Clear the back buffer and depth buffer.
     D3D12_CPU_DESCRIPTOR_HANDLE rtv = nowRT->m_rtvDescriptor;
-    D3D12_CPU_DESCRIPTOR_HANDLE dsv = DepthBufferView();
+    D3D12_CPU_DESCRIPTOR_HANDLE dsv = mMainCamera->DepthBufferView();
 
     const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
     commandList->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
@@ -265,8 +265,8 @@ void CoreApp::UpdateGUI()
     float height = vMax.y - vMin.y;
     float width = vMax.x - vMin.x;
 
-    height = max(height, 600);
-    width = max(width, 800);
+    height = max(height, 100);
+    width = max(width, 100);
 
     //BaseRenderTexture* nowRT = &*mMainCamera->mRenderTextures[mFrameIdx];
     /*nowRT->SizeResources(static_cast<size_t>(width), static_cast<size_t>(height));*/

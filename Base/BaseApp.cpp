@@ -53,7 +53,6 @@ BaseApp::BaseApp(HINSTANCE hInstance)
   InitFence();
   InitSwapChain();
 
-  InitDepth();
   InitRTV();
 
   mMainHeap = new BaseMainHeap(mDevice.Get());
@@ -371,54 +370,6 @@ void BaseApp::InitSwapChain()
   tmpSwapChain = nullptr; // To avoid the resources bound to swapChain be released
 }
 
-void BaseApp::InitDepth()
-{
-  // Create a depth stencil descriptor heap so we can get a pointer to the depth stencil buffer
-  D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = {};
-  dsvHeapDesc.NumDescriptors = 1;
-  dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
-  dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-  HRESULT hr = mDevice->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(mDsDescriptorHeap.GetAddressOf()));
-  if (FAILED(hr))
-  {
-    mIsRunning = false;
-    return;
-  }
-
-  D3D12_DEPTH_STENCIL_VIEW_DESC depthStencilDesc = {};
-  depthStencilDesc.Format = DXGI_FORMAT_D32_FLOAT;
-  depthStencilDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
-  depthStencilDesc.Flags = D3D12_DSV_FLAG_NONE;
-
-  D3D12_CLEAR_VALUE depthOptimizedClearValue = {};
-  depthOptimizedClearValue.Format = DXGI_FORMAT_D32_FLOAT;
-  depthOptimizedClearValue.DepthStencil.Depth = 1.0f;
-  depthOptimizedClearValue.DepthStencil.Stencil = 0;
-
-  auto hprop = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
-  auto rdesc = CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_D32_FLOAT, mWidth, mHeight, 1, 0, 1, 0, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
-  mDevice->CreateCommittedResource(
-    &hprop,
-    D3D12_HEAP_FLAG_NONE,
-    &rdesc,
-    D3D12_RESOURCE_STATE_DEPTH_WRITE,
-    &depthOptimizedClearValue,
-    IID_PPV_ARGS(mDepthStencilBuffer.GetAddressOf())
-  );
-  mDsDescriptorHeap->SetName(L"Depth/Stencil Resource Heap");
-
-  mDevice->CreateDepthStencilView(
-    mDepthStencilBuffer.Get(), 
-    &depthStencilDesc, 
-    mDsDescriptorHeap->GetCPUDescriptorHandleForHeapStart()
-  );
-}
-
-D3D12_CPU_DESCRIPTOR_HANDLE BaseApp::DepthBufferView() const
-{
-  CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(mDsDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
-  return dsvHandle;
-}
 
 shared_ptr<BaseObject> BaseApp::CreateObject(const string& name)
 {

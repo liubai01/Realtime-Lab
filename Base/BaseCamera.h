@@ -29,10 +29,16 @@ struct BaseCameraConstant {
 class BaseCamera: public BaseStagedBuffer<BaseCameraConstant>
 {
 public:
-  // for imGUI, we first render into texture, then render in imGUI
+  // render texture
   ComPtr<ID3D12DescriptorHeap> mRtvDescriptorHeap;
   vector<unique_ptr<BaseRenderTexture>> mRenderTextures;
   vector<BaseDescHeapHandle> mRTHandles;
+
+  // depth buffer
+  ComPtr<ID3D12Resource> mDepthStencilBuffer;
+  ComPtr<ID3D12DescriptorHeap> mDepthDescriptorHeap;
+
+  D3D12_CPU_DESCRIPTOR_HANDLE DepthBufferView() const;
 
   BaseCamera(ID3D12Device* device, BaseRuntimeHeap* mUIHeap, float width, float height, int frameCnt=3, float nearZ=1.0f, float FarZ=1000.0f);
 
@@ -52,6 +58,7 @@ public:
   float mFarZ;
 
   int mFrameCnt;
+  ID3D12Device* mDevice;
 
   void Upload();
 };

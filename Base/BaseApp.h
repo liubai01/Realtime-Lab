@@ -50,10 +50,10 @@ public:
   void InitSwapChain();
 
   void InitRTV();
-  void InitDepth();
+  //void InitDepth();
 
   D3D12_CPU_DESCRIPTOR_HANDLE CurrentBackBufferView() const;
-  D3D12_CPU_DESCRIPTOR_HANDLE DepthBufferView() const;
+  //D3D12_CPU_DESCRIPTOR_HANDLE DepthBufferView() const;
 
   int mFrameCnt = 3;
   int mFrameIdx = 0;
@@ -81,8 +81,8 @@ public:
 
   ComPtr<ID3D12CommandQueue> mCommandQueue;
 
-  ComPtr<ID3D12Resource> mDepthStencilBuffer;
-  ComPtr<ID3D12DescriptorHeap> mDsDescriptorHeap;
+  //ComPtr<ID3D12Resource> mDepthStencilBuffer;
+  //ComPtr<ID3D12DescriptorHeap> mDsDescriptorHeap;
 
   BaseCamera* mMainCamera;
 

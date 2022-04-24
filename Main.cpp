@@ -12,12 +12,22 @@ public:
         shared_ptr<CoreMaterial> redMat = CreateMaterial("Red");
         redMat->mBuffer.mData.Kd = { 1.0f, 0.0f, 0.0f, 1.0f };
 
+        shared_ptr<CoreMaterial> blueMat = CreateMaterial("Blue");
+        blueMat->mBuffer.mData.Kd = { 0.0f, 1.0f, 0.0f, 1.0f };
+
         shared_ptr<BaseObject> cubeObj = CreateObject("Cube Red");
         cubeObj->mTransform.SetRot(0.1f, 0.0f, 0.0f);
         shared_ptr<CoreGeometry> cubeGeo = make_shared<CoreGeometry>(GetCubeGeometry());
         shared_ptr<CoreMeshComponent> meshComponent = make_shared<CoreMeshComponent>(cubeGeo);
         meshComponent->mMat = redMat;
         cubeObj->AddComponent(meshComponent);
+
+        shared_ptr<BaseObject> cubeObj2 = CreateObject("Cube Blue");
+        cubeObj2->mTransform.SetRot(0.1f, 0.0f, 0.2f);
+        cubeObj2->mTransform.SetPos(1.0f, 1.0f, 1.0f);
+        shared_ptr<CoreMeshComponent> meshComponent2 = make_shared<CoreMeshComponent>(cubeGeo);
+        meshComponent2->mMat = blueMat;
+        cubeObj2->AddComponent(meshComponent2);
 
         mMainCamera->SetPos(5.0f, 5.0f, 5.0f);
     }

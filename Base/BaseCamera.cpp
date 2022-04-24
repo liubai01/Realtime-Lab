@@ -5,16 +5,30 @@ BaseCamera::BaseCamera(ID3D12Device* device, BaseRuntimeHeap* mUIHeap, float wid
     mFrameCnt = frameCnt;
     mNearZ = nearZ;
     mFarZ = farZ;
+    mDevice = device;
 
     XMVECTOR pos = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
     XMStoreFloat4(&mPos, pos);
+
+    // Depth desc heap
+    D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = {};
+    dsvHeapDesc.NumDescriptors = 1;
+    dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+    dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+    HRESULT hr = device->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(mDepthDescriptorHeap.GetAddressOf()));
+    if (FAILED(hr))
+    {
+        dout::printf("[BaseCamera] Fail to create depth texture");
+    }
+
+    mDepthDescriptorHeap->SetName(L"Depth/Stencil Resource Heap");
 
     // Render target views for the BaseRenderTexture
     D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
     rtvHeapDesc.NumDescriptors = frameCnt;
     rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
     rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-    HRESULT hr = device->CreateDescriptorHeap(
+    hr = device->CreateDescriptorHeap(
         &rtvHeapDesc,
         IID_PPV_ARGS(mRtvDescriptorHeap.GetAddressOf())
     );
@@ -37,6 +51,12 @@ BaseCamera::BaseCamera(ID3D12Device* device, BaseRuntimeHeap* mUIHeap, float wid
 
 
     SetSize(width, height);
+}
+
+D3D12_CPU_DESCRIPTOR_HANDLE BaseCamera::DepthBufferView() const
+{
+  CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(mDepthDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
+  return dsvHandle;
 }
 
 void BaseCamera::SetSize(float width, float height)
@@ -66,6 +86,39 @@ void BaseCamera::SetSize(float width, float height)
         BaseRenderTexture* rt = &*mRenderTextures[i];
         rt->SetWindow(mScissorRect);
     }
+
+    auto hprop = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+    auto rdesc = CD3DX12_RESOURCE_DESC::Tex2D(
+        DXGI_FORMAT_D32_FLOAT,
+        static_cast<UINT64>(width),
+        static_cast<UINT>(height), 1, 0, 1, 0, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL
+    );
+
+    D3D12_CLEAR_VALUE depthOptimizedClearValue = {};
+    depthOptimizedClearValue.Format = DXGI_FORMAT_D32_FLOAT;
+    depthOptimizedClearValue.DepthStencil.Depth = 1.0f;
+    depthOptimizedClearValue.DepthStencil.Stencil = 0;
+
+    mDevice->CreateCommittedResource(
+        &hprop,
+        D3D12_HEAP_FLAG_NONE,
+        &rdesc,
+        D3D12_RESOURCE_STATE_DEPTH_WRITE,
+        &depthOptimizedClearValue,
+        IID_PPV_ARGS(mDepthStencilBuffer.ReleaseAndGetAddressOf())
+    );
+
+    D3D12_DEPTH_STENCIL_VIEW_DESC depthStencilDesc = {};
+    depthStencilDesc.Format = DXGI_FORMAT_D32_FLOAT;
+    depthStencilDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+    depthStencilDesc.Flags = D3D12_DSV_FLAG_NONE;
+
+    mDevice->CreateDepthStencilView(
+        mDepthStencilBuffer.Get(),
+        &depthStencilDesc,
+        mDepthDescriptorHeap->GetCPUDescriptorHandleForHeapStart()
+    );
+
 }
 
 void BaseCamera::SetPos(float x, float y, float z)
