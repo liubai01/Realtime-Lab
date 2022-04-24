@@ -60,17 +60,16 @@ public:
 
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPTSTR lpCmdLine, _In_ int nShowCmd)
 {
-  MyApp* app = new MyApp(hInstance);
+  MyApp app = MyApp(hInstance);
 
   try
   {
-    app->Run();
+    app.Run();
   }
   catch (dout::DxException e) {
     dout::printf("%s\n", e.ToString().c_str());
   }
 
-  delete app;
 
   return 0;
 }

@@ -8,6 +8,7 @@ CoreApp::CoreApp(HINSTANCE hInstance) : BaseApp(hInstance)
 {
   mDrawContext = make_unique<BaseDrawContext>(mDevice.Get());
   mUploadCmdList = make_unique<BaseDirectCommandList>(mDevice.Get());
+
   mMaterialManager = make_unique<CoreMaterialManager>(mDevice.Get());
   mLightManager = make_unique<CoreLightManager>(mDevice.Get());
 
@@ -189,11 +190,11 @@ void CoreApp::RenderUI()
 {
     ID3D12GraphicsCommandList* commandList = mDrawContext->mCommandList.Get();
 
+    // We are not required to set the viewports, the ImGUI would handle those kind of stuff
     D3D12_CPU_DESCRIPTOR_HANDLE rtv = CurrentBackBufferView();
     const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
     commandList->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
     commandList->OMSetRenderTargets(1, &rtv, false, nullptr);
-
     commandList->SetDescriptorHeaps(1, mUIRuntimeHeap->mDescHeap.GetAddressOf());
 
     ImGui::Render();

@@ -15,6 +15,8 @@
 
 using namespace DirectX;
 
+BaseApp* BaseApp::mApp = nullptr;
+
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 LRESULT CALLBACK BaseApp::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -24,9 +26,15 @@ LRESULT CALLBACK BaseApp::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 
   if (msg == WM_DESTROY)
   {
-    // Inform mainloop to exit
     PostQuitMessage(0);
     return 0;
+  } else if (msg == WM_SIZE) {
+    BaseApp* app = BaseApp::mApp;
+    if (app)
+    {
+        app->OnResize();
+    }
+
   }
 
   // Default fallback
@@ -64,6 +72,8 @@ BaseApp::BaseApp(HINSTANCE hInstance)
 
   mMainCamera = new BaseCamera(mDevice.Get(), mUIRuntimeHeap, static_cast<float>(mWidth), static_cast<float>(mHeight));
   mMainCamera->RegisterMainHandle(mMainHeap);
+
+  mApp = this;
 }
 
 BaseApp::~BaseApp()
@@ -118,6 +128,62 @@ void BaseApp::Run()
     Update();
     Render();
   }
+}
+
+void BaseApp::OnResize()
+{
+    // flush all commandlist
+    ++mExpectedFenceValue[mFrameIdx];
+    HRESULT hr = mCommandQueue->Signal(mFence[mFrameIdx].Get(), mExpectedFenceValue[mFrameIdx]);
+
+    if (FAILED(hr))
+    {
+        mIsRunning = false;
+        return;
+    }
+
+    UINT64 nowFenceValue = mFence[mFrameIdx]->GetCompletedValue();
+    if (nowFenceValue < mExpectedFenceValue[mFrameIdx])
+    {
+        hr = mFence[mFrameIdx]->SetEventOnCompletion(mExpectedFenceValue[mFrameIdx], mFenceEvent);
+        if (FAILED(hr))
+        {
+            mIsRunning = false;
+            return;
+        }
+
+        WaitForSingleObject(mFenceEvent, INFINITE);
+    }
+
+    for (int i = 0; i < mFrameCnt; ++i)
+    {
+        mRenderTargets[i].Reset();
+    }
+
+    RECT rect = { 0, 0, 0, 0 };
+    GetClientRect(mHwnd, &rect);
+    mHeight = rect.bottom;
+    mWidth = rect.right;
+
+    ThrowIfFailed(mSwapChain->ResizeBuffers(
+        mFrameCnt,
+        mWidth, mHeight,
+        DXGI_FORMAT_R8G8B8A8_UNORM,
+        DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH)
+    );
+
+    int rtvDescriptorSize = mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+    CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(mRtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
+    for (int i = 0; i < mFrameCnt; ++i)
+    {
+        HRESULT hr = mSwapChain->GetBuffer(
+            i, IID_PPV_ARGS(mRenderTargets[i].GetAddressOf())
+        );
+
+        mDevice->CreateRenderTargetView(mRenderTargets[i].Get(), nullptr, rtvHandle);
+        rtvHandle.Offset(1, rtvDescriptorSize);
+    }
+    mFrameIdx = 0;
 }
 
 void BaseApp::InitImGUI()

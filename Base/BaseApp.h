@@ -31,6 +31,7 @@ class BaseApp
 public:
   BaseApp(HINSTANCE hInstance);
   virtual ~BaseApp();
+
   void Run();
   virtual void Update() = 0;
   virtual void Render() = 0;
@@ -48,12 +49,11 @@ public:
   void InitCommandQueue();
   void InitFence();
   void InitSwapChain();
-
   void InitRTV();
-  //void InitDepth();
+
+  void OnResize();
 
   D3D12_CPU_DESCRIPTOR_HANDLE CurrentBackBufferView() const;
-  //D3D12_CPU_DESCRIPTOR_HANDLE DepthBufferView() const;
 
   int mFrameCnt = 3;
   int mFrameIdx = 0;
@@ -81,9 +81,6 @@ public:
 
   ComPtr<ID3D12CommandQueue> mCommandQueue;
 
-  //ComPtr<ID3D12Resource> mDepthStencilBuffer;
-  //ComPtr<ID3D12DescriptorHeap> mDsDescriptorHeap;
-
   BaseCamera* mMainCamera;
 
   BaseMainHeap* mMainHeap;
@@ -92,4 +89,6 @@ public:
 
   shared_ptr<BaseObject> CreateObject(const string& name);
   shared_ptr<BaseObject> GetObject(const string& name);
+
+  static BaseApp* mApp;
 };
