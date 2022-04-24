@@ -18,6 +18,7 @@
 #include "BaseDrawContext.h"
 #include "BaseCamera.h"
 #include "BaseRuntimeHeap.h"
+#include "BaseRenderTexture.h"
 
 using namespace DirectX;
 using namespace DirectX::PackedVector;

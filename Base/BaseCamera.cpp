@@ -1,6 +1,6 @@
 #include "BaseCamera.h"
 
-BaseCamera::BaseCamera(ID3D12Device* device, float width, float height, float FovAngleY, float nearZ, float FarZ) : BaseStagedBuffer(device)
+BaseCamera::BaseCamera(ID3D12Device* device, BaseRuntimeHeap* mUIHeap, float width, float height, int frameCnt, float FovAngleY, float nearZ, float FarZ) : BaseStagedBuffer(device)
 {
   mWidth = width;
   mHeight = height;
@@ -24,6 +24,34 @@ BaseCamera::BaseCamera(ID3D12Device* device, float width, float height, float Fo
 
   XMVECTOR pos = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
   XMStoreFloat4(&mPos, pos);
+
+  // Render target views for the BaseRenderTexture
+  D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
+  rtvHeapDesc.NumDescriptors = frameCnt;
+  rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+  rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+  HRESULT hr = device->CreateDescriptorHeap(
+      &rtvHeapDesc,
+      IID_PPV_ARGS(mRtvDescriptorHeap.GetAddressOf())
+  );
+
+  int rtvDescriptorSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+  CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(mRtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
+
+  for (int i = 0; i < frameCnt; ++i)
+  {
+      unique_ptr<BaseRenderTexture> mRT = make_unique<BaseRenderTexture>(DXGI_FORMAT_R8G8B8A8_UNORM);
+      BaseDescHeapHandle runtimeHandle = mUIHeap->GetHeapHandleBlock(1);
+      mRTHandles.push_back(runtimeHandle);
+
+      mRT->SetClearColor({ 0.0f, 0.2f, 0.4f, 1.0f });
+      mRT->SetDevice(device, runtimeHandle.GetCPUHandle(), rtvHandle);
+      mRT->SetWindow(mScissorRect);
+
+      mRenderTextures.emplace_back(move(mRT));
+      rtvHandle.Offset(1, rtvDescriptorSize);
+  }
+
 }
 
 void BaseCamera::SetPos(float x, float y, float z)

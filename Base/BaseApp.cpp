@@ -58,13 +58,13 @@ BaseApp::BaseApp(HINSTANCE hInstance)
 
   mMainHeap = new BaseMainHeap(mDevice.Get());
   mRuntimeHeap = new BaseRuntimeHeap(mDevice.Get());
-  mUIRuntimeHeap = new BaseRuntimeHeap(mDevice.Get());
+  mUIRuntimeHeap = new BaseRuntimeHeap(mDevice.Get(), 1 + mFrameCnt);
   mObjs = new unordered_map<string, shared_ptr<BaseObject>>();
 
-  mMainCamera = new BaseCamera(mDevice.Get(), static_cast<float>(mWidth), static_cast<float>(mHeight));
-  mMainCamera->RegisterMainHandle(mMainHeap);
-
   InitImGUI();
+
+  mMainCamera = new BaseCamera(mDevice.Get(), mUIRuntimeHeap, static_cast<float>(mWidth), static_cast<float>(mHeight));
+  mMainCamera->RegisterMainHandle(mMainHeap);
 }
 
 BaseApp::~BaseApp()
@@ -131,13 +131,15 @@ void BaseApp::InitImGUI()
   ImGui::StyleColorsDark();
   ImGui_ImplWin32_Init(mHwnd);
 
+  // ImGUI would use start handle for font
+  mUIRuntimeHeap->GetHeapHandleBlock(1); 
+  // pick out first handle for sure (imGUI will use it!)
   ImGui_ImplDX12_Init(mDevice.Get(), mFrameCnt,
     DXGI_FORMAT_R8G8B8A8_UNORM, mUIRuntimeHeap->mDescHeap.Get(),
       mUIRuntimeHeap->mDescriptorHeapCPUStart,
       mUIRuntimeHeap->mDescriptorHeapGPUStart
   );
 }
-
 
 void BaseApp::Flush(ID3D12GraphicsCommandList* commandList)
 {

@@ -22,12 +22,12 @@ BaseRuntimeHeap::BaseRuntimeHeap(ID3D12Device* device, UINT32 numDescriptors)
 BaseDescHeapHandle BaseRuntimeHeap::GetHeapHandleBlock(UINT32 count)
 {
   UINT32 newHandleID = 0;
-  UINT32 blockEnd = mCurrentDescriptorIndex + count;
+  UINT32 blockEnd = mCurrentDescriptorIndex + count - 1;
 
   if (blockEnd < mMaxDesc)
   {
     newHandleID = mCurrentDescriptorIndex;
-    mCurrentDescriptorIndex = blockEnd;
+    mCurrentDescriptorIndex = blockEnd + 1;
   }
   else
   {
@@ -36,7 +36,7 @@ BaseDescHeapHandle BaseRuntimeHeap::GetHeapHandleBlock(UINT32 count)
 
   BaseDescHeapHandle newHandle;
   D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = mDescriptorHeapCPUStart;
-  cpuHandle.ptr += newHandleID * mDescriptorSize;
+  cpuHandle.ptr += static_cast<UINT64>(newHandleID) * mDescriptorSize;
   newHandle.SetCPUHandle(cpuHandle);
 
   D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = mDescriptorHeapGPUStart;
