@@ -19,6 +19,7 @@
 #include "BaseCamera.h"
 #include "BaseRuntimeHeap.h"
 #include "BaseRenderTexture.h"
+#include "BaseGameObjectManager.h"
 
 using namespace DirectX;
 using namespace DirectX::PackedVector;
@@ -72,8 +73,6 @@ public:
   clock_t mTimer;
   float mTimeDelta;
 
-  unordered_map<string, shared_ptr<BaseObject>>* mObjs;
-
   ComPtr<IDXGIFactory4> mDxgiFactory;
   ComPtr<IDXGISwapChain3> mSwapChain;
 
@@ -83,12 +82,11 @@ public:
 
   BaseCamera* mMainCamera;
 
+  BaseGameObjectManager* mGOManager;
+
   BaseMainHeap* mMainHeap;
   BaseRuntimeHeap* mRuntimeHeap;
   BaseRuntimeHeap* mUIRuntimeHeap;
-
-  shared_ptr<BaseObject> CreateObject(const string& name);
-  shared_ptr<BaseObject> GetObject(const string& name);
 
   static BaseApp* mApp;
 };

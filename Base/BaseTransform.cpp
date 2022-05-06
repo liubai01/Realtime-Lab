@@ -3,6 +3,7 @@
 
 BaseTransform::BaseTransform(ID3D12Device* device) : BaseStagedBuffer(device)
 {
+    mParent = nullptr;
 }
 
 void BaseTransform::Upload()
@@ -29,6 +30,10 @@ void BaseTransform::SetScale(float x, float y, float z)
 XMMATRIX BaseTransform::GetWorldMatrix()
 {
   XMFLOAT4X4 tmp = Identity4x4();
+  if (mParent)
+  {
+      tmp = mParent->mWorld;
+  }
   XMMATRIX ret = XMLoadFloat4x4(&tmp);
   XMMATRIX tmpMat;
 
@@ -55,12 +60,17 @@ XMMATRIX BaseTransform::GetWorldMatrix()
   tmpMat = XMLoadFloat4x4(&tmp);
   ret = tmpMat * ret;
 
+  XMStoreFloat4x4(&mWorld, ret);
   return ret;
 }
 
 XMMATRIX BaseTransform::GetRSInvT()
 {
   XMFLOAT4X4 tmp = Identity4x4();
+  if (mParent)
+  {
+      tmp = mParent->mRS;
+  }
   XMMATRIX ret = XMLoadFloat4x4(&tmp);
   XMMATRIX tmpMat;
 
@@ -81,6 +91,7 @@ XMMATRIX BaseTransform::GetRSInvT()
   );
   tmpMat = XMLoadFloat4x4(&tmp);
   ret = tmpMat * ret;
+  XMStoreFloat4x4(&mRS, ret);
 
   ret = XMMatrixInverse(nullptr, ret);
   ret = XMMatrixTranspose(ret);

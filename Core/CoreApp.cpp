@@ -109,16 +109,18 @@ void CoreApp::UploadGeometry()
     // 1. Upload geoemetry(vertices, indices) if it has not been uploaded before
     // 2. Register transform constant buffer
     mUploadCmdList->ResetCommandList();
-    for (auto& elem : *mObjs)
+    mGOManager->DispatchTransformUpload(mRuntimeHeap);
+
+    for (auto& elem : mGOManager->mObjs)
     {
         shared_ptr<BaseObject>& obj = elem.second;
-        obj->mTransform.RegisterRuntimeHandle(mRuntimeHeap);
 
         for (auto component : obj->mComponents)
         {
             if (component->mComponentType == BaseComponentType::BASE_COMPONENT_MESH)
             {
                 CoreMeshComponent* com = static_cast<CoreMeshComponent*>(&(*component));
+                // component could be shared by multiple objects
                 if (!com->mUploaded)
                 {
                     com->Upload(mDevice.Get(), mUploadCmdList->mCommandList.Get());
@@ -157,7 +159,7 @@ void CoreApp::RenderObjects()
     commandList->SetGraphicsRootDescriptorTable(1, mMainCamera->GetHandle().GetGPUHandle());
     commandList->SetGraphicsRootDescriptorTable(3, mLightManager->mLightData.GetHandle().GetGPUHandle());
 
-    for (auto& elem : *mObjs)
+    for (auto& elem : mGOManager->mObjs)
     {
         shared_ptr<BaseObject>& obj = elem.second;
         commandList->SetGraphicsRootDescriptorTable(0, obj->mTransform.GetHandle().GetGPUHandle());
@@ -269,8 +271,6 @@ void CoreApp::UpdateGUI()
     height = max(height, 100);
     width = max(width, 100);
 
-    //BaseRenderTexture* nowRT = &*mMainCamera->mRenderTextures[mFrameIdx];
-    /*nowRT->SizeResources(static_cast<size_t>(width), static_cast<size_t>(height));*/
     mMainCamera->SetSize(width, height);
     ImGui::Image((ImTextureID)mMainCamera->mRTHandles[mFrameIdx].GetGPUHandle().ptr, ImVec2(width, height));
 

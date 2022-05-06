@@ -145,6 +145,7 @@
     <ClCompile Include="Base\BaseDescHeapHandle.cpp" />
     <ClCompile Include="Base\BaseDirectCommandList.cpp" />
     <ClCompile Include="Base\BaseDrawContext.cpp" />
+    <ClCompile Include="Base\BaseGameObjectManager.cpp" />
     <ClCompile Include="Base\BaseGeometry.cpp" />
     <ClCompile Include="Base\BaseImage.cpp" />
     <ClCompile Include="Base\BaseMainHeap.cpp" />
@@ -181,7 +182,9 @@
     <ClInclude Include="Base\BaseDescHeapHandle.h" />
     <ClInclude Include="Base\BaseDirectCommandList.h" />
     <ClInclude Include="Base\BaseDrawContext.h" />
+    <ClInclude Include="Base\BaseGameObjectManager.h" />
     <ClInclude Include="Base\BaseGeometry.h" />
+    <ClInclude Include="Base\BaseUUIDGenerator.h" />
     <ClInclude Include="Base\BaseImage.h" />
     <ClInclude Include="Base\BaseMainHeap.h" />
     <ClInclude Include="Base\BaseObject.h" />

@@ -9,6 +9,7 @@
 #include "Component/BaseComponent.h"
 #include <string>
 #include <memory>
+#include <unordered_set>
 
 using namespace DirectX;
 using Microsoft::WRL::ComPtr;
@@ -17,13 +18,29 @@ using namespace std;
 class BaseObject
 {
 public:
-  BaseObject(const string& name, ID3D12Device* device) : mName(name), mTransform(device) {
+  BaseObject(const string& name, const string& uuid, ID3D12Device* device, unordered_set<BaseObject*>* rootObjects) : mName(name), mTransform(device) {
+	  this->mUuid = uuid;
+	  this->mRootObjects = rootObjects;
   }
+
+  BaseObject* GetParent();
+  void SetParent(BaseObject* obj);
+  const unordered_set<BaseObject*>& GetChildObjects();
+
+  void DispatchTransformUpload(BaseRuntimeHeap* runtimeHeap);
 
   string mName;
   BaseTransform mTransform;
 
   void AddComponent(shared_ptr<BaseComponent> component);
+  string GetUUID();
   vector<shared_ptr<BaseComponent>> mComponents;
+
+private:
+	string mUuid;
+
+	BaseObject* mParentObject;
+	unordered_set<BaseObject*> mChildObjects;
+	unordered_set<BaseObject*>* mRootObjects;
 };
 

@@ -66,7 +66,7 @@ BaseApp::BaseApp(HINSTANCE hInstance)
   mMainHeap = new BaseMainHeap(mDevice.Get());
   mRuntimeHeap = new BaseRuntimeHeap(mDevice.Get());
   mUIRuntimeHeap = new BaseRuntimeHeap(mDevice.Get(), 1 + mFrameCnt);
-  mObjs = new unordered_map<string, shared_ptr<BaseObject>>();
+  mGOManager = new BaseGameObjectManager(mDevice.Get(), mMainHeap);
 
   InitImGUI();
 
@@ -83,7 +83,7 @@ BaseApp::~BaseApp()
   ImGui::DestroyContext();
 
   delete mMainCamera;
-  delete mObjs;
+  delete mGOManager;
   delete mMainHeap;
   delete mRuntimeHeap;
   delete mUIRuntimeHeap;
@@ -132,7 +132,7 @@ void BaseApp::Run()
 
 void BaseApp::OnResize()
 {
-    // flush all commandlist
+    // flush
     ++mExpectedFenceValue[mFrameIdx];
     HRESULT hr = mCommandQueue->Signal(mFence[mFrameIdx].Get(), mExpectedFenceValue[mFrameIdx]);
 
@@ -249,9 +249,6 @@ void BaseApp::Enqueue(ID3D12GraphicsCommandList* commandList)
   // Add the command list to the queue for execution.
   ID3D12CommandList* cmdsLists[] = { commandList };
   mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
-
-  ++mExpectedFenceValue[mFrameIdx];
-  hr = mCommandQueue->Signal(mFence[mFrameIdx].Get(), mExpectedFenceValue[mFrameIdx]);
 
   if (FAILED(hr))
   {
@@ -434,35 +431,4 @@ void BaseApp::InitSwapChain()
     reinterpret_cast<IDXGISwapChain**>(mSwapChain.GetAddressOf())
   );
   tmpSwapChain = nullptr; // To avoid the resources bound to swapChain be released
-}
-
-
-shared_ptr<BaseObject> BaseApp::CreateObject(const string& name)
-{
-  auto f = mObjs->find(name);
-  if (f != mObjs->end())
-  {
-    dout::printf("[BaseApp] Create Object Name %s Repeated!", name.c_str());
-    return nullptr;
-  }
-  shared_ptr<BaseObject> obj = make_shared<BaseObject>(name, mDevice.Get());
-  obj->mTransform.RegisterMainHandle(mMainHeap);
-
-  (*mObjs)[name] = obj;
-
-  return obj;
-}
-
-shared_ptr<BaseObject> BaseApp::GetObject(const string& name)
-{
-    auto f = mObjs->find(name);
-
-    if (f != mObjs->end())
-    {
-        return f->second;
-    }
-
-    dout::printf("[BaseApp] Object %s not found!", name.c_str());
-
-    return nullptr;
 }

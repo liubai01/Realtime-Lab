@@ -4,4 +4,62 @@
 void BaseObject::AddComponent(shared_ptr<BaseComponent> component)
 {
   mComponents.push_back(component);
+  mChildObjects.clear();
+  mParentObject = nullptr;
+}
+
+string BaseObject::GetUUID()
+{
+	return mUuid;
+}
+
+
+BaseObject* BaseObject::GetParent()
+{
+	return mParentObject;
+}
+
+void BaseObject::SetParent(BaseObject* obj)
+{
+	/*dout::printf("set root obj: %s\n", obj->mName.c_str());*/
+	// remove its pointer at its parent
+	if (mParentObject)
+	{
+		if (mParentObject->mChildObjects.find(obj) != mParentObject->mChildObjects.end())
+		{
+			mParentObject->mChildObjects.erase(obj);
+		}
+		
+	} else {
+		//dout::printf("erase root obj: %s\n", obj->mName.c_str());
+		mRootObjects->erase(this);
+	}
+
+	if (obj)
+	{
+		mParentObject = obj;
+		// update the transform's parent to implement the hierachy
+		mTransform.mParent = &obj->mTransform;
+		mParentObject->mChildObjects.insert(this);
+	} else {
+		mParentObject = nullptr;
+		mRootObjects->insert(this);
+	}
+	
+}
+
+void BaseObject::DispatchTransformUpload(BaseRuntimeHeap* runtimeHeap)
+{
+	mTransform.RegisterRuntimeHandle(runtimeHeap);
+
+	for (auto& obj : mChildObjects)
+	{
+		obj->mTransform.RegisterRuntimeHandle(runtimeHeap);
+	}
+}
+
+
+const unordered_set<BaseObject*>& BaseObject::GetChildObjects()
+{
+	return mChildObjects;
 }

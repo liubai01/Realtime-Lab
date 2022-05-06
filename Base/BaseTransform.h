@@ -34,5 +34,10 @@ public:
   XMFLOAT4 mPosition = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
   XMFLOAT4 mRotation = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
   XMFLOAT4 mScale = XMFLOAT4(1.0f, 1.0f, 1.0f, 0.0f);
+
+  BaseTransform* mParent;
+private:
+  XMFLOAT4X4 mWorld = Identity4x4();
+  XMFLOAT4X4 mRS = Identity4x4();
 };
 

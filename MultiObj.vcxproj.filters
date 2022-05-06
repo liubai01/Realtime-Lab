@@ -159,6 +159,9 @@
     <ClCompile Include="Base\BaseRenderTexture.cpp">
       <Filter>Source Files\Base</Filter>
     </ClCompile>
+    <ClCompile Include="Base\BaseGameObjectManager.cpp">
+      <Filter>Source Files\Base</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -273,6 +276,12 @@
       <Filter>Header Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="Base\BaseRenderTexture.h">
+      <Filter>Header Files\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\BaseUUIDGenerator.h">
+      <Filter>Header Files\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\BaseGameObjectManager.h">
       <Filter>Header Files\Base</Filter>
     </ClInclude>
   </ItemGroup>
