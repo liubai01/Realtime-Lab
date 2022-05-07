@@ -3,27 +3,40 @@
 
 using namespace std;
 
-CoreHierarchyWidget::CoreHierarchyWidget(BaseGameObjectManager* GOManager)
+CoreHierarchyWidget::CoreHierarchyWidget(BaseGameObjectManager* GOManager, BaseObject** nowSelectObjectPtr)
 {
 	mGOManager = GOManager;
+	mNowSelectObjectPtr = nowSelectObjectPtr;
 }
 
-void DFSTreeNode(BaseObject* obj)
+void DFSTreeNode(BaseObject* obj, BaseObject** nowSelectObjectPtr)
 {
 	bool hasChild = obj->GetChildObjects().size() != 0;
 
 	if (hasChild)
 	{
-		if (ImGui::TreeNode(obj->mName.c_str()))
+		auto treeNode = ImGui::TreeNodeEx(obj->mName.c_str(), ImGuiTreeNodeFlags_DefaultOpen, "");
+		ImGui::SameLine();
+		if (ImGui::SmallButton(obj->mName.c_str()))
+		{
+			*nowSelectObjectPtr = obj;
+		}
+		
+		if (treeNode)
 		{
 			for (BaseObject* childobj : obj->GetChildObjects())
 			{
-				DFSTreeNode(childobj);
+				DFSTreeNode(childobj, nowSelectObjectPtr);
 			}
 			ImGui::TreePop();
 		}
 	} else {
-		ImGui::BulletText(obj->mName.c_str());
+		ImGui::BulletText("");
+		ImGui::SameLine();
+		if (ImGui::SmallButton(obj->mName.c_str()))
+		{
+			*nowSelectObjectPtr = obj;
+		}
 	}
 }
 
@@ -32,7 +45,7 @@ void CoreHierarchyWidget::Update()
 	ImGui::Begin("Hierarchy");
 	for (BaseObject* obj : mGOManager->mRootObjects)
 	{
-		DFSTreeNode(obj);
+		DFSTreeNode(obj, mNowSelectObjectPtr);
 	}
 	ImGui::End();
 }

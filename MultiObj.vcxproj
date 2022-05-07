@@ -168,6 +168,7 @@
     <ClCompile Include="Core\CoreMaterialManager.cpp" />
     <ClCompile Include="Core\GUI\CoreGUIManager.cpp" />
     <ClCompile Include="Core\GUI\CoreHierarchyWidget.cpp" />
+    <ClCompile Include="Core\GUI\CoreInspectorWidget.cpp" />
     <ClCompile Include="Core\GUI\CoreSceneWidget.cpp" />
     <ClCompile Include="DebugOut.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -210,6 +211,7 @@
     <ClInclude Include="Core\CoreMaterialManager.h" />
     <ClInclude Include="Core\GUI\CoreGUIManager.h" />
     <ClInclude Include="Core\GUI\CoreHierarchyWidget.h" />
+    <ClInclude Include="Core\GUI\CoreInspectorWidget.h" />
     <ClInclude Include="Core\GUI\CoreSceneWidget.h" />
     <ClInclude Include="DebugOut.h" />
     <ClInclude Include="MathUtils.h" />

@@ -5,10 +5,11 @@
 class CoreHierarchyWidget : public BaseGUIWidget
 {
 public:
-	CoreHierarchyWidget(BaseGameObjectManager* GOManager);
+	CoreHierarchyWidget(BaseGameObjectManager* GOManager, BaseObject** nowSelectObjectPtr);
 	void Update();
 	void Start(ImGuiID& dockspace_id);
 private:
 	BaseGameObjectManager* mGOManager;
+	BaseObject** mNowSelectObjectPtr;
 };
 

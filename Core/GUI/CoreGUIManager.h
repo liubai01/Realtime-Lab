@@ -19,6 +19,8 @@ public:
 	void Start();
 
 	vector<unique_ptr<BaseGUIWidget>> mWidgets;
+	BaseObject* mNowSelectedObject;
+
 private:
 	bool mFirstLoop;
 	BaseApp* mApp;

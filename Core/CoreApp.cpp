@@ -92,6 +92,8 @@ void CoreApp::Render()
       &trans
   );
 
+  //ImGui::ShowDemoWindow(nullptr);
+
   RenderObjects();
   mGUIManager->Render(mDrawContext->mCommandList.Get());
 
