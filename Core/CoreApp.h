@@ -9,6 +9,7 @@
 #include "../Base/BaseDirectCommandList.h"
 #include "CoreMaterialManager.h"
 #include "CoreLightManager.h"
+#include "GUI/CoreGUIManager.h"
 #include <memory>
 
 #include "../ThirdParty/ImGUI/imgui.h"
@@ -21,24 +22,21 @@ __declspec(align(16)) class CoreApp : public BaseApp
 public:
   unique_ptr<BaseDrawContext> mDrawContext;
   unique_ptr<BaseDirectCommandList> mUploadCmdList;
+
   unique_ptr<CoreMaterialManager> mMaterialManager;
   unique_ptr<CoreLightManager> mLightManager;
-
-  //float mSceneWidth;
-  //float mSceneHeight;
-
+  unique_ptr<CoreGUIManager> mGUIManager;
+  
   CoreApp(HINSTANCE hInstance);
 
   shared_ptr<CoreMaterial> CreateMaterial(const string& name);
 
   virtual void Start();
   virtual void Update();
-  void UpdateGUI();
   void Render();
 
   void UploadGeometry();
   void RenderObjects();
-  void RenderUI();
 
   void* operator new(size_t i)
   {

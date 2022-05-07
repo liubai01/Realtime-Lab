@@ -55,6 +55,12 @@
     <Filter Include="Source Files\Base\Heap">
       <UniqueIdentifier>{1e995a78-d0ae-433f-9f63-36a0f7c8aa9f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Core\GUI">
+      <UniqueIdentifier>{1c655cce-de0d-4d1d-ab5c-af4590d00ce3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\GUI">
+      <UniqueIdentifier>{02eabdbe-5b78-4bce-8760-f39cfe016429}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MultiObj.cpp">
@@ -161,6 +167,15 @@
     </ClCompile>
     <ClCompile Include="Base\BaseGameObjectManager.cpp">
       <Filter>Source Files\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\BaseGUIWidget.cpp">
+      <Filter>Header Files\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\GUI\CoreGUIManager.cpp">
+      <Filter>Source Files\Core\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\GUI\CoreHierarchyWidget.cpp">
+      <Filter>Source Files\Core\GUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -283,6 +298,15 @@
     </ClInclude>
     <ClInclude Include="Base\BaseGameObjectManager.h">
       <Filter>Header Files\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\BaseGUIWidget.h">
+      <Filter>Source Files\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\GUI\CoreGUIManager.h">
+      <Filter>Header Files\Core\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\GUI\CoreHierarchyWidget.h">
+      <Filter>Header Files\Core\GUI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -13,7 +13,7 @@ public:
         redMat->mBuffer.mData.Kd = { 1.0f, 0.0f, 0.0f, 1.0f };
 
         shared_ptr<CoreMaterial> blueMat = CreateMaterial("Blue");
-        blueMat->mBuffer.mData.Kd = { 0.0f, 1.0f, 0.0f, 1.0f };
+        blueMat->mBuffer.mData.Kd = { 0.0f, 0.0f, 1.0f, 1.0f };
 
         shared_ptr<BaseObject> cubeObj = mGOManager->CreateObject("Cube Red");
         //cubeObj->mTransform.SetRot(0.1f, 0.0f, 0.0f);

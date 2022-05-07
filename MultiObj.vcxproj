@@ -147,6 +147,7 @@
     <ClCompile Include="Base\BaseDrawContext.cpp" />
     <ClCompile Include="Base\BaseGameObjectManager.cpp" />
     <ClCompile Include="Base\BaseGeometry.cpp" />
+    <ClCompile Include="Base\BaseGUIWidget.cpp" />
     <ClCompile Include="Base\BaseImage.cpp" />
     <ClCompile Include="Base\BaseMainHeap.cpp" />
     <ClCompile Include="Base\BaseObject.cpp" />
@@ -165,6 +166,8 @@
     <ClCompile Include="Core\CoreLightManager.cpp" />
     <ClCompile Include="Core\CoreMaterial.cpp" />
     <ClCompile Include="Core\CoreMaterialManager.cpp" />
+    <ClCompile Include="Core\GUI\CoreGUIManager.cpp" />
+    <ClCompile Include="Core\GUI\CoreHierarchyWidget.cpp" />
     <ClCompile Include="DebugOut.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MultiObj.cpp" />
@@ -184,6 +187,7 @@
     <ClInclude Include="Base\BaseDrawContext.h" />
     <ClInclude Include="Base\BaseGameObjectManager.h" />
     <ClInclude Include="Base\BaseGeometry.h" />
+    <ClInclude Include="Base\BaseGUIWidget.h" />
     <ClInclude Include="Base\BaseUUIDGenerator.h" />
     <ClInclude Include="Base\BaseImage.h" />
     <ClInclude Include="Base\BaseMainHeap.h" />
@@ -203,6 +207,8 @@
     <ClInclude Include="Core\CoreLightManager.h" />
     <ClInclude Include="Core\CoreMaterial.h" />
     <ClInclude Include="Core\CoreMaterialManager.h" />
+    <ClInclude Include="Core\GUI\CoreGUIManager.h" />
+    <ClInclude Include="Core\GUI\CoreHierarchyWidget.h" />
     <ClInclude Include="DebugOut.h" />
     <ClInclude Include="MathUtils.h" />
     <ClInclude Include="MultiObj.h" />

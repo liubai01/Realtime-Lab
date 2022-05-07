@@ -13,6 +13,7 @@ CoreApp::CoreApp(HINSTANCE hInstance) : BaseApp(hInstance)
   mLightManager = make_unique<CoreLightManager>(mDevice.Get());
 
   mLightManager->RegisterMainHandle(mMainHeap);
+  mGUIManager = make_unique<CoreGUIManager>(this);
 
   // Set input layout
   mDrawContext->mInputLayout =
@@ -66,7 +67,7 @@ void CoreApp::Update()
 
 void CoreApp::Render()
 {
-  UpdateGUI();
+  mGUIManager->Update();
 
   // Set resource to runtime heap
   mRuntimeHeap->Reset();
@@ -88,7 +89,7 @@ void CoreApp::Render()
   );
 
   RenderObjects();
-  RenderUI();
+  mGUIManager->Render(mDrawContext->mCommandList.Get());
 
   trans = CD3DX12_RESOURCE_BARRIER::Transition(
       mRenderTargets[mFrameIdx].Get(),
@@ -188,96 +189,6 @@ void CoreApp::RenderObjects()
     nowRT->EndScene(commandList);
 }
 
-void CoreApp::RenderUI()
-{
-    ID3D12GraphicsCommandList* commandList = mDrawContext->mCommandList.Get();
-
-    // We are not required to set the viewports, the ImGUI would handle those kind of stuff
-    D3D12_CPU_DESCRIPTOR_HANDLE rtv = CurrentBackBufferView();
-    const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
-    commandList->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
-    commandList->OMSetRenderTargets(1, &rtv, false, nullptr);
-    commandList->SetDescriptorHeaps(1, mUIRuntimeHeap->mDescHeap.GetAddressOf());
-
-    ImGui::Render();
-    ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList);
-}
-
-void CoreApp::UpdateGUI()
-{
-    if (ImGui::BeginMainMenuBar())
-    {
-        if (ImGui::BeginMenu("About"))
-        {
-            if (ImGui::MenuItem("@liubai01")) {}
-            ImGui::EndMenu();
-        }
-        ImGui::EndMainMenuBar();
-    }
-
-    static bool firstLoop = true;
-
-    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-    window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-    window_flags |= ImGuiWindowFlags_NoDocking;
-
-    const ImGuiViewport* viewport = ImGui::GetMainViewport();
-    ImGui::SetNextWindowPos(viewport->WorkPos);
-    ImGui::SetNextWindowSize(viewport->WorkSize);
-    ImGui::SetNextWindowViewport(viewport->ID);
-
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-    ImGui::Begin("Invisible Docker Space", nullptr, window_flags);
-
-    ImGui::PopStyleVar(3);
-
-    static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
-    ImGuiID dockspace_id = ImGui::GetID("DockSpace");
-    ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
-
-
-    if (firstLoop)
-    {
-        ImGui::DockBuilderRemoveNode(dockspace_id);
-        ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_DockSpace);
-
-        // Make the dock node's size and position to match the viewport
-        ImGui::DockBuilderSetNodeSize(dockspace_id, ImGui::GetMainViewport()->WorkSize);
-        ImGui::DockBuilderSetNodePos(dockspace_id, ImGui::GetMainViewport()->WorkPos);
-
-        //ImGuiID dock_main_id = mainNodeID;
-        ImGuiID dock_left_id = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, 0.2f, nullptr, &dockspace_id);
-        ImGui::DockBuilderDockWindow("Hierarchy", dock_left_id);
-        ImGui::DockBuilderDockWindow("Scene", dockspace_id);
-
-        ImGui::DockBuilderFinish(dockspace_id);
-
-        firstLoop = false;
-    }
-
-    ImGui::Begin("Hierarchy");
-    ImGui::Text("Hierarchy TODO here");
-    ImGui::End();
-
-    ImGui::Begin("Scene");
-
-    ImVec2 vMin = ImGui::GetWindowContentRegionMin();
-    ImVec2 vMax = ImGui::GetWindowContentRegionMax();
-    float height = vMax.y - vMin.y;
-    float width = vMax.x - vMin.x;
-
-    height = max(height, 100);
-    width = max(width, 100);
-
-    mMainCamera->SetSize(width, height);
-    ImGui::Image((ImTextureID)mMainCamera->mRTHandles[mFrameIdx].GetGPUHandle().ptr, ImVec2(width, height));
-
-    ImGui::End();
-
-    ImGui::End();
-}
 
 shared_ptr<CoreMaterial> CoreApp::CreateMaterial(const string& name)
 {
