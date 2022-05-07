@@ -168,13 +168,16 @@
     <ClCompile Include="Base\BaseGameObjectManager.cpp">
       <Filter>Source Files\Base</Filter>
     </ClCompile>
-    <ClCompile Include="Base\BaseGUIWidget.cpp">
-      <Filter>Header Files\Base</Filter>
-    </ClCompile>
     <ClCompile Include="Core\GUI\CoreGUIManager.cpp">
       <Filter>Source Files\Core\GUI</Filter>
     </ClCompile>
     <ClCompile Include="Core\GUI\CoreHierarchyWidget.cpp">
+      <Filter>Source Files\Core\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\BaseGUIWidget.cpp">
+      <Filter>Source Files\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\GUI\CoreSceneWidget.cpp">
       <Filter>Source Files\Core\GUI</Filter>
     </ClCompile>
   </ItemGroup>
@@ -299,13 +302,16 @@
     <ClInclude Include="Base\BaseGameObjectManager.h">
       <Filter>Header Files\Base</Filter>
     </ClInclude>
-    <ClInclude Include="Base\BaseGUIWidget.h">
-      <Filter>Source Files\Base</Filter>
-    </ClInclude>
     <ClInclude Include="Core\GUI\CoreGUIManager.h">
       <Filter>Header Files\Core\GUI</Filter>
     </ClInclude>
     <ClInclude Include="Core\GUI\CoreHierarchyWidget.h">
+      <Filter>Header Files\Core\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\BaseGUIWidget.h">
+      <Filter>Header Files\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\GUI\CoreSceneWidget.h">
       <Filter>Header Files\Core\GUI</Filter>
     </ClInclude>
   </ItemGroup>

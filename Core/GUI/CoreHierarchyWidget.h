@@ -6,7 +6,8 @@ class CoreHierarchyWidget : public BaseGUIWidget
 {
 public:
 	CoreHierarchyWidget(BaseGameObjectManager* GOManager);
-	void UpdateGUI();
+	void Update();
+	void Start(ImGuiID& dockspace_id);
 private:
 	BaseGameObjectManager* mGOManager;
 };

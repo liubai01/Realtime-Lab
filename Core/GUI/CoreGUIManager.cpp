@@ -1,4 +1,5 @@
 #include "CoreGUIManager.h"
+#include "CoreSceneWidget.h"
 #include "../../ThirdParty/ImGUI/imgui_internal.h"
 #include "../../ThirdParty/ImGUI/imgui_impl_dx12.h"
 
@@ -6,6 +7,7 @@ CoreGUIManager::CoreGUIManager(BaseApp* app)
 {
     mApp = app;
     mWidgets.push_back(make_unique<CoreHierarchyWidget>(mApp->mGOManager));
+    mWidgets.push_back(make_unique<CoreSceneWidget>(mApp->mMainCamera));
     mFirstLoop = true;
 }
 
@@ -20,11 +22,11 @@ void CoreGUIManager::Start()
     ImGui::DockBuilderSetNodeSize(dockspace_id, ImGui::GetMainViewport()->WorkSize);
     ImGui::DockBuilderSetNodePos(dockspace_id, ImGui::GetMainViewport()->WorkPos);
 
-    //ImGuiID dock_main_id = mainNodeID;
-    ImGuiID dock_left_id = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, 0.2f, nullptr, &dockspace_id);
-    ImGui::DockBuilderDockWindow("Hierarchy", dock_left_id);
-    ImGui::DockBuilderDockWindow("Scene", dockspace_id);
-
+    for (unique_ptr<BaseGUIWidget>& widget : mWidgets)
+    {
+        widget->Start(dockspace_id);
+    }
+    
     ImGui::DockBuilderFinish(dockspace_id);
 }
 
@@ -80,24 +82,8 @@ void CoreGUIManager::Update()
 
         for (unique_ptr<BaseGUIWidget>& widget : mWidgets)
         {
-            widget->UpdateGUI();
+            widget->Update();
         }
-
-        ImGui::Begin("Scene");
-
-            ImVec2 vMin = ImGui::GetWindowContentRegionMin();
-            ImVec2 vMax = ImGui::GetWindowContentRegionMax();
-            float height = vMax.y - vMin.y;
-            float width = vMax.x - vMin.x;
-
-            // set a minimal size of window
-            height = max(height, 100);
-            width = max(width, 100);
-
-            mApp->mMainCamera->SetSize(width, height);
-            ImGui::Image((ImTextureID)mApp->mMainCamera->mRTHandles[mApp->mFrameIdx].GetGPUHandle().ptr, ImVec2(width, height));
-
-        ImGui::End(); // end of Scene
-
+    
     ImGui::End(); // end of docker space
 }

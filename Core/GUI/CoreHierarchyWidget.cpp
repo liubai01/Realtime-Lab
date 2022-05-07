@@ -27,7 +27,7 @@ void DFSTreeNode(BaseObject* obj)
 	}
 }
 
-void CoreHierarchyWidget::UpdateGUI()
+void CoreHierarchyWidget::Update()
 {
 	ImGui::Begin("Hierarchy");
 	for (BaseObject* obj : mGOManager->mRootObjects)
@@ -35,4 +35,10 @@ void CoreHierarchyWidget::UpdateGUI()
 		DFSTreeNode(obj);
 	}
 	ImGui::End();
+}
+
+void CoreHierarchyWidget::Start(ImGuiID& dockspace_id)
+{
+	ImGuiID dock_left_id = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, 0.2f, nullptr, &dockspace_id);
+	ImGui::DockBuilderDockWindow("Hierarchy", dock_left_id);
 }

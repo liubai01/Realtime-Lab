@@ -18,8 +18,8 @@ public:
     mHeapIndex = 0;
   }
 
-  D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandle() { return mCPUHandle; }
-  D3D12_GPU_DESCRIPTOR_HANDLE GetGPUHandle() { return mGPUHandle; }
+  D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandle() const { return mCPUHandle; }
+  D3D12_GPU_DESCRIPTOR_HANDLE GetGPUHandle() const { return mGPUHandle; }
   UINT32 GetHeapIndex() { return mHeapIndex; }
 
   void SetCPUHandle(D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle) { mCPUHandle = cpuHandle; }

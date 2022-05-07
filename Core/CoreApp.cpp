@@ -71,8 +71,12 @@ void CoreApp::Render()
 
   // Set resource to runtime heap
   mRuntimeHeap->Reset();
+
+  // Register Runtime Heap
   mMaterialManager->RegisterRuntimeHandle(mRuntimeHeap);
   mLightManager->RegisterRuntimeHandle(mRuntimeHeap);
+  mGOManager->DispatchTransformUpload(mRuntimeHeap);
+  mMainCamera->RegisterRuntimeHandle(mRuntimeHeap);
 
   UploadGeometry();
 
@@ -107,10 +111,8 @@ void CoreApp::Render()
 
 void CoreApp::UploadGeometry()
 {
-    // 1. Upload geoemetry(vertices, indices) if it has not been uploaded before
-    // 2. Register transform constant buffer
+    // Upload geoemetry(vertices, indices) if it has not been uploaded before
     mUploadCmdList->ResetCommandList();
-    mGOManager->DispatchTransformUpload(mRuntimeHeap);
 
     for (auto& elem : mGOManager->mObjs)
     {
@@ -134,29 +136,15 @@ void CoreApp::UploadGeometry()
 
 void CoreApp::RenderObjects()
 {
-    BaseRenderTexture* nowRT = &*mMainCamera->mRenderTextures[mFrameIdx];
     ID3D12GraphicsCommandList* commandList = mDrawContext->mCommandList.Get();
 
-    nowRT->BeginScene(commandList);
+    mMainCamera->BeginScene(commandList, mFrameIdx);
 
     commandList->SetGraphicsRootSignature(mDrawContext->GetRootSig());
-    commandList->RSSetViewports(1, &mMainCamera->mViewport);
-    commandList->RSSetScissorRects(1, &mMainCamera->mScissorRect);
-
-    // Clear the back buffer and depth buffer.
-    D3D12_CPU_DESCRIPTOR_HANDLE rtv = nowRT->m_rtvDescriptor;
-    D3D12_CPU_DESCRIPTOR_HANDLE dsv = mMainCamera->DepthBufferView();
-
-    const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
-    commandList->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
-    commandList->ClearDepthStencilView(dsv, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
-
-    commandList->OMSetRenderTargets(1, &rtv, false, &dsv);
 
     ID3D12DescriptorHeap* descriptorHeaps[] = { mRuntimeHeap->mDescHeap.Get() };
     commandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
-
-    mMainCamera->RegisterRuntimeHandle(mRuntimeHeap);
+    
     commandList->SetGraphicsRootDescriptorTable(1, mMainCamera->GetHandle().GetGPUHandle());
     commandList->SetGraphicsRootDescriptorTable(3, mLightManager->mLightData.GetHandle().GetGPUHandle());
 
@@ -186,7 +174,7 @@ void CoreApp::RenderObjects()
         }
     }
 
-    nowRT->EndScene(commandList);
+    mMainCamera->EndScene(commandList, mFrameIdx);
 }
 
 

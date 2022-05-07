@@ -40,7 +40,7 @@ BaseCamera::BaseCamera(ID3D12Device* device, BaseRuntimeHeap* mUIHeap, float wid
     {
         unique_ptr<BaseRenderTexture> rt = make_unique<BaseRenderTexture>(DXGI_FORMAT_R8G8B8A8_UNORM);
         BaseDescHeapHandle runtimeHandle = mUIHeap->GetHeapHandleBlock(1);
-        mRTHandles.push_back(runtimeHandle);
+        mRenderTextureHandles.push_back(runtimeHandle);
 
         rt->SetClearColor({ 0.0f, 0.2f, 0.4f, 1.0f });
         rt->SetDevice(device, runtimeHandle.GetCPUHandle(), rtvHandle);
@@ -141,4 +141,34 @@ void BaseCamera::Upload()
 
     XMStoreFloat4x4(&mBuffer.mData.ViewProj, XMMatrixTranspose(viewproj));
     mBuffer.mData.EyePos = mPos;
+}
+
+void BaseCamera::BeginScene(ID3D12GraphicsCommandList* commandList, int frameIdx)
+{
+    mFrameIdx = frameIdx;
+    BaseRenderTexture* nowRT = &*mRenderTextures[frameIdx];
+    nowRT->BeginScene(commandList);
+
+    commandList->RSSetViewports(1, &mViewport);
+    commandList->RSSetScissorRects(1, &mScissorRect);
+
+    D3D12_CPU_DESCRIPTOR_HANDLE rtv = nowRT->m_rtvDescriptor;
+    D3D12_CPU_DESCRIPTOR_HANDLE dsv = DepthBufferView();
+
+    const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
+    commandList->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
+    commandList->ClearDepthStencilView(dsv, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+
+    commandList->OMSetRenderTargets(1, &rtv, false, &dsv);
+}
+
+void BaseCamera::EndScene(ID3D12GraphicsCommandList* commandList, int frameIdx)
+{
+    BaseRenderTexture* nowRT = &*mRenderTextures[frameIdx];
+    nowRT->EndScene(commandList);
+}
+
+const BaseDescHeapHandle& BaseCamera::GetRenderTextureHandle()
+{
+    return mRenderTextureHandles[mFrameIdx];
 }

@@ -5,6 +5,7 @@
 class BaseGUIWidget
 {
 public:
-	virtual void UpdateGUI() = 0;
+	virtual void Start(ImGuiID& dockspace_id) = 0;
+	virtual void Update() = 0;
 };
 

@@ -29,37 +29,42 @@ struct BaseCameraConstant {
 class BaseCamera: public BaseStagedBuffer<BaseCameraConstant>
 {
 public:
-  // render texture
-  ComPtr<ID3D12DescriptorHeap> mRtvDescriptorHeap;
-  vector<unique_ptr<BaseRenderTexture>> mRenderTextures;
-  vector<BaseDescHeapHandle> mRTHandles;
+	BaseCamera(ID3D12Device* device, BaseRuntimeHeap* mUIHeap, float width, float height, int frameCnt=3, float nearZ=1.0f, float FarZ=1000.0f);
 
-  // depth buffer
-  ComPtr<ID3D12Resource> mDepthStencilBuffer;
-  ComPtr<ID3D12DescriptorHeap> mDepthDescriptorHeap;
+	void SetPos(float x, float y, float z);
+	void SetSize(float width, float height);
 
-  D3D12_CPU_DESCRIPTOR_HANDLE DepthBufferView() const;
+	void BeginScene(ID3D12GraphicsCommandList* commandList, int frameIdx);
+	void EndScene(ID3D12GraphicsCommandList* commandList, int frameIdx);
 
-  BaseCamera(ID3D12Device* device, BaseRuntimeHeap* mUIHeap, float width, float height, int frameCnt=3, float nearZ=1.0f, float FarZ=1000.0f);
+	const BaseDescHeapHandle& GetRenderTextureHandle();
 
-  D3D12_VIEWPORT mViewport;    // area that output from rasterizer will be stretched to.
-  D3D12_RECT mScissorRect;     // the area to draw in. pixels outside that area will not be drawn onto
+	float mWidth;
+	float mHeight;
 
-  XMFLOAT4X4 mProj;
-  XMFLOAT4 mPos;
+	void Upload();
+private:
+	ID3D12Device* mDevice;
+	int mFrameCnt;
+	int mFrameIdx;
 
-  void SetPos(float x, float y, float z);
-  void SetSize(float width, float height);
+	XMFLOAT4X4 mProj;
+	XMFLOAT4 mPos;
 
-  float mWidth;
-  float mHeight;
+	D3D12_VIEWPORT mViewport;    // area that output from rasterizer will be stretched to.
+	D3D12_RECT mScissorRect;     // the area to draw in. pixels outside that area will not be drawn onto
 
-  float mNearZ;
-  float mFarZ;
+	float mNearZ;
+	float mFarZ;
 
-  int mFrameCnt;
-  ID3D12Device* mDevice;
+	// depth buffer
+	ComPtr<ID3D12Resource> mDepthStencilBuffer;
+	ComPtr<ID3D12DescriptorHeap> mDepthDescriptorHeap;
+	D3D12_CPU_DESCRIPTOR_HANDLE DepthBufferView() const;
 
-  void Upload();
+	// render texture
+	ComPtr<ID3D12DescriptorHeap> mRtvDescriptorHeap;
+	vector<unique_ptr<BaseRenderTexture>> mRenderTextures;
+	vector<BaseDescHeapHandle> mRenderTextureHandles;
 };
 
