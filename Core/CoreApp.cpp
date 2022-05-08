@@ -142,7 +142,7 @@ void CoreApp::RenderObjects()
 {
     ID3D12GraphicsCommandList* commandList = mDrawContext->mCommandList.Get();
 
-    mMainCamera->BeginScene(commandList, mFrameIdx);
+    mMainCamera->BeginScene(commandList);
 
     commandList->SetGraphicsRootSignature(mDrawContext->GetRootSig());
 
@@ -178,7 +178,7 @@ void CoreApp::RenderObjects()
         }
     }
 
-    mMainCamera->EndScene(commandList, mFrameIdx);
+    mMainCamera->EndScene(commandList);
 }
 
 

@@ -29,13 +29,13 @@ struct BaseCameraConstant {
 class BaseCamera: public BaseStagedBuffer<BaseCameraConstant>
 {
 public:
-	BaseCamera(ID3D12Device* device, BaseRuntimeHeap* mUIHeap, float width, float height, int frameCnt=3, float nearZ=1.0f, float FarZ=1000.0f);
+	BaseCamera(ID3D12Device* device, BaseRuntimeHeap* mUIHeap, float width, float height, float nearZ=1.0f, float FarZ=1000.0f);
 
 	void SetPos(float x, float y, float z);
 	void SetSize(float width, float height);
 
-	void BeginScene(ID3D12GraphicsCommandList* commandList, int frameIdx);
-	void EndScene(ID3D12GraphicsCommandList* commandList, int frameIdx);
+	void BeginScene(ID3D12GraphicsCommandList* commandList);
+	void EndScene(ID3D12GraphicsCommandList* commandList);
 
 	const BaseDescHeapHandle& GetRenderTextureHandle();
 
@@ -49,8 +49,6 @@ public:
 	void Upload();
 private:
 	ID3D12Device* mDevice;
-	int mFrameCnt;
-	int mFrameIdx;
 
 	XMFLOAT4X4 mProj;
 	XMFLOAT4 mPos;
@@ -68,7 +66,7 @@ private:
 
 	// render texture
 	ComPtr<ID3D12DescriptorHeap> mRtvDescriptorHeap;
-	vector<unique_ptr<BaseRenderTexture>> mRenderTextures;
-	vector<BaseDescHeapHandle> mRenderTextureHandles;
+	unique_ptr<BaseRenderTexture> mRenderTexture;
+	BaseDescHeapHandle mRenderTextureHandle;
 };
 

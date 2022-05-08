@@ -1,8 +1,7 @@
 #include "BaseCamera.h"
 
-BaseCamera::BaseCamera(ID3D12Device* device, BaseRuntimeHeap* mUIHeap, float width, float height, int frameCnt, float nearZ, float farZ) : BaseStagedBuffer(device)
+BaseCamera::BaseCamera(ID3D12Device* device, BaseRuntimeHeap* mUIHeap, float width, float height, float nearZ, float farZ) : BaseStagedBuffer(device)
 {
-    mFrameCnt = frameCnt;
     mNearZ = nearZ;
     mFarZ = farZ;
     mDevice = device;
@@ -26,7 +25,7 @@ BaseCamera::BaseCamera(ID3D12Device* device, BaseRuntimeHeap* mUIHeap, float wid
 
     // Render target views for the BaseRenderTexture
     D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
-    rtvHeapDesc.NumDescriptors = frameCnt;
+    rtvHeapDesc.NumDescriptors = 1;
     rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
     rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
     hr = device->CreateDescriptorHeap(
@@ -38,19 +37,12 @@ BaseCamera::BaseCamera(ID3D12Device* device, BaseRuntimeHeap* mUIHeap, float wid
     CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(mRtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
 
     XMVECTOR tmp = XMLoadFloat4(&mClearColor);
-    for (int i = 0; i < frameCnt; ++i)
-    {
-        unique_ptr<BaseRenderTexture> rt = make_unique<BaseRenderTexture>(DXGI_FORMAT_R8G8B8A8_UNORM);
-        BaseDescHeapHandle runtimeHandle = mUIHeap->GetHeapHandleBlock(1);
-        mRenderTextureHandles.push_back(runtimeHandle);
 
-        rt->SetClearColor(tmp);
-        rt->SetDevice(device, runtimeHandle.GetCPUHandle(), rtvHandle);
+    mRenderTexture = make_unique<BaseRenderTexture>(DXGI_FORMAT_R8G8B8A8_UNORM);
+    mRenderTextureHandle = mUIHeap->GetHeapHandleBlock(1);
 
-        mRenderTextures.emplace_back(move(rt));
-        rtvHandle.Offset(1, rtvDescriptorSize);
-    }
-
+    mRenderTexture->SetClearColor(tmp);
+    mRenderTexture->SetDevice(device, mRenderTextureHandle.GetCPUHandle(), rtvHandle);
 
     SetSize(width, height);
 }
@@ -83,11 +75,7 @@ void BaseCamera::SetSize(float width, float height)
     XMMATRIX P = XMMatrixPerspectiveFovLH(0.25f * 3.1415926535f, static_cast<float>(width) / height, mNearZ, mFarZ);
     XMStoreFloat4x4(&mProj, P);
 
-    for (int i = 0; i < mFrameCnt; ++i)
-    {
-        BaseRenderTexture* rt = &*mRenderTextures[i];
-        rt->SetWindow(mScissorRect);
-    }
+    mRenderTexture->SetWindow(mScissorRect);
 
     auto hprop = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
     auto rdesc = CD3DX12_RESOURCE_DESC::Tex2D(
@@ -145,16 +133,14 @@ void BaseCamera::Upload()
     mBuffer.mData.EyePos = mPos;
 }
 
-void BaseCamera::BeginScene(ID3D12GraphicsCommandList* commandList, int frameIdx)
+void BaseCamera::BeginScene(ID3D12GraphicsCommandList* commandList)
 {
-    mFrameIdx = frameIdx;
-    BaseRenderTexture* nowRT = &*mRenderTextures[frameIdx];
-    nowRT->BeginScene(commandList);
+    mRenderTexture->BeginScene(commandList);
 
     commandList->RSSetViewports(1, &mViewport);
     commandList->RSSetScissorRects(1, &mScissorRect);
 
-    D3D12_CPU_DESCRIPTOR_HANDLE rtv = nowRT->m_rtvDescriptor;
+    D3D12_CPU_DESCRIPTOR_HANDLE rtv = mRenderTexture->m_rtvDescriptor;
     D3D12_CPU_DESCRIPTOR_HANDLE dsv = DepthBufferView();
 
     const float clearColor[] = { mClearColor.x, mClearColor.y, mClearColor.z, mClearColor.w };
@@ -164,15 +150,14 @@ void BaseCamera::BeginScene(ID3D12GraphicsCommandList* commandList, int frameIdx
     commandList->OMSetRenderTargets(1, &rtv, false, &dsv);
 }
 
-void BaseCamera::EndScene(ID3D12GraphicsCommandList* commandList, int frameIdx)
+void BaseCamera::EndScene(ID3D12GraphicsCommandList* commandList)
 {
-    BaseRenderTexture* nowRT = &*mRenderTextures[frameIdx];
-    nowRT->EndScene(commandList);
+    mRenderTexture->EndScene(commandList);
 }
 
 const BaseDescHeapHandle& BaseCamera::GetRenderTextureHandle()
 {
-    return mRenderTextureHandles[mFrameIdx];
+    return mRenderTextureHandle;
 }
 
 
@@ -180,9 +165,5 @@ void BaseCamera::SetClearColor(XMFLOAT4 clearColor)
 {
     mClearColor = clearColor;
     XMVECTOR tmp = XMLoadFloat4(&mClearColor);
-    for (int i = 0; i < mFrameCnt; ++i)
-    {
-        mRenderTextures[i]->SetClearColor(tmp);
-
-    }
+    mRenderTexture->SetClearColor(tmp);
 }
