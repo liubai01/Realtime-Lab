@@ -20,8 +20,19 @@ void CoreInspectorWidget::Update()
 	BaseObject* obj = *mNowSelectObjectPtr;
 	if (obj)
 	{
-		ImGui::Text((*mNowSelectObjectPtr)->mName.c_str());
-		ImGui::Text("");
+		char name[128]{ 0 };
+		strcpy_s(name, obj->mName.c_str());
+
+		if (ImGui::InputText("Name", name, IM_ARRAYSIZE(name), ImGuiInputTextFlags_EnterReturnsTrue))
+		{
+			if (strlen(name) > 0)
+			{
+				obj->mName = string(name);
+			}
+		}
+
+		
+		ImGui::Separator();
 
 		if (ImGui::TreeNodeEx("Transform", ImGuiTreeNodeFlags_DefaultOpen))
 		{

@@ -21,6 +21,8 @@ __declspec(align(16)) class CoreApp : public BaseApp
 {
 public:
   unique_ptr<BaseDrawContext> mDrawContext;
+  unique_ptr<BaseDrawContext> mEdgeLightDrawContext;
+
   unique_ptr<BaseDirectCommandList> mUploadCmdList;
 
   unique_ptr<CoreMaterialManager> mMaterialManager;

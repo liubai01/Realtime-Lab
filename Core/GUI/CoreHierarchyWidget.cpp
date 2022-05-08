@@ -15,13 +15,20 @@ void DFSTreeNode(BaseObject* obj, BaseObject** nowSelectObjectPtr)
 
 	if (hasChild)
 	{
-		auto treeNode = ImGui::TreeNodeEx(obj->mName.c_str(), ImGuiTreeNodeFlags_DefaultOpen, "");
+		// check whether current object is selected
+		int flag = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_OpenOnArrow;
+		if (obj == *nowSelectObjectPtr)
+		{
+			flag = flag | ImGuiTreeNodeFlags_Selected;
+		}
+		auto treeNode = ImGui::TreeNodeEx(obj->mName.c_str(), flag, "");
 		ImGui::SameLine();
 		if (ImGui::SmallButton(obj->mName.c_str()))
 		{
 			*nowSelectObjectPtr = obj;
 		}
 		
+
 		if (treeNode)
 		{
 			for (BaseObject* childobj : obj->GetChildObjects())
@@ -31,7 +38,14 @@ void DFSTreeNode(BaseObject* obj, BaseObject** nowSelectObjectPtr)
 			ImGui::TreePop();
 		}
 	} else {
-		ImGui::BulletText("");
+		int flag = ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_Bullet;
+		if (obj == *nowSelectObjectPtr)
+		{
+			flag = flag | ImGuiTreeNodeFlags_Selected;
+		}
+		// avoid name collision with button, add a tree postfix
+		ImGui::TreeNodeEx((obj->mName + "tree").c_str(), flag, "");
+
 		ImGui::SameLine();
 		if (ImGui::SmallButton(obj->mName.c_str()))
 		{

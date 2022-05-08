@@ -192,9 +192,11 @@ void BaseApp::InitImGUI()
   ImGui::CreateContext();
   ImGuiIO& io = ImGui::GetIO(); (void)io;
   io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+  io.Fonts->AddFontFromFileTTF("ThirdParty\\ImGUI\\Cousine-Regular.ttf", 16);
 
   ImGui::StyleColorsDark();
   ImGui_ImplWin32_Init(mHwnd);
+
 
   // ImGUI would use start handle for font
   mUIRuntimeHeap->GetHeapHandleBlock(1); 

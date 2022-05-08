@@ -39,8 +39,12 @@ public:
 
 	const BaseDescHeapHandle& GetRenderTextureHandle();
 
+	void SetClearColor(XMFLOAT4 clearColor);
+
 	float mWidth;
 	float mHeight;
+
+	XMFLOAT4 mClearColor;
 
 	void Upload();
 private:

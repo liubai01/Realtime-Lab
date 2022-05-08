@@ -22,32 +22,36 @@ using namespace std;
 class BaseDrawContext: public BaseDirectCommandList
 {
 public:
-  vector<D3D12_ROOT_PARAMETER> mRootParams;
-  // root params would carry a pointer to descriptor range, which is stored here
-  vector<vector<D3D12_DESCRIPTOR_RANGE>> mDescTableRanges;
+	vector<D3D12_ROOT_PARAMETER> mRootParams;
+	// root params would carry a pointer to descriptor range, which is stored here
+	vector<vector<D3D12_DESCRIPTOR_RANGE>> mDescTableRanges;
 
   
 
-  vector<D3D12_INPUT_ELEMENT_DESC> mInputLayout;
-  BaseShaderManager mShader;
+	vector<D3D12_INPUT_ELEMENT_DESC> mInputLayout;
+	BaseShaderManager mShader;
   
-  BaseDrawContext(ID3D12Device* device);
+	BaseDrawContext(ID3D12Device* device);
 
-  void Init();
-  void ResetCommandList();
+	void Init();
+	void ResetCommandList();
 
-  ID3D12RootSignature* GetRootSig();
+	ID3D12RootSignature* GetRootSig();
+
+	void AppendCBVDescTable();
 
 private:
-  ComPtr<ID3D12RootSignature> mRootSig;
-  ComPtr<ID3D12PipelineState> mPSO;
-  D3D12_INPUT_LAYOUT_DESC mInputLayoutDesc;
+	int mRegCnt;
 
-  ID3D12Device* mDevice;
-  bool mHasInited;
+	ComPtr<ID3D12RootSignature> mRootSig;
+	ComPtr<ID3D12PipelineState> mPSO;
+	D3D12_INPUT_LAYOUT_DESC mInputLayoutDesc;
 
-  void InitRootSig();
-  void InitInputLayout();
-  void InitPSO();
+	ID3D12Device* mDevice;
+	bool mHasInited;
+
+	void InitRootSig();
+	void InitInputLayout();
+	void InitPSO();
 };
 

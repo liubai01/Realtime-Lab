@@ -6,7 +6,6 @@
 
 CoreApp::CoreApp(HINSTANCE hInstance) : BaseApp(hInstance)
 {
-  mDrawContext = make_unique<BaseDrawContext>(mDevice.Get());
   mUploadCmdList = make_unique<BaseDirectCommandList>(mDevice.Get());
 
   mMaterialManager = make_unique<CoreMaterialManager>(mDevice.Get());
@@ -15,6 +14,8 @@ CoreApp::CoreApp(HINSTANCE hInstance) : BaseApp(hInstance)
   mLightManager->RegisterMainHandle(mMainHeap);
   mGUIManager = make_unique<CoreGUIManager>(this);
 
+  // Diffuse Draw Context
+  mDrawContext = make_unique<BaseDrawContext>(mDevice.Get());
   // Set input layout
   mDrawContext->mInputLayout =
   {
@@ -23,8 +24,9 @@ CoreApp::CoreApp(HINSTANCE hInstance) : BaseApp(hInstance)
       { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0}
   };
 
-  mDrawContext->mShader.AddVertexShader("Core\\Shader\\ShadowMapVertexShader.hlsl");
-  mDrawContext->mShader.AddPixelShader("Core\\Shader\\ShadowMapPixelShader.hlsl");
+  mDrawContext->mShader.AddVertexShader("Core\\Shader\\DiffuseVertexShader.hlsl");
+  mDrawContext->mShader.AddPixelShader("Core\\Shader\\DiffusePixelShader.hlsl");
+  //mMainCamera->SetClearColor({ 0.0f, 0.0f, 0.0f, 0.0f });
 
   // b0: transform buffer
   // b1: camera buffer
@@ -32,25 +34,27 @@ CoreApp::CoreApp(HINSTANCE hInstance) : BaseApp(hInstance)
   // b3: light buffer
   for (int i = 0; i < 4; ++i)
   {
-    mDrawContext->mDescTableRanges.emplace_back(1);
-    vector<D3D12_DESCRIPTOR_RANGE>& descTableRanges = mDrawContext->mDescTableRanges.back();
+      mDrawContext->AppendCBVDescTable();
+  }
 
-    descTableRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV; // this is a range of constant buffer views (descriptors)
-    descTableRanges[0].NumDescriptors = 1; // we only have one constant buffer, so the range is only 1
-    descTableRanges[0].BaseShaderRegister = i; // start index of the shader registers in the range
-    descTableRanges[0].RegisterSpace = 0; // space 0. can usually be zero
-    descTableRanges[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // this appends the range to the end of the root signature descriptor tables
+  // Edge Light Draw Context
+  mEdgeLightDrawContext = make_unique<BaseDrawContext>(mDevice.Get());
+  // Set input layout
+  mEdgeLightDrawContext->mInputLayout =
+  {
+      { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+      { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+      { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0}
+  };
 
-    // create a descriptor table
-    D3D12_ROOT_DESCRIPTOR_TABLE descriptorTable;
-    descriptorTable.NumDescriptorRanges = static_cast<UINT>(descTableRanges.size()); // we only have one range
-    descriptorTable.pDescriptorRanges = descTableRanges.data(); // the pointer to the beginning of our ranges array
+  mEdgeLightDrawContext->mShader.AddVertexShader("Core\\Shader\\EdgeLightVertexShader.hlsl");
+  mEdgeLightDrawContext->mShader.AddPixelShader("Core\\Shader\\EdgeLightPixelShader.hlsl");
 
-    // create a root parameter and fill it out
-    mDrawContext->mRootParams.emplace_back();
-    mDrawContext->mRootParams.back().ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; // this is a descriptor table
-    mDrawContext->mRootParams.back().DescriptorTable = descriptorTable; // this is our descriptor table for this root parameter
-    mDrawContext->mRootParams.back().ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+  // b0: transform buffer
+  // b1: camera buffer
+  for (int i = 0; i < 2; ++i)
+  {
+      mEdgeLightDrawContext->AppendCBVDescTable();
   }
 }
 
@@ -91,8 +95,6 @@ void CoreApp::Render()
       1,
       &trans
   );
-
-  //ImGui::ShowDemoWindow(nullptr);
 
   RenderObjects();
   mGUIManager->Render(mDrawContext->mCommandList.Get());

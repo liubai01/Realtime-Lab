@@ -5,6 +5,8 @@ BaseDrawContext::BaseDrawContext(ID3D12Device* device) : BaseDirectCommandList(d
   mHasInited = false;
   mDevice = device;
   mInputLayoutDesc = {};
+
+  mRegCnt = 0;
 }
 
 ID3D12RootSignature* BaseDrawContext::GetRootSig()
@@ -144,4 +146,27 @@ void BaseDrawContext::ResetCommandList()
     dout::printf("[BaseDrawContext] Command List Failed!");
   }
   ThrowIfFailed(hr);
+}
+
+void BaseDrawContext::AppendCBVDescTable()
+{
+    mDescTableRanges.emplace_back(1);
+    vector<D3D12_DESCRIPTOR_RANGE>& descTableRanges = mDescTableRanges.back();
+
+    descTableRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV; // this is a range of constant buffer views (descriptors)
+    descTableRanges[0].NumDescriptors = 1; // we only have one constant buffer, so the range is only 1
+    descTableRanges[0].BaseShaderRegister = mRegCnt++; // start index of the shader registers in the range
+    descTableRanges[0].RegisterSpace = 0; // space 0. can usually be zero
+    descTableRanges[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; // this appends the range to the end of the root signature descriptor tables
+
+    // create a descriptor table
+    D3D12_ROOT_DESCRIPTOR_TABLE descriptorTable;
+    descriptorTable.NumDescriptorRanges = static_cast<UINT>(descTableRanges.size()); // we only have one range
+    descriptorTable.pDescriptorRanges = descTableRanges.data(); // the pointer to the beginning of our ranges array
+
+    // create a root parameter and fill it out
+    mRootParams.emplace_back();
+    mRootParams.back().ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE; // this is a descriptor table
+    mRootParams.back().DescriptorTable = descriptorTable; // this is our descriptor table for this root parameter
+    mRootParams.back().ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 }
