@@ -20,7 +20,7 @@ void CoreSceneWidget::Update()
     width = max(width, 100);
 
     mCamera->SetSize(width, height);
-    ImGui::Image((ImTextureID) (mCamera->GetRenderTextureHandle()).GetGPUHandle().ptr, ImVec2(width, height));
+    ImGui::Image((ImTextureID) (mCamera->GetRenderTextureSRVHandle()).GetGPUHandle().ptr, ImVec2(width, height));
 
     ImGui::End(); // end of Scene
 }

@@ -125,6 +125,7 @@ void BaseApp::Run()
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
 
+    BeforeUpdate();
     Update();
     Render();
   }

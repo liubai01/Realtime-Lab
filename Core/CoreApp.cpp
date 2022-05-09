@@ -3,6 +3,7 @@
 #include "../Core/Component/CoreMeshComponent.h"
 #include "CoreGeometryUtils.h"
 #include "../ThirdParty/ImGUI/imgui_internal.h"
+#include "../ThirdParty/ImGUI/imgui.h"
 
 CoreApp::CoreApp(HINSTANCE hInstance) : BaseApp(hInstance)
 {
@@ -13,6 +14,12 @@ CoreApp::CoreApp(HINSTANCE hInstance) : BaseApp(hInstance)
 
   mLightManager->RegisterMainHandle(mMainHeap);
   mGUIManager = make_unique<CoreGUIManager>(this);
+
+  mRenderTextureManager = make_unique<CoreRenderTextureManager>(mUIRuntimeHeap, mDevice.Get());
+  mSceneRenderTexture = mRenderTextureManager->AllocateRenderTexture();
+  mEdgeRenderTexture = mRenderTextureManager->AllocateRenderTexture();
+
+  mMainCamera->SetRenderTexture(mSceneRenderTexture);
 
   // Diffuse Draw Context
   mDrawContext = make_unique<BaseDrawContext>(mDevice.Get());
@@ -26,7 +33,6 @@ CoreApp::CoreApp(HINSTANCE hInstance) : BaseApp(hInstance)
 
   mDrawContext->mShader.AddVertexShader("Core\\Shader\\DiffuseVertexShader.hlsl");
   mDrawContext->mShader.AddPixelShader("Core\\Shader\\DiffusePixelShader.hlsl");
-  //mMainCamera->SetClearColor({ 0.0f, 0.0f, 0.0f, 0.0f });
 
   // b0: transform buffer
   // b1: camera buffer
@@ -71,8 +77,6 @@ void CoreApp::Update()
 
 void CoreApp::Render()
 {
-  mGUIManager->Update();
-
   // Set resource to runtime heap
   mRuntimeHeap->Reset();
 
@@ -113,6 +117,12 @@ void CoreApp::Render()
   Swap();
 }
 
+void CoreApp::BeforeUpdate()
+{
+    mGUIManager->Update();
+    //ImGui::ShowDemoWindow();
+}
+
 void CoreApp::UploadGeometry()
 {
     // Upload geoemetry(vertices, indices) if it has not been uploaded before
@@ -142,6 +152,7 @@ void CoreApp::RenderObjects()
 {
     ID3D12GraphicsCommandList* commandList = mDrawContext->mCommandList.Get();
 
+    //mMainCamera->SetRenderTexture(mEdgeRenderTexture);
     mMainCamera->BeginScene(commandList);
 
     commandList->SetGraphicsRootSignature(mDrawContext->GetRootSig());
@@ -179,6 +190,7 @@ void CoreApp::RenderObjects()
     }
 
     mMainCamera->EndScene(commandList);
+    //mMainCamera->SetRenderTexture(mSceneRenderTexture);
 }
 
 

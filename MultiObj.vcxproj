@@ -142,6 +142,7 @@
   <ItemGroup>
     <ClCompile Include="Base\BaseApp.cpp" />
     <ClCompile Include="Base\BaseCamera.cpp" />
+    <ClCompile Include="Base\BaseDepthRenderTexture.cpp" />
     <ClCompile Include="Base\BaseDescHeapHandle.cpp" />
     <ClCompile Include="Base\BaseDirectCommandList.cpp" />
     <ClCompile Include="Base\BaseDrawContext.cpp" />
@@ -157,6 +158,7 @@
     <ClCompile Include="Base\BaseStagedBuffer.cpp" />
     <ClCompile Include="Base\BaseTransform.cpp" />
     <ClCompile Include="Base\BaseUploadHeap.cpp" />
+    <ClCompile Include="Base\BaseUUIDGenerator.cpp" />
     <ClCompile Include="Base\Component\BaseComponent.cpp" />
     <ClCompile Include="Base\Component\BaseMeshComponent.cpp" />
     <ClCompile Include="Core\Component\CoreMeshComponent.cpp" />
@@ -166,6 +168,7 @@
     <ClCompile Include="Core\CoreLightManager.cpp" />
     <ClCompile Include="Core\CoreMaterial.cpp" />
     <ClCompile Include="Core\CoreMaterialManager.cpp" />
+    <ClCompile Include="Core\CoreRenderTextureManager.cpp" />
     <ClCompile Include="Core\GUI\CoreGUIManager.cpp" />
     <ClCompile Include="Core\GUI\CoreHierarchyWidget.cpp" />
     <ClCompile Include="Core\GUI\CoreInspectorWidget.cpp" />
@@ -184,6 +187,7 @@
   <ItemGroup>
     <ClInclude Include="Base\BaseApp.h" />
     <ClInclude Include="Base\BaseCamera.h" />
+    <ClInclude Include="Base\BaseDepthRenderTexture.h" />
     <ClInclude Include="Base\BaseDescHeapHandle.h" />
     <ClInclude Include="Base\BaseDirectCommandList.h" />
     <ClInclude Include="Base\BaseDrawContext.h" />
@@ -209,6 +213,7 @@
     <ClInclude Include="Core\CoreLightManager.h" />
     <ClInclude Include="Core\CoreMaterial.h" />
     <ClInclude Include="Core\CoreMaterialManager.h" />
+    <ClInclude Include="Core\CoreRenderTextureManager.h" />
     <ClInclude Include="Core\GUI\CoreGUIManager.h" />
     <ClInclude Include="Core\GUI\CoreHierarchyWidget.h" />
     <ClInclude Include="Core\GUI\CoreInspectorWidget.h" />

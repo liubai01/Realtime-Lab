@@ -9,6 +9,7 @@
 #include "../Base/BaseDirectCommandList.h"
 #include "CoreMaterialManager.h"
 #include "CoreLightManager.h"
+#include "CoreRenderTextureManager.h"
 #include "GUI/CoreGUIManager.h"
 #include <memory>
 
@@ -28,6 +29,10 @@ public:
   unique_ptr<CoreMaterialManager> mMaterialManager;
   unique_ptr<CoreLightManager> mLightManager;
   unique_ptr<CoreGUIManager> mGUIManager;
+  unique_ptr<CoreRenderTextureManager> mRenderTextureManager;
+
+  shared_ptr<BaseRenderTexture> mSceneRenderTexture;
+  shared_ptr<BaseRenderTexture> mEdgeRenderTexture;
   
   CoreApp(HINSTANCE hInstance);
 
@@ -35,6 +40,7 @@ public:
 
   virtual void Start();
   virtual void Update();
+  void BeforeUpdate();
   void Render();
 
   void UploadGeometry();

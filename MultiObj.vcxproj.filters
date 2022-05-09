@@ -183,6 +183,15 @@
     <ClCompile Include="Core\GUI\CoreInspectorWidget.cpp">
       <Filter>Source Files\Core\GUI</Filter>
     </ClCompile>
+    <ClCompile Include="Core\CoreRenderTextureManager.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\BaseUUIDGenerator.cpp">
+      <Filter>Source Files\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\BaseDepthRenderTexture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -319,6 +328,12 @@
     </ClInclude>
     <ClInclude Include="Core\GUI\CoreInspectorWidget.h">
       <Filter>Header Files\Core\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\CoreRenderTextureManager.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\BaseDepthRenderTexture.h">
+      <Filter>Header Files\Base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

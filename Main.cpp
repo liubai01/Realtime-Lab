@@ -32,7 +32,7 @@ public:
 
         cubeObj2->SetParent(cubeObj.get());
 
-        mMainCamera->SetPos(5.0f, 5.0f, 5.0f);
+        mMainCamera->SetPos(10.0f, 10.0f, -10.0f);
     }
 
     void Update()
@@ -51,9 +51,9 @@ public:
         float z = sinf(mPhi) * sinf(mTheta);
         float y = cosf(mPhi);
 
-        mLightManager->SetLightDir(x, y, z);
+        //mLightManager->SetLightDir(x, y, z);
 
-        mMainCamera->SetPos(mRadius * x, mRadius * y, mRadius * z);
+        /*mMainCamera->SetPos(mRadius * x, mRadius * y, mRadius * z);*/
 
         //shared_ptr<BaseObject> cubeObj = GetObject("Cube Red");
         //cubeObj->mTransform.SetRot(timer, timer * 0.5f, timer);

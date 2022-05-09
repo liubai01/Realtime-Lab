@@ -6,6 +6,7 @@
 
 #include <DirectXMath.h>
 #include <DirectXPackedVector.h>
+#include "BaseDescHeapHandle.h"
 
 using namespace DirectX;
 
@@ -16,7 +17,7 @@ class BaseRenderTexture
 public:
     BaseRenderTexture(DXGI_FORMAT format) noexcept;
 
-    void SetDevice(_In_ ID3D12Device* device, D3D12_CPU_DESCRIPTOR_HANDLE srvDescriptor, D3D12_CPU_DESCRIPTOR_HANDLE rtvDescriptor);
+    void SetDevice(_In_ ID3D12Device* device, BaseDescHeapHandle srvHandle, D3D12_CPU_DESCRIPTOR_HANDLE rtvDescriptor);
 
     void SizeResources(size_t width, size_t height);
 
@@ -36,28 +37,31 @@ public:
 
     void SetClearColor(FXMVECTOR color)
     {
-        DirectX::XMStoreFloat4(reinterpret_cast<XMFLOAT4*>(m_clearColor), color);
+        DirectX::XMStoreFloat4(reinterpret_cast<XMFLOAT4*>(mClearColor), color);
     }
 
-    ID3D12Resource* GetResource() const noexcept { return m_resource.Get(); }
-    D3D12_RESOURCE_STATES GetCurrentState() const noexcept { return m_state; }
+    ID3D12Resource* GetResource() const noexcept { return mResource.Get(); }
+    D3D12_RESOURCE_STATES GetCurrentState() const noexcept { return mState; }
 
     void SetWindow(const RECT& rect);
 
-    DXGI_FORMAT GetFormat() const noexcept { return m_format; }
+    DXGI_FORMAT GetFormat() const noexcept { return mFormat; }
 
-    D3D12_CPU_DESCRIPTOR_HANDLE                         m_srvDescriptor;
-    D3D12_CPU_DESCRIPTOR_HANDLE                         m_rtvDescriptor;
+    D3D12_CPU_DESCRIPTOR_HANDLE                         mSrvDescriptor;
+    D3D12_CPU_DESCRIPTOR_HANDLE                         mRtvDescriptor;
 
-    size_t                                              m_width;
-    size_t                                              m_height;
+    BaseDescHeapHandle mSRVHandle;
+
+    size_t                                              mWidth;
+    size_t                                              mHeight;
+
+    float                                               mClearColor[4];
 
 private:
-    Microsoft::WRL::ComPtr<ID3D12Device>                m_device;
-    Microsoft::WRL::ComPtr<ID3D12Resource>              m_resource;
-    D3D12_RESOURCE_STATES                               m_state;
-    float                                               m_clearColor[4];
+    Microsoft::WRL::ComPtr<ID3D12Device>                mDevice;
+    Microsoft::WRL::ComPtr<ID3D12Resource>              mResource;
+    D3D12_RESOURCE_STATES                               mState;
 
-    DXGI_FORMAT                                         m_format;
+    DXGI_FORMAT                                         mFormat;
 };
 

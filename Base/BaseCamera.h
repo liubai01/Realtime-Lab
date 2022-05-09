@@ -34,17 +34,16 @@ public:
 	void SetPos(float x, float y, float z);
 	void SetSize(float width, float height);
 
+	void SetRenderTexture(shared_ptr<BaseRenderTexture> renderTexture);
+
 	void BeginScene(ID3D12GraphicsCommandList* commandList);
 	void EndScene(ID3D12GraphicsCommandList* commandList);
 
-	const BaseDescHeapHandle& GetRenderTextureHandle();
-
-	void SetClearColor(XMFLOAT4 clearColor);
+	const BaseDescHeapHandle& GetRenderTextureSRVHandle();
 
 	float mWidth;
 	float mHeight;
 
-	XMFLOAT4 mClearColor;
 
 	void Upload();
 private:
@@ -65,8 +64,6 @@ private:
 	D3D12_CPU_DESCRIPTOR_HANDLE DepthBufferView() const;
 
 	// render texture
-	ComPtr<ID3D12DescriptorHeap> mRtvDescriptorHeap;
-	unique_ptr<BaseRenderTexture> mRenderTexture;
-	BaseDescHeapHandle mRenderTextureHandle;
+	shared_ptr<BaseRenderTexture> mRenderTexture;
 };
 

@@ -5,10 +5,6 @@ BaseCamera::BaseCamera(ID3D12Device* device, BaseRuntimeHeap* mUIHeap, float wid
     mNearZ = nearZ;
     mFarZ = farZ;
     mDevice = device;
-    mClearColor = { 0.0f, 0.2f, 0.4f, 1.0f };
-
-    XMVECTOR pos = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
-    XMStoreFloat4(&mPos, pos);
 
     // Depth desc heap
     D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = {};
@@ -22,29 +18,16 @@ BaseCamera::BaseCamera(ID3D12Device* device, BaseRuntimeHeap* mUIHeap, float wid
     }
 
     mDepthDescriptorHeap->SetName(L"Depth/Stencil Resource Heap");
-
-    // Render target views for the BaseRenderTexture
-    D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
-    rtvHeapDesc.NumDescriptors = 1;
-    rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-    rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-    hr = device->CreateDescriptorHeap(
-        &rtvHeapDesc,
-        IID_PPV_ARGS(mRtvDescriptorHeap.GetAddressOf())
-    );
-
-    int rtvDescriptorSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-    CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(mRtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
-
-    XMVECTOR tmp = XMLoadFloat4(&mClearColor);
-
-    mRenderTexture = make_unique<BaseRenderTexture>(DXGI_FORMAT_R8G8B8A8_UNORM);
-    mRenderTextureHandle = mUIHeap->GetHeapHandleBlock(1);
-
-    mRenderTexture->SetClearColor(tmp);
-    mRenderTexture->SetDevice(device, mRenderTextureHandle.GetCPUHandle(), rtvHandle);
-
     SetSize(width, height);
+}
+
+void BaseCamera::SetRenderTexture(shared_ptr<BaseRenderTexture> renderTexture)
+{
+    mRenderTexture = renderTexture;
+    if (mRenderTexture->mHeight != mHeight || mRenderTexture->mWidth != mWidth)
+    {
+        mRenderTexture->SetWindow(mScissorRect);
+    }
 }
 
 D3D12_CPU_DESCRIPTOR_HANDLE BaseCamera::DepthBufferView() const
@@ -75,7 +58,10 @@ void BaseCamera::SetSize(float width, float height)
     XMMATRIX P = XMMatrixPerspectiveFovLH(0.25f * 3.1415926535f, static_cast<float>(width) / height, mNearZ, mFarZ);
     XMStoreFloat4x4(&mProj, P);
 
-    mRenderTexture->SetWindow(mScissorRect);
+    if (mRenderTexture != nullptr)
+    {
+        mRenderTexture->SetWindow(mScissorRect);
+    }
 
     auto hprop = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
     auto rdesc = CD3DX12_RESOURCE_DESC::Tex2D(
@@ -140,11 +126,10 @@ void BaseCamera::BeginScene(ID3D12GraphicsCommandList* commandList)
     commandList->RSSetViewports(1, &mViewport);
     commandList->RSSetScissorRects(1, &mScissorRect);
 
-    D3D12_CPU_DESCRIPTOR_HANDLE rtv = mRenderTexture->m_rtvDescriptor;
+    D3D12_CPU_DESCRIPTOR_HANDLE rtv = mRenderTexture->mRtvDescriptor;
     D3D12_CPU_DESCRIPTOR_HANDLE dsv = DepthBufferView();
 
-    const float clearColor[] = { mClearColor.x, mClearColor.y, mClearColor.z, mClearColor.w };
-    commandList->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
+    commandList->ClearRenderTargetView(rtv, mRenderTexture->mClearColor, 0, nullptr);
     commandList->ClearDepthStencilView(dsv, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
     commandList->OMSetRenderTargets(1, &rtv, false, &dsv);
@@ -155,15 +140,7 @@ void BaseCamera::EndScene(ID3D12GraphicsCommandList* commandList)
     mRenderTexture->EndScene(commandList);
 }
 
-const BaseDescHeapHandle& BaseCamera::GetRenderTextureHandle()
+const BaseDescHeapHandle& BaseCamera::GetRenderTextureSRVHandle()
 {
-    return mRenderTextureHandle;
-}
-
-
-void BaseCamera::SetClearColor(XMFLOAT4 clearColor)
-{
-    mClearColor = clearColor;
-    XMVECTOR tmp = XMLoadFloat4(&mClearColor);
-    mRenderTexture->SetClearColor(tmp);
+    return mRenderTexture->mSRVHandle;
 }
