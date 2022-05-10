@@ -40,7 +40,7 @@ public:
 
 	void AppendCBVDescTable();
 
-private:
+	
 	int mRegCnt;
 
 	ComPtr<ID3D12RootSignature> mRootSig;
@@ -52,6 +52,6 @@ private:
 
 	void InitRootSig();
 	void InitInputLayout();
-	void InitPSO();
+	virtual void InitPSO();
 };
 

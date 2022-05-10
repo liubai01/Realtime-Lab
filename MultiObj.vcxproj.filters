@@ -61,6 +61,12 @@
     <Filter Include="Source Files\Core\GUI">
       <UniqueIdentifier>{02eabdbe-5b78-4bce-8760-f39cfe016429}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Core\DrawContext">
+      <UniqueIdentifier>{9a79c226-dbc9-44bf-9781-e6439cc8956f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core\DrawContext">
+      <UniqueIdentifier>{dcf93511-6acd-403c-91b0-404483030b34}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MultiObj.cpp">
@@ -191,6 +197,12 @@
     </ClCompile>
     <ClCompile Include="Base\BaseDepthRenderTexture.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\DrawContext\CoreDrawDiffuseContext.cpp">
+      <Filter>Source Files\Core\DrawContext</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\DrawContext\CoreDrawEdgeContext.cpp">
+      <Filter>Source Files\Core\DrawContext</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -334,6 +346,12 @@
     </ClInclude>
     <ClInclude Include="Base\BaseDepthRenderTexture.h">
       <Filter>Header Files\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\DrawContext\CoreDrawDiffuseContext.h">
+      <Filter>Header Files\Core\DrawContext</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\DrawContext\CoreDrawEdgeContext.h">
+      <Filter>Header Files\Core\DrawContext</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

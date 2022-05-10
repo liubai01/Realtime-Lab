@@ -38,7 +38,7 @@ void CoreGUIManager::Render(ID3D12GraphicsCommandList* commandList)
     // We are not required to set the viewports, the ImGUI would handle those kind of stuff
     D3D12_CPU_DESCRIPTOR_HANDLE rtv = mApp->CurrentBackBufferView();
     commandList->OMSetRenderTargets(1, &rtv, false, nullptr);
-    commandList->SetDescriptorHeaps(1, mApp->mUIRuntimeHeap->mDescHeap.GetAddressOf());
+    commandList->SetDescriptorHeaps(1, mApp->mRuntimeHeap->mDescHeap.GetAddressOf());
 
     ImGui::Render();
     ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList);

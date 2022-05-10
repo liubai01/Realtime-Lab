@@ -29,12 +29,13 @@ struct BaseCameraConstant {
 class BaseCamera: public BaseStagedBuffer<BaseCameraConstant>
 {
 public:
-	BaseCamera(ID3D12Device* device, BaseRuntimeHeap* mUIHeap, float width, float height, float nearZ=1.0f, float FarZ=1000.0f);
+	BaseCamera(ID3D12Device* device, float width, float height, float nearZ=1.0f, float FarZ=1000.0f);
 
 	void SetPos(float x, float y, float z);
 	void SetSize(float width, float height);
 
 	void SetRenderTexture(shared_ptr<BaseRenderTexture> renderTexture);
+	void SetDepthWrite(bool depthOn);
 
 	void BeginScene(ID3D12GraphicsCommandList* commandList);
 	void EndScene(ID3D12GraphicsCommandList* commandList);
@@ -62,6 +63,7 @@ private:
 	ComPtr<ID3D12Resource> mDepthStencilBuffer;
 	ComPtr<ID3D12DescriptorHeap> mDepthDescriptorHeap;
 	D3D12_CPU_DESCRIPTOR_HANDLE DepthBufferView() const;
+	bool mDepthOn;
 
 	// render texture
 	shared_ptr<BaseRenderTexture> mRenderTexture;

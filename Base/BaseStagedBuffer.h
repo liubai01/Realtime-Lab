@@ -18,7 +18,7 @@ public:
   bool mRuntimeRegistered;
   // would be invoked when GetHandle()
   virtual void Upload() {};
-  BaseDescHeapHandle GetHandle();
+  BaseDescHeapHandle GetRuntimeHandle();
 
 
   BaseUploadHeap<T> mBuffer;
@@ -59,7 +59,7 @@ void BaseStagedBuffer<T>::RegisterRuntimeHandle(BaseRuntimeHeap* heap)
 }
 
 template <class T>
-BaseDescHeapHandle BaseStagedBuffer<T>::GetHandle()
+BaseDescHeapHandle BaseStagedBuffer<T>::GetRuntimeHandle()
 {
   if (!mRuntimeRegistered)
   {

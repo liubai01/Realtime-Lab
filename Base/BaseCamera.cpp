@@ -1,6 +1,6 @@
 #include "BaseCamera.h"
 
-BaseCamera::BaseCamera(ID3D12Device* device, BaseRuntimeHeap* mUIHeap, float width, float height, float nearZ, float farZ) : BaseStagedBuffer(device)
+BaseCamera::BaseCamera(ID3D12Device* device, float width, float height, float nearZ, float farZ) : BaseStagedBuffer(device)
 {
     mNearZ = nearZ;
     mFarZ = farZ;
@@ -18,7 +18,14 @@ BaseCamera::BaseCamera(ID3D12Device* device, BaseRuntimeHeap* mUIHeap, float wid
     }
 
     mDepthDescriptorHeap->SetName(L"Depth/Stencil Resource Heap");
+    mDepthOn = true;
+
     SetSize(width, height);
+}
+
+void BaseCamera::SetDepthWrite(bool depthOn)
+{
+    mDepthOn = depthOn;
 }
 
 void BaseCamera::SetRenderTexture(shared_ptr<BaseRenderTexture> renderTexture)
@@ -126,13 +133,24 @@ void BaseCamera::BeginScene(ID3D12GraphicsCommandList* commandList)
     commandList->RSSetViewports(1, &mViewport);
     commandList->RSSetScissorRects(1, &mScissorRect);
 
-    D3D12_CPU_DESCRIPTOR_HANDLE rtv = mRenderTexture->mRtvDescriptor;
-    D3D12_CPU_DESCRIPTOR_HANDLE dsv = DepthBufferView();
+    if (mDepthOn)
+    {
+        D3D12_CPU_DESCRIPTOR_HANDLE rtv = mRenderTexture->mRtvDescriptor;
+        D3D12_CPU_DESCRIPTOR_HANDLE dsv = DepthBufferView();
 
-    commandList->ClearRenderTargetView(rtv, mRenderTexture->mClearColor, 0, nullptr);
-    commandList->ClearDepthStencilView(dsv, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+        commandList->ClearRenderTargetView(rtv, mRenderTexture->mClearColor, 0, nullptr);
+        commandList->ClearDepthStencilView(dsv, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
-    commandList->OMSetRenderTargets(1, &rtv, false, &dsv);
+        commandList->OMSetRenderTargets(1, &rtv, false, &dsv);
+    }
+    else {
+        D3D12_CPU_DESCRIPTOR_HANDLE rtv = mRenderTexture->mRtvDescriptor;
+
+        commandList->ClearRenderTargetView(rtv, mRenderTexture->mClearColor, 0, nullptr);
+
+        commandList->OMSetRenderTargets(1, &rtv, false, nullptr);
+    }
+
 }
 
 void BaseCamera::EndScene(ID3D12GraphicsCommandList* commandList)

@@ -88,7 +88,7 @@ public:
 
   BaseMainHeap* mMainHeap;
   BaseRuntimeHeap* mRuntimeHeap;
-  BaseRuntimeHeap* mUIRuntimeHeap;
+  BaseDescHeapHandle mUIResourceHandle;
 
   static BaseApp* mApp;
 };

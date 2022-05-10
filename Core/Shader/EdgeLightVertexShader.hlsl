@@ -27,7 +27,8 @@ VertexOut main(VertexIn vin)
 	VertexOut ret;
 
 	// extrude
-	ret.Pos = float4(vin.Pos + vin.Norm * 0.01f, 1.0f);
+	//ret.Pos = float4(vin.Pos + vin.Norm * 0.01f, 1.0f);
+	ret.Pos = float4(vin.Pos, 1.0f);
 	ret.Pos = mul(ret.Pos, gWorld);
 	ret.Pos = mul(ret.Pos, gViewProj);
 

@@ -169,6 +169,8 @@
     <ClCompile Include="Core\CoreMaterial.cpp" />
     <ClCompile Include="Core\CoreMaterialManager.cpp" />
     <ClCompile Include="Core\CoreRenderTextureManager.cpp" />
+    <ClCompile Include="Core\DrawContext\CoreDrawDiffuseContext.cpp" />
+    <ClCompile Include="Core\DrawContext\CoreDrawEdgeContext.cpp" />
     <ClCompile Include="Core\GUI\CoreGUIManager.cpp" />
     <ClCompile Include="Core\GUI\CoreHierarchyWidget.cpp" />
     <ClCompile Include="Core\GUI\CoreInspectorWidget.cpp" />
@@ -214,6 +216,8 @@
     <ClInclude Include="Core\CoreMaterial.h" />
     <ClInclude Include="Core\CoreMaterialManager.h" />
     <ClInclude Include="Core\CoreRenderTextureManager.h" />
+    <ClInclude Include="Core\DrawContext\CoreDrawDiffuseContext.h" />
+    <ClInclude Include="Core\DrawContext\CoreDrawEdgeContext.h" />
     <ClInclude Include="Core\GUI\CoreGUIManager.h" />
     <ClInclude Include="Core\GUI\CoreHierarchyWidget.h" />
     <ClInclude Include="Core\GUI\CoreInspectorWidget.h" />

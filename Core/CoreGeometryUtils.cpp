@@ -74,3 +74,34 @@ CoreGeometry GetCubeGeometry()
 
   return geo;
 }
+
+
+CoreGeometry GetPlaneGeometry()
+{
+    CoreGeometry geo;
+    geo.mName = "Plane";
+    geo.mVertices = {
+        // front
+        { { -1.0f, +1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, {0.0f, 0.0f} },
+        { { +1.0f, -1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, {1.0f, 1.0f} },
+        { { -1.0f, -1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, {1.0f, 0.0f} },
+        { { +1.0f, +1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, {0.0f, 1.0f} },
+    };
+    geo.mIndices = {
+        // ffront face
+        0, 1, 2, // first triangle
+        0, 3, 1, // second triangle
+    };
+
+    vector<XMFLOAT3*> norms;
+    vector<XMFLOAT3*> pos;
+
+    for (auto& v : geo.mVertices) {
+        pos.push_back(&v.pos);
+        norms.push_back(&v.normal);
+    }
+
+    geo.ComputeNormal();
+
+    return geo;
+}

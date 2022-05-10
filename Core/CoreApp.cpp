@@ -8,6 +8,7 @@
 CoreApp::CoreApp(HINSTANCE hInstance) : BaseApp(hInstance)
 {
   mUploadCmdList = make_unique<BaseDirectCommandList>(mDevice.Get());
+  mUIDrawCmdList = make_unique<BaseDirectCommandList>(mDevice.Get());
 
   mMaterialManager = make_unique<CoreMaterialManager>(mDevice.Get());
   mLightManager = make_unique<CoreLightManager>(mDevice.Get());
@@ -15,53 +16,20 @@ CoreApp::CoreApp(HINSTANCE hInstance) : BaseApp(hInstance)
   mLightManager->RegisterMainHandle(mMainHeap);
   mGUIManager = make_unique<CoreGUIManager>(this);
 
-  mRenderTextureManager = make_unique<CoreRenderTextureManager>(mUIRuntimeHeap, mDevice.Get());
+  mRenderTextureManager = make_unique<CoreRenderTextureManager>(mRuntimeHeap, mDevice.Get());
   mSceneRenderTexture = mRenderTextureManager->AllocateRenderTexture();
   mEdgeRenderTexture = mRenderTextureManager->AllocateRenderTexture();
+
+  shared_ptr<CoreGeometry> planeGeo = make_shared<CoreGeometry>(GetPlaneGeometry());
+  mFullScreenPlane = make_unique<CoreMeshComponent>(planeGeo);
 
   mMainCamera->SetRenderTexture(mSceneRenderTexture);
 
   // Diffuse Draw Context
-  mDrawContext = make_unique<BaseDrawContext>(mDevice.Get());
-  // Set input layout
-  mDrawContext->mInputLayout =
-  {
-      { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-      { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-      { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0}
-  };
-
-  mDrawContext->mShader.AddVertexShader("Core\\Shader\\DiffuseVertexShader.hlsl");
-  mDrawContext->mShader.AddPixelShader("Core\\Shader\\DiffusePixelShader.hlsl");
-
-  // b0: transform buffer
-  // b1: camera buffer
-  // b2: matereial buffer
-  // b3: light buffer
-  for (int i = 0; i < 4; ++i)
-  {
-      mDrawContext->AppendCBVDescTable();
-  }
+  mDrawContext = make_unique<CoreDrawDiffuseContext>(mDevice.Get());
 
   // Edge Light Draw Context
-  mEdgeLightDrawContext = make_unique<BaseDrawContext>(mDevice.Get());
-  // Set input layout
-  mEdgeLightDrawContext->mInputLayout =
-  {
-      { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-      { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-      { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0}
-  };
-
-  mEdgeLightDrawContext->mShader.AddVertexShader("Core\\Shader\\EdgeLightVertexShader.hlsl");
-  mEdgeLightDrawContext->mShader.AddPixelShader("Core\\Shader\\EdgeLightPixelShader.hlsl");
-
-  // b0: transform buffer
-  // b1: camera buffer
-  for (int i = 0; i < 2; ++i)
-  {
-      mEdgeLightDrawContext->AppendCBVDescTable();
-  }
+  mEdgeLightDrawContext = make_unique<CoreDrawEdgeContext>(mDevice.Get());
 }
 
 void CoreApp::Start() 
@@ -87,33 +55,10 @@ void CoreApp::Render()
   mMainCamera->RegisterRuntimeHandle(mRuntimeHeap);
 
   UploadGeometry();
-
-  mDrawContext->ResetCommandList();
-  ID3D12GraphicsCommandList* commandList = mDrawContext->mCommandList.Get();
-  auto trans = CD3DX12_RESOURCE_BARRIER::Transition(
-      mRenderTargets[mFrameIdx].Get(),
-      D3D12_RESOURCE_STATE_PRESENT,
-      D3D12_RESOURCE_STATE_RENDER_TARGET
-  );
-  commandList->ResourceBarrier(
-      1,
-      &trans
-  );
-
+  RenderEdgeLightPre();
   RenderObjects();
-  mGUIManager->Render(mDrawContext->mCommandList.Get());
-
-  trans = CD3DX12_RESOURCE_BARRIER::Transition(
-      mRenderTargets[mFrameIdx].Get(),
-      D3D12_RESOURCE_STATE_RENDER_TARGET,
-      D3D12_RESOURCE_STATE_PRESENT
-  );
-  commandList->ResourceBarrier(
-      1,
-      &trans
-  );
+  RenderUI();
   
-  Flush(mDrawContext->mCommandList.Get());
   Swap();
 }
 
@@ -145,34 +90,41 @@ void CoreApp::UploadGeometry()
             }
         }
     }
+
+    // this full screen plane would be used when lighting edge
+    if (!mFullScreenPlane->mUploaded)
+    {
+        mFullScreenPlane->Upload(mDevice.Get(), mUploadCmdList->mCommandList.Get());
+    }
+    
     Enqueue(mUploadCmdList->mCommandList.Get());
 }
 
-void CoreApp::RenderObjects()
+void CoreApp::RenderEdgeLightPre()
 {
-    ID3D12GraphicsCommandList* commandList = mDrawContext->mCommandList.Get();
+    mEdgeLightDrawContext->ResetCommandList();
+    ID3D12GraphicsCommandList* commandList = mEdgeLightDrawContext->mCommandList.Get();
 
-    //mMainCamera->SetRenderTexture(mEdgeRenderTexture);
+    mMainCamera->SetRenderTexture(mEdgeRenderTexture);
+    mMainCamera->SetDepthWrite(false);
     mMainCamera->BeginScene(commandList);
 
-    commandList->SetGraphicsRootSignature(mDrawContext->GetRootSig());
+    commandList->SetGraphicsRootSignature(mEdgeLightDrawContext->GetRootSig());
 
     ID3D12DescriptorHeap* descriptorHeaps[] = { mRuntimeHeap->mDescHeap.Get() };
     commandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
-    
-    commandList->SetGraphicsRootDescriptorTable(1, mMainCamera->GetHandle().GetGPUHandle());
-    commandList->SetGraphicsRootDescriptorTable(3, mLightManager->mLightData.GetHandle().GetGPUHandle());
+
+    commandList->SetGraphicsRootDescriptorTable(1, mMainCamera->GetRuntimeHandle().GetGPUHandle());
 
     for (auto& elem : mGOManager->mObjs)
     {
         shared_ptr<BaseObject>& obj = elem.second;
-        commandList->SetGraphicsRootDescriptorTable(0, obj->mTransform.GetHandle().GetGPUHandle());
+        commandList->SetGraphicsRootDescriptorTable(0, obj->mTransform.GetRuntimeHandle().GetGPUHandle());
         for (auto component : obj->mComponents)
         {
             if (component->mComponentType == BaseComponentType::BASE_COMPONENT_MESH)
             {
                 CoreMeshComponent* com = static_cast<CoreMeshComponent*>(&(*component));
-                commandList->SetGraphicsRootDescriptorTable(2, com->mMat->GetHandle().GetGPUHandle());
 
                 D3D12_INDEX_BUFFER_VIEW ibView = com->mIndexBufferView;
                 D3D12_VERTEX_BUFFER_VIEW vbView = com->mVertexBufferView;
@@ -190,7 +142,83 @@ void CoreApp::RenderObjects()
     }
 
     mMainCamera->EndScene(commandList);
-    //mMainCamera->SetRenderTexture(mSceneRenderTexture);
+    Enqueue(mEdgeLightDrawContext->mCommandList.Get());
+}
+
+void CoreApp::RenderUI()
+{
+    mUIDrawCmdList->ResetCommandList();
+    ID3D12GraphicsCommandList* commandList = mUIDrawCmdList->mCommandList.Get();
+    auto trans = CD3DX12_RESOURCE_BARRIER::Transition(
+        mRenderTargets[mFrameIdx].Get(),
+        D3D12_RESOURCE_STATE_PRESENT,
+        D3D12_RESOURCE_STATE_RENDER_TARGET
+    );
+    commandList->ResourceBarrier(
+        1,
+        &trans
+    );
+
+    mGUIManager->Render(commandList);
+
+    trans = CD3DX12_RESOURCE_BARRIER::Transition(
+        mRenderTargets[mFrameIdx].Get(),
+        D3D12_RESOURCE_STATE_RENDER_TARGET,
+        D3D12_RESOURCE_STATE_PRESENT
+    );
+    commandList->ResourceBarrier(
+        1,
+        &trans
+    );
+
+    Flush(commandList); // this is the last step
+}
+
+void CoreApp::RenderObjects()
+{
+    mDrawContext->ResetCommandList();
+    ID3D12GraphicsCommandList* commandList = mDrawContext->mCommandList.Get();
+
+    mMainCamera->SetRenderTexture(mSceneRenderTexture);
+    mMainCamera->SetDepthWrite(true);
+    mMainCamera->BeginScene(commandList);
+
+    commandList->SetGraphicsRootSignature(mDrawContext->GetRootSig());
+
+    ID3D12DescriptorHeap* descriptorHeaps[] = { mRuntimeHeap->mDescHeap.Get() };
+    commandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
+    
+    commandList->SetGraphicsRootDescriptorTable(1, mMainCamera->GetRuntimeHandle().GetGPUHandle());
+    commandList->SetGraphicsRootDescriptorTable(3, mLightManager->mLightData.GetRuntimeHandle().GetGPUHandle());
+
+    for (auto& elem : mGOManager->mObjs)
+    {
+        shared_ptr<BaseObject>& obj = elem.second;
+        commandList->SetGraphicsRootDescriptorTable(0, obj->mTransform.GetRuntimeHandle().GetGPUHandle());
+        for (auto component : obj->mComponents)
+        {
+            if (component->mComponentType == BaseComponentType::BASE_COMPONENT_MESH)
+            {
+                CoreMeshComponent* com = static_cast<CoreMeshComponent*>(&(*component));
+                commandList->SetGraphicsRootDescriptorTable(2, com->mMat->GetRuntimeHandle().GetGPUHandle());
+
+                D3D12_INDEX_BUFFER_VIEW ibView = com->mIndexBufferView;
+                D3D12_VERTEX_BUFFER_VIEW vbView = com->mVertexBufferView;
+
+                commandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+                commandList->IASetVertexBuffers(0, 1, &vbView);
+                commandList->IASetIndexBuffer(&ibView);
+
+                commandList->DrawIndexedInstanced(
+                    static_cast<UINT>(com->mGeo->mIndices.size()),
+                    1, 0, 0, 0
+                );
+            }
+        }
+    }
+
+    mMainCamera->EndScene(commandList);
+    Enqueue(mDrawContext->mCommandList.Get());
 }
 
 

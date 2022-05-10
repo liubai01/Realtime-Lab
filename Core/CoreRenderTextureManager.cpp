@@ -1,8 +1,8 @@
 #include "CoreRenderTextureManager.h"
 
-CoreRenderTextureManager::CoreRenderTextureManager(BaseRuntimeHeap* UIRuntimeHeap, ID3D12Device* device)
+CoreRenderTextureManager::CoreRenderTextureManager(BaseRuntimeHeap* runtimeHeap, ID3D12Device* device)
 {
-	mUIRuntimeHeap = UIRuntimeHeap;
+	mRuntimeHeap = runtimeHeap;
 	mDevice = device;
     mSize = 16; // TBD: configurable and could grow
     mCnt = 0;
@@ -31,7 +31,8 @@ std::shared_ptr<BaseRenderTexture> CoreRenderTextureManager::AllocateRenderTextu
     retTexture = std::make_shared<BaseRenderTexture>(DXGI_FORMAT_R8G8B8A8_UNORM);
 
     retTexture->SetClearColor(XMLoadFloat4(&clearColor));
-    retTexture->SetDevice(mDevice, mUIRuntimeHeap->GetHeapHandleBlock(1), rtvHandle);
+    retTexture->SetDevice(mDevice, mRuntimeHeap->GetHeapHandleStaticBlock(), rtvHandle);
+
 
     return retTexture;
 }

@@ -11,7 +11,10 @@
 #include "CoreLightManager.h"
 #include "CoreRenderTextureManager.h"
 #include "GUI/CoreGUIManager.h"
+#include "DrawContext/CoreDrawDiffuseContext.h"
+#include "DrawContext/CoreDrawEdgeContext.h"
 #include <memory>
+#include "Component/CoreMeshComponent.h"
 
 #include "../ThirdParty/ImGUI/imgui.h"
 #include "../ThirdParty/ImGUI/imgui_impl_win32.h"
@@ -21,10 +24,12 @@
 __declspec(align(16)) class CoreApp : public BaseApp
 {
 public:
-  unique_ptr<BaseDrawContext> mDrawContext;
-  unique_ptr<BaseDrawContext> mEdgeLightDrawContext;
+  unique_ptr<CoreDrawDiffuseContext> mDrawContext;
+  unique_ptr<CoreDrawEdgeContext> mEdgeLightDrawContext;
+  unique_ptr<CoreMeshComponent> mFullScreenPlane;
 
   unique_ptr<BaseDirectCommandList> mUploadCmdList;
+  unique_ptr<BaseDirectCommandList> mUIDrawCmdList;
 
   unique_ptr<CoreMaterialManager> mMaterialManager;
   unique_ptr<CoreLightManager> mLightManager;
@@ -45,6 +50,8 @@ public:
 
   void UploadGeometry();
   void RenderObjects();
+  void RenderEdgeLightPre();
+  void RenderUI();
 
   void* operator new(size_t i)
   {

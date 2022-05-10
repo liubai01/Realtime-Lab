@@ -18,54 +18,54 @@ ID3D12RootSignature* BaseDrawContext::GetRootSig()
 
 void BaseDrawContext::InitRootSig()
 {
-  CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc;
+    CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc;
 
-  // create a static sampler
-  D3D12_STATIC_SAMPLER_DESC sampler = {};
-  sampler.Filter = D3D12_FILTER_MIN_MAG_MIP_POINT;
-  sampler.AddressU = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
-  sampler.AddressV = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
-  sampler.AddressW = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
-  sampler.MipLODBias = 0;
-  sampler.MaxAnisotropy = 0;
-  sampler.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;
-  sampler.BorderColor = D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK;
-  sampler.MinLOD = 0.0f;
-  sampler.MaxLOD = D3D12_FLOAT32_MAX;
-  sampler.ShaderRegister = 0;
-  sampler.RegisterSpace = 0;
-  sampler.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+    // create a static sampler
+    D3D12_STATIC_SAMPLER_DESC sampler = {};
+    sampler.Filter = D3D12_FILTER_MIN_MAG_MIP_POINT;
+    sampler.AddressU = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+    sampler.AddressV = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+    sampler.AddressW = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+    sampler.MipLODBias = 0;
+    sampler.MaxAnisotropy = 0;
+    sampler.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;
+    sampler.BorderColor = D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK;
+    sampler.MinLOD = 0.0f;
+    sampler.MaxLOD = D3D12_FLOAT32_MAX;
+    sampler.ShaderRegister = 0;
+    sampler.RegisterSpace = 0;
+    sampler.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 
-  rootSigDesc.Init(
+    rootSigDesc.Init(
     mRootParams.size(),
     mRootParams.data(),
     1,
     &sampler,
     D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT
-  );
+    );
 
-  ComPtr<ID3DBlob> signature;
-  HRESULT hr = D3D12SerializeRootSignature(
+    ComPtr<ID3DBlob> signature;
+    HRESULT hr = D3D12SerializeRootSignature(
     &rootSigDesc,
     D3D_ROOT_SIGNATURE_VERSION_1,
     signature.GetAddressOf(),
     nullptr
-  );
-  if (FAILED(hr))
-  {
-    dout::printf("Signature Blob(CPU) Failed");
-  }
+    );
+    if (FAILED(hr))
+    {
+        dout::printf("Signature Blob(CPU) Failed");
+    }
 
-  hr = mDevice->CreateRootSignature(
+    hr = mDevice->CreateRootSignature(
     0,
     signature->GetBufferPointer(),
     signature->GetBufferSize(),
     IID_PPV_ARGS(mRootSig.GetAddressOf())
-  );
-  if (FAILED(hr))
-  {
-    dout::printf("RootSignature Created Failed!");
-  }
+    );
+    if (FAILED(hr))
+    {
+        dout::printf("RootSignature Created Failed!");
+    }
 
 }
 
