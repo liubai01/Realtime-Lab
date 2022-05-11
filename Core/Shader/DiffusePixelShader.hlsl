@@ -9,6 +9,7 @@ cbuffer cbCamera : register(b1)
 {
 	float4x4 gViewProj;
 	float4 gEyePos;
+	float4 gWindowSize;
 };
 
 cbuffer matPerObject: register(b2)

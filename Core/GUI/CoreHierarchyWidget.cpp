@@ -58,26 +58,20 @@ void CoreHierarchyWidget::Update()
 {
 	ImGui::Begin("Hierarchy");
 
-	ImGui::Text("Keys down:");
-	const ImGuiKey key_first = 0;
-	struct funcs { 
-		static bool IsLegacyNativeDupe(ImGuiKey key) 
-		{ 
-			return key < 512 && ImGui::GetIO().KeyMap[key] != -1; 
-		} 
-	}; // Hide Native<>ImGuiKey duplicates when both exists in the array
+	ImGuiIO& io = ImGui::GetIO();
+	int count = IM_ARRAYSIZE(io.MouseDown);
 
-	for (ImGuiKey key = key_first; key < ImGuiKey_COUNT; key++) 
-	{ 
-		if (funcs::IsLegacyNativeDupe(key)) continue; 
-		if (ImGui::IsKeyDown(key)) 
-		{ 
-			ImGui::SameLine(); 
-			ImGui::Text("\"%s\" %d (%.02f secs)", ImGui::GetKeyName(key), key, ImGui::GetKeyData(key)->DownDuration); 
-		} 
+	ImVec2 vMin = ImGui::GetWindowContentRegionMin();
+	ImVec2 vMax = ImGui::GetWindowContentRegionMax();
+
+	// if left click in hierarchy menu, reset mNowSelectObjectPtr by default
+	if (ImGui::IsMouseClicked(0))
+	{
+		if (io.MousePos.x > vMin.x && io.MousePos.x < vMax.x && io.MousePos.y > vMin.y && io.MousePos.y < vMax.y)
+		{
+			*mNowSelectObjectPtr = nullptr;
+		}
 	}
-	/*ImGui::Text("Keys pressed:");       for (ImGuiKey key = key_first; key < ImGuiKey_COUNT; key++) { if (funcs::IsLegacyNativeDupe(key)) continue; if (ImGui::IsKeyPressed(key)) { ImGui::SameLine(); ImGui::Text("\"%s\" %d", ImGui::GetKeyName(key), key); } }
-	ImGui::Text("Keys released:");      for (ImGuiKey key = key_first; key < ImGuiKey_COUNT; key++) { if (funcs::IsLegacyNativeDupe(key)) continue; if (ImGui::IsKeyReleased(key)) { ImGui::SameLine(); ImGui::Text("\"%s\" %d", ImGui::GetKeyName(key), key); } }*/
 
 	for (BaseObject* obj : mGOManager->mRootObjects)
 	{

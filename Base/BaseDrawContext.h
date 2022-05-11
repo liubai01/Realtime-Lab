@@ -26,8 +26,6 @@ public:
 	// root params would carry a pointer to descriptor range, which is stored here
 	vector<vector<D3D12_DESCRIPTOR_RANGE>> mDescTableRanges;
 
-  
-
 	vector<D3D12_INPUT_ELEMENT_DESC> mInputLayout;
 	BaseShaderManager mShader;
   
@@ -39,7 +37,7 @@ public:
 	ID3D12RootSignature* GetRootSig();
 
 	void AppendCBVDescTable();
-
+	void AppendSRVDescTable();
 	
 	int mRegCnt;
 

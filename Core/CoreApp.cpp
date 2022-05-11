@@ -18,7 +18,10 @@ CoreApp::CoreApp(HINSTANCE hInstance) : BaseApp(hInstance)
 
   mRenderTextureManager = make_unique<CoreRenderTextureManager>(mRuntimeHeap, mDevice.Get());
   mSceneRenderTexture = mRenderTextureManager->AllocateRenderTexture();
+  mSceneRenderTexture->SetClearColor({ 0.0f, 0.0f, 0.0f, 0.0f });
   mEdgeRenderTexture = mRenderTextureManager->AllocateRenderTexture();
+  mEdgeRenderTexture->SetClearColor({0.0f, 0.0f, 0.0f, 0.0f});
+  mEdgeBlurredRenderTexture = mRenderTextureManager->AllocateRenderTexture();
 
   shared_ptr<CoreGeometry> planeGeo = make_shared<CoreGeometry>(GetPlaneGeometry());
   mFullScreenPlane = make_unique<CoreMeshComponent>(planeGeo);
@@ -30,6 +33,9 @@ CoreApp::CoreApp(HINSTANCE hInstance) : BaseApp(hInstance)
 
   // Edge Light Draw Context
   mEdgeLightDrawContext = make_unique<CoreDrawEdgeContext>(mDevice.Get());
+
+  // Edge Light Blur Draw Context
+  mBlurDrawContext = make_unique<CoreDrawBlurContext>(mDevice.Get());
 }
 
 void CoreApp::Start() 
@@ -57,6 +63,7 @@ void CoreApp::Render()
   UploadGeometry();
   RenderEdgeLightPre();
   RenderObjects();
+  RenderBlurred();
   RenderUI();
   
   Swap();
@@ -100,6 +107,47 @@ void CoreApp::UploadGeometry()
     Enqueue(mUploadCmdList->mCommandList.Get());
 }
 
+void CoreApp::RenderBlurred()
+{
+    //mEdgeBlurredRenderTexture->SetWindow(mMainCamera->mScissorRect);
+
+    mBlurDrawContext->ResetCommandList();
+    ID3D12GraphicsCommandList* commandList = mBlurDrawContext->mCommandList.Get();
+
+    commandList->SetGraphicsRootSignature(mBlurDrawContext->GetRootSig());
+
+    commandList->RSSetViewports(1, &mMainCamera->mViewport);
+    commandList->RSSetScissorRects(1, &mMainCamera->mScissorRect);
+
+    D3D12_CPU_DESCRIPTOR_HANDLE rtv = mSceneRenderTexture->mRtvDescriptor;
+
+    
+    mSceneRenderTexture->BeginScene(commandList);
+    commandList->OMSetRenderTargets(1, &rtv, false, nullptr);
+
+    ID3D12DescriptorHeap* descriptorHeaps[] = { mRuntimeHeap->mDescHeap.Get() };
+    commandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
+    commandList->SetGraphicsRootDescriptorTable(0, mEdgeRenderTexture->mSRVHandle.GetGPUHandle());
+    commandList->SetGraphicsRootDescriptorTable(1, mMainCamera->GetRuntimeHandle().GetGPUHandle());
+    
+    CoreMeshComponent* com = &*mFullScreenPlane;
+
+    D3D12_INDEX_BUFFER_VIEW ibView = com->mIndexBufferView;
+    D3D12_VERTEX_BUFFER_VIEW vbView = com->mVertexBufferView;
+
+    commandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    commandList->IASetVertexBuffers(0, 1, &vbView);
+    commandList->IASetIndexBuffer(&ibView);
+
+    commandList->DrawIndexedInstanced(
+        static_cast<UINT>(com->mGeo->mIndices.size()),
+        1, 0, 0, 0
+    );
+    
+    mSceneRenderTexture->EndScene(commandList);
+    Enqueue(mBlurDrawContext->mCommandList.Get());
+}
+
 void CoreApp::RenderEdgeLightPre()
 {
     mEdgeLightDrawContext->ResetCommandList();
@@ -119,6 +167,11 @@ void CoreApp::RenderEdgeLightPre()
     for (auto& elem : mGOManager->mObjs)
     {
         shared_ptr<BaseObject>& obj = elem.second;
+        if (&*obj != mGUIManager->mNowSelectedObject)
+        {
+            continue;
+        }
+        
         commandList->SetGraphicsRootDescriptorTable(0, obj->mTransform.GetRuntimeHandle().GetGPUHandle());
         for (auto component : obj->mComponents)
         {

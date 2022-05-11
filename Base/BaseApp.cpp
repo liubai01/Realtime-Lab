@@ -395,7 +395,6 @@ void BaseApp::InitFence()
       D3D12_FENCE_FLAG_NONE,
       IID_PPV_ARGS(mFence[i].GetAddressOf())
     );
-
     mExpectedFenceValue.push_back(0);
   }
 }

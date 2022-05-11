@@ -24,6 +24,7 @@ using namespace std;
 struct BaseCameraConstant {
   XMFLOAT4X4 ViewProj = Identity4x4();
   XMFLOAT4 EyePos = { 0.0f, 0.0f, 0.0f, 1.0f };
+  XMFLOAT4 WindowSize = { 0.0f, 0.0f, 0.0f, 0.0f };
 };
 
 class BaseCamera: public BaseStagedBuffer<BaseCameraConstant>
@@ -45,16 +46,16 @@ public:
 	float mWidth;
 	float mHeight;
 
-
 	void Upload();
+
+	D3D12_VIEWPORT mViewport;    // area that output from rasterizer will be stretched to.
+	D3D12_RECT mScissorRect;     // the area to draw in. pixels outside that area will not be drawn onto
+
 private:
 	ID3D12Device* mDevice;
 
 	XMFLOAT4X4 mProj;
 	XMFLOAT4 mPos;
-
-	D3D12_VIEWPORT mViewport;    // area that output from rasterizer will be stretched to.
-	D3D12_RECT mScissorRect;     // the area to draw in. pixels outside that area will not be drawn onto
 
 	float mNearZ;
 	float mFarZ;

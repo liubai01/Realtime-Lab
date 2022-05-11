@@ -204,6 +204,9 @@
     <ClCompile Include="Core\DrawContext\CoreDrawEdgeContext.cpp">
       <Filter>Source Files\Core\DrawContext</Filter>
     </ClCompile>
+    <ClCompile Include="Core\DrawContext\CoreDrawBlurContext.cpp">
+      <Filter>Source Files\Core\DrawContext</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -351,6 +354,9 @@
       <Filter>Header Files\Core\DrawContext</Filter>
     </ClInclude>
     <ClInclude Include="Core\DrawContext\CoreDrawEdgeContext.h">
+      <Filter>Header Files\Core\DrawContext</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\DrawContext\CoreDrawBlurContext.h">
       <Filter>Header Files\Core\DrawContext</Filter>
     </ClInclude>
   </ItemGroup>

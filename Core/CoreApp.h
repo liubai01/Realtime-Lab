@@ -13,6 +13,7 @@
 #include "GUI/CoreGUIManager.h"
 #include "DrawContext/CoreDrawDiffuseContext.h"
 #include "DrawContext/CoreDrawEdgeContext.h"
+#include "DrawContext/CoreDrawBlurContext.h"
 #include <memory>
 #include "Component/CoreMeshComponent.h"
 
@@ -26,6 +27,7 @@ __declspec(align(16)) class CoreApp : public BaseApp
 public:
   unique_ptr<CoreDrawDiffuseContext> mDrawContext;
   unique_ptr<CoreDrawEdgeContext> mEdgeLightDrawContext;
+  unique_ptr<CoreDrawBlurContext> mBlurDrawContext;
   unique_ptr<CoreMeshComponent> mFullScreenPlane;
 
   unique_ptr<BaseDirectCommandList> mUploadCmdList;
@@ -38,6 +40,7 @@ public:
 
   shared_ptr<BaseRenderTexture> mSceneRenderTexture;
   shared_ptr<BaseRenderTexture> mEdgeRenderTexture;
+  shared_ptr<BaseRenderTexture> mEdgeBlurredRenderTexture;
   
   CoreApp(HINSTANCE hInstance);
 
@@ -51,6 +54,7 @@ public:
   void UploadGeometry();
   void RenderObjects();
   void RenderEdgeLightPre();
+  void RenderBlurred();
   void RenderUI();
 
   void* operator new(size_t i)

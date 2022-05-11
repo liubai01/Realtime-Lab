@@ -124,6 +124,9 @@ void BaseCamera::Upload()
 
     XMStoreFloat4x4(&mBuffer.mData.ViewProj, XMMatrixTranspose(viewproj));
     mBuffer.mData.EyePos = mPos;
+
+    mBuffer.mData.WindowSize.y = mHeight;
+    mBuffer.mData.WindowSize.x = mWidth;
 }
 
 void BaseCamera::BeginScene(ID3D12GraphicsCommandList* commandList)
