@@ -10,7 +10,7 @@ CoreApp::CoreApp(HINSTANCE hInstance) : BaseApp(hInstance)
   mUploadCmdList = make_unique<BaseDirectCommandList>(mDevice.Get());
   mUIDrawCmdList = make_unique<BaseDirectCommandList>(mDevice.Get());
 
-  mMaterialManager = make_unique<CoreMaterialManager>(mDevice.Get());
+  mMaterialManager = make_unique<CoreMaterialManager>(mDevice.Get(), mMainHeap);
   mLightManager = make_unique<CoreLightManager>(mDevice.Get());
 
   mLightManager->RegisterMainHandle(mMainHeap);
@@ -18,13 +18,13 @@ CoreApp::CoreApp(HINSTANCE hInstance) : BaseApp(hInstance)
 
   mRenderTextureManager = make_unique<CoreRenderTextureManager>(mRuntimeHeap, mDevice.Get());
   mSceneRenderTexture = mRenderTextureManager->AllocateRenderTexture();
-  mSceneRenderTexture->SetClearColor({ 0.0f, 0.0f, 0.0f, 0.0f });
+  mSceneRenderTexture->SetClearColor({ 0.1f, 0.1f, 0.3f, 1.0f });
   mEdgeRenderTexture = mRenderTextureManager->AllocateRenderTexture();
   mEdgeRenderTexture->SetClearColor({0.0f, 0.0f, 0.0f, 0.0f});
-  mEdgeBlurredRenderTexture = mRenderTextureManager->AllocateRenderTexture();
 
   shared_ptr<CoreGeometry> planeGeo = make_shared<CoreGeometry>(GetPlaneGeometry());
-  mFullScreenPlane = make_unique<CoreMeshComponent>(planeGeo);
+  mFullScreenPlane = make_unique<CoreMeshComponent>();
+  mFullScreenPlane->AddGeometry(planeGeo);
 
   mMainCamera->SetRenderTexture(mSceneRenderTexture);
 
@@ -36,6 +36,10 @@ CoreApp::CoreApp(HINSTANCE hInstance) : BaseApp(hInstance)
 
   // Edge Light Blur Draw Context
   mBlurDrawContext = make_unique<CoreDrawBlurContext>(mDevice.Get());
+
+  mMeshLoader = make_unique<CoreMeshLoader>(&*mMaterialManager);
+  
+
 }
 
 void CoreApp::Start() 
@@ -86,7 +90,7 @@ void CoreApp::UploadGeometry()
 
         for (auto component : obj->mComponents)
         {
-            if (component->mComponentType == BaseComponentType::BASE_COMPONENT_MESH)
+            if (component->mComponentType == ComponentType::COMPONENT_MESH)
             {
                 CoreMeshComponent* com = static_cast<CoreMeshComponent*>(&(*component));
                 // component could be shared by multiple objects
@@ -129,20 +133,8 @@ void CoreApp::RenderBlurred()
     commandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
     commandList->SetGraphicsRootDescriptorTable(0, mEdgeRenderTexture->mSRVHandle.GetGPUHandle());
     commandList->SetGraphicsRootDescriptorTable(1, mMainCamera->GetRuntimeHandle().GetGPUHandle());
-    
-    CoreMeshComponent* com = &*mFullScreenPlane;
 
-    D3D12_INDEX_BUFFER_VIEW ibView = com->mIndexBufferView;
-    D3D12_VERTEX_BUFFER_VIEW vbView = com->mVertexBufferView;
-
-    commandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    commandList->IASetVertexBuffers(0, 1, &vbView);
-    commandList->IASetIndexBuffer(&ibView);
-
-    commandList->DrawIndexedInstanced(
-        static_cast<UINT>(com->mGeo->mIndices.size()),
-        1, 0, 0, 0
-    );
+    mFullScreenPlane->Render(commandList);
     
     mSceneRenderTexture->EndScene(commandList);
     Enqueue(mBlurDrawContext->mCommandList.Get());
@@ -175,21 +167,10 @@ void CoreApp::RenderEdgeLightPre()
         commandList->SetGraphicsRootDescriptorTable(0, obj->mTransform.GetRuntimeHandle().GetGPUHandle());
         for (auto component : obj->mComponents)
         {
-            if (component->mComponentType == BaseComponentType::BASE_COMPONENT_MESH)
-            {
+            if (component->mComponentType == ComponentType::COMPONENT_MESH)
+            {     
                 CoreMeshComponent* com = static_cast<CoreMeshComponent*>(&(*component));
-
-                D3D12_INDEX_BUFFER_VIEW ibView = com->mIndexBufferView;
-                D3D12_VERTEX_BUFFER_VIEW vbView = com->mVertexBufferView;
-
-                commandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-                commandList->IASetVertexBuffers(0, 1, &vbView);
-                commandList->IASetIndexBuffer(&ibView);
-
-                commandList->DrawIndexedInstanced(
-                    static_cast<UINT>(com->mGeo->mIndices.size()),
-                    1, 0, 0, 0
-                );
+                com->Render(commandList);
             }
         }
     }
@@ -250,38 +231,14 @@ void CoreApp::RenderObjects()
         commandList->SetGraphicsRootDescriptorTable(0, obj->mTransform.GetRuntimeHandle().GetGPUHandle());
         for (auto component : obj->mComponents)
         {
-            if (component->mComponentType == BaseComponentType::BASE_COMPONENT_MESH)
+            if (component->mComponentType == ComponentType::COMPONENT_MESH)
             {
                 CoreMeshComponent* com = static_cast<CoreMeshComponent*>(&(*component));
-                commandList->SetGraphicsRootDescriptorTable(2, com->mMat->GetRuntimeHandle().GetGPUHandle());
-
-                D3D12_INDEX_BUFFER_VIEW ibView = com->mIndexBufferView;
-                D3D12_VERTEX_BUFFER_VIEW vbView = com->mVertexBufferView;
-
-                commandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-                commandList->IASetVertexBuffers(0, 1, &vbView);
-                commandList->IASetIndexBuffer(&ibView);
-
-                commandList->DrawIndexedInstanced(
-                    static_cast<UINT>(com->mGeo->mIndices.size()),
-                    1, 0, 0, 0
-                );
+                com->Render(commandList, 2);
             }
         }
     }
 
     mMainCamera->EndScene(commandList);
     Enqueue(mDrawContext->mCommandList.Get());
-}
-
-
-shared_ptr<CoreMaterial> CoreApp::CreateMaterial(const string& name)
-{
-    shared_ptr<CoreMaterial> mat = mMaterialManager->CreateMaterial(name);
-    if (mat != nullptr)
-    {
-        mat->RegisterMainHandle(mMainHeap);
-    }
-
-    return mat;
 }

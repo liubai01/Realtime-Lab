@@ -19,6 +19,8 @@ struct CoreMaterialConsts {
 class CoreMaterial: public BaseStagedBuffer<CoreMaterialConsts>
 {
 public:
+	string mName;
+
 	CoreMaterial(ID3D12Device* device);
 	void Upload();
 };

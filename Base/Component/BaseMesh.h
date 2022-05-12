@@ -12,12 +12,10 @@ using namespace DirectX;
 using Microsoft::WRL::ComPtr;
 
 
-class BaseMeshComponent : public BaseComponent
+class BaseMesh
 {
 public:
-  //int mNumIndex = 0;
-
-  BaseMeshComponent();
+  BaseMesh();
 
   // Vertex Buffer
   ComPtr<ID3D12Resource> mVertexBuffer;
@@ -41,16 +39,16 @@ private:
 };
 
 template <class T>
-void BaseMeshComponent::UploadGeo(BaseGeometry<T>& geo, ID3D12Device* device, ID3D12GraphicsCommandList* commandList)
+void BaseMesh::UploadGeo(BaseGeometry<T>& geo, ID3D12Device* device, ID3D12GraphicsCommandList* commandList)
 {
   UploadVertex(geo, device, commandList);
   UploadIndex(geo, device, commandList);
 }
 
 template <class T>
-void BaseMeshComponent::UploadVertex(BaseGeometry<T>& geo, ID3D12Device* device, ID3D12GraphicsCommandList* commandList)
+void BaseMesh::UploadVertex(BaseGeometry<T>& geo, ID3D12Device* device, ID3D12GraphicsCommandList* commandList)
 {
-  int vBufferSize = sizeof(T) * geo.mVertices.size();
+  size_t vBufferSize = sizeof(T) * geo.mVertices.size();
 
   // create default heap
   // default heap is memory on the GPU. Only the GPU has access to this memory
@@ -113,13 +111,13 @@ void BaseMeshComponent::UploadVertex(BaseGeometry<T>& geo, ID3D12Device* device,
   // create a vertex buffer view for the triangle. We get the GPU memory address to the vertex pointer using the GetGPUVirtualAddress() method
   mVertexBufferView.BufferLocation = mVertexBuffer->GetGPUVirtualAddress();
   mVertexBufferView.StrideInBytes = sizeof(T);
-  mVertexBufferView.SizeInBytes = vBufferSize;
+  mVertexBufferView.SizeInBytes = static_cast<UINT>(vBufferSize);
 }
 
 template <class T>
-void BaseMeshComponent::UploadIndex(BaseGeometry<T>& geo, ID3D12Device* device, ID3D12GraphicsCommandList* commandList)
+void BaseMesh::UploadIndex(BaseGeometry<T>& geo, ID3D12Device* device, ID3D12GraphicsCommandList* commandList)
 {
-  int iBufferSize = sizeof(DWORD) * geo.mIndices.size();
+  size_t iBufferSize = sizeof(DWORD) * geo.mIndices.size();
 
   // create default heap to hold index buffer
   auto hprop = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
@@ -173,7 +171,7 @@ void BaseMeshComponent::UploadIndex(BaseGeometry<T>& geo, ID3D12Device* device, 
   // create a vertex buffer view for the triangle. We get the GPU memory address to the vertex pointer using the GetGPUVirtualAddress() method
   mIndexBufferView.BufferLocation = mIndexBuffer->GetGPUVirtualAddress();
   mIndexBufferView.Format = DXGI_FORMAT_R32_UINT; // 32-bit unsigned integer (this is what a dword is, double word, a word is 2 bytes)
-  mIndexBufferView.SizeInBytes = iBufferSize;
+  mIndexBufferView.SizeInBytes = static_cast<UINT>(iBufferSize);
 
   //mNumIndex = geo.mIndices.size();
 }

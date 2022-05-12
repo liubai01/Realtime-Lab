@@ -16,6 +16,7 @@
 #include "DrawContext/CoreDrawBlurContext.h"
 #include <memory>
 #include "Component/CoreMeshComponent.h"
+#include "CoreMeshLoader.h"
 
 #include "../ThirdParty/ImGUI/imgui.h"
 #include "../ThirdParty/ImGUI/imgui_impl_win32.h"
@@ -37,10 +38,10 @@ public:
   unique_ptr<CoreLightManager> mLightManager;
   unique_ptr<CoreGUIManager> mGUIManager;
   unique_ptr<CoreRenderTextureManager> mRenderTextureManager;
+  unique_ptr<CoreMeshLoader> mMeshLoader;
 
   shared_ptr<BaseRenderTexture> mSceneRenderTexture;
   shared_ptr<BaseRenderTexture> mEdgeRenderTexture;
-  shared_ptr<BaseRenderTexture> mEdgeBlurredRenderTexture;
   
   CoreApp(HINSTANCE hInstance);
 

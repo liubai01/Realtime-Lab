@@ -69,9 +69,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="MultiObj.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="DebugOut.cpp">
       <Filter>Source Files\Base</Filter>
     </ClCompile>
@@ -123,7 +120,7 @@
     <ClCompile Include="Base\Component\BaseComponent.cpp">
       <Filter>Source Files\Base\Component</Filter>
     </ClCompile>
-    <ClCompile Include="Base\Component\BaseMeshComponent.cpp">
+    <ClCompile Include="Base\Component\BaseMesh.cpp">
       <Filter>Source Files\Base\Component</Filter>
     </ClCompile>
     <ClCompile Include="Core\CoreGeometry.cpp">
@@ -195,9 +192,6 @@
     <ClCompile Include="Base\BaseUUIDGenerator.cpp">
       <Filter>Source Files\Base</Filter>
     </ClCompile>
-    <ClCompile Include="Base\BaseDepthRenderTexture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Core\DrawContext\CoreDrawDiffuseContext.cpp">
       <Filter>Source Files\Core\DrawContext</Filter>
     </ClCompile>
@@ -206,6 +200,12 @@
     </ClCompile>
     <ClCompile Include="Core\DrawContext\CoreDrawBlurContext.cpp">
       <Filter>Source Files\Core\DrawContext</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\CoreMeshLoader.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\BaseDepthRenderTexture.cpp">
+      <Filter>Source Files\Base</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -217,9 +217,6 @@
     </ClInclude>
     <ClInclude Include="MathUtils.h">
       <Filter>Header Files\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="MultiObj.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ThirdParty\tiny_obj_loader.h">
       <Filter>Header Files\ThirdParty</Filter>
@@ -281,7 +278,7 @@
     <ClInclude Include="Base\Component\BaseComponent.h">
       <Filter>Header Files\Base\Component</Filter>
     </ClInclude>
-    <ClInclude Include="Base\Component\BaseMeshComponent.h">
+    <ClInclude Include="Base\Component\BaseMesh.h">
       <Filter>Header Files\Base\Component</Filter>
     </ClInclude>
     <ClInclude Include="Core\CoreGeometryUtils.h">
@@ -358,6 +355,9 @@
     </ClInclude>
     <ClInclude Include="Core\DrawContext\CoreDrawBlurContext.h">
       <Filter>Header Files\Core\DrawContext</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\CoreMeshLoader.h">
+      <Filter>Header Files\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

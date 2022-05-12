@@ -23,7 +23,7 @@ float4 main(VertexOut pin) : SV_TARGET
 	);
 	int n = 3;
 	float4 ret = { 0.0f, 0.0f, 0.0f, 0.0f };
-	int dialte = 2.0f;
+	int dialte = 1.5f;
 
 	for (int x = -n; x <= n; ++x) {
 		for (int y = -n; y <= n; ++y) {
@@ -32,7 +32,7 @@ float4 main(VertexOut pin) : SV_TARGET
 		}
 	}
 	ret /= (2 * n + 1) * (2 * n + 1);
-	ret += (ret > 0) * 0.5f ;
+	ret += (ret > 0) * 0.5;
 
 	ret = min(ret, 1.0f);
 	

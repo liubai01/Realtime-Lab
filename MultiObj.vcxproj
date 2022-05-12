@@ -160,7 +160,7 @@
     <ClCompile Include="Base\BaseUploadHeap.cpp" />
     <ClCompile Include="Base\BaseUUIDGenerator.cpp" />
     <ClCompile Include="Base\Component\BaseComponent.cpp" />
-    <ClCompile Include="Base\Component\BaseMeshComponent.cpp" />
+    <ClCompile Include="Base\Component\BaseMesh.cpp" />
     <ClCompile Include="Core\Component\CoreMeshComponent.cpp" />
     <ClCompile Include="Core\CoreApp.cpp" />
     <ClCompile Include="Core\CoreGeometry.cpp" />
@@ -168,6 +168,7 @@
     <ClCompile Include="Core\CoreLightManager.cpp" />
     <ClCompile Include="Core\CoreMaterial.cpp" />
     <ClCompile Include="Core\CoreMaterialManager.cpp" />
+    <ClCompile Include="Core\CoreMeshLoader.cpp" />
     <ClCompile Include="Core\CoreRenderTextureManager.cpp" />
     <ClCompile Include="Core\DrawContext\CoreDrawBlurContext.cpp" />
     <ClCompile Include="Core\DrawContext\CoreDrawDiffuseContext.cpp" />
@@ -178,7 +179,6 @@
     <ClCompile Include="Core\GUI\CoreSceneWidget.cpp" />
     <ClCompile Include="DebugOut.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="MultiObj.cpp" />
     <ClCompile Include="ThirdParty\ImGUI\imgui.cpp" />
     <ClCompile Include="ThirdParty\ImGUI\imgui_demo.cpp" />
     <ClCompile Include="ThirdParty\ImGUI\imgui_draw.cpp" />
@@ -208,7 +208,7 @@
     <ClInclude Include="Base\BaseTransform.h" />
     <ClInclude Include="Base\BaseUploadHeap.h" />
     <ClInclude Include="Base\Component\BaseComponent.h" />
-    <ClInclude Include="Base\Component\BaseMeshComponent.h" />
+    <ClInclude Include="Base\Component\BaseMesh.h" />
     <ClInclude Include="Core\Component\CoreMeshComponent.h" />
     <ClInclude Include="Core\CoreApp.h" />
     <ClInclude Include="Core\CoreGeometry.h" />
@@ -216,6 +216,7 @@
     <ClInclude Include="Core\CoreLightManager.h" />
     <ClInclude Include="Core\CoreMaterial.h" />
     <ClInclude Include="Core\CoreMaterialManager.h" />
+    <ClInclude Include="Core\CoreMeshLoader.h" />
     <ClInclude Include="Core\CoreRenderTextureManager.h" />
     <ClInclude Include="Core\DrawContext\CoreDrawBlurContext.h" />
     <ClInclude Include="Core\DrawContext\CoreDrawDiffuseContext.h" />
@@ -226,7 +227,6 @@
     <ClInclude Include="Core\GUI\CoreSceneWidget.h" />
     <ClInclude Include="DebugOut.h" />
     <ClInclude Include="MathUtils.h" />
-    <ClInclude Include="MultiObj.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="ThirdParty\d3dx12.h" />
     <ClInclude Include="ThirdParty\ImGUI\imconfig.h" />

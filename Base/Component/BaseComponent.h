@@ -1,14 +1,14 @@
 #pragma once
 
-typedef enum class BaseComponentType
+typedef enum class ComponentType
 {
-  BASE_COMPONENT_MESH
-} BaseComponentType;
+  COMPONENT_MESH
+} ComponentType;
 
 class BaseComponent
 {
 public:
-  BaseComponentType mComponentType;
+  ComponentType mComponentType;
 
   virtual void Update() {}
 };
