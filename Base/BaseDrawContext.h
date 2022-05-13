@@ -39,7 +39,8 @@ public:
 	void AppendCBVDescTable();
 	void AppendSRVDescTable();
 	
-	int mRegCnt;
+	int mCBVRegCnt;
+	int mSRVRegCnt;
 
 	ComPtr<ID3D12RootSignature> mRootSig;
 	ComPtr<ID3D12PipelineState> mPSO;

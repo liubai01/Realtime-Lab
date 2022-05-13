@@ -8,6 +8,12 @@ CoreMaterial::CoreMaterial(ID3D12Device* device): BaseStagedBuffer(device) {
 	mName = "Unnamed";
 }
 
+void CoreMaterial::SetDiffuseColorTextured(shared_ptr<BaseImage> diffuseColorTexture)
+{
+	mBuffer.mData.isDiffuseColorTextured = true;
+	mDiffuseColorTexture = diffuseColorTexture;
+}
+
 void CoreMaterial::Upload()
 {
 

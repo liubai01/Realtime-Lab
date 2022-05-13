@@ -66,6 +66,7 @@ BaseApp::BaseApp(HINSTANCE hInstance)
   mMainHeap = new BaseMainHeap(mDevice.Get());
   mRuntimeHeap = new BaseRuntimeHeap(mDevice.Get());
   mGOManager = new BaseGameObjectManager(mDevice.Get(), mMainHeap);
+  mImageManager = new BaseImageManager(mDevice.Get(), mMainHeap);
 
   InitImGUI();
 
@@ -83,6 +84,7 @@ BaseApp::~BaseApp()
 
   delete mMainCamera;
   delete mGOManager;
+  delete mImageManager;
   delete mMainHeap;
   delete mRuntimeHeap;
   CloseHandle(mFenceEvent);

@@ -23,6 +23,7 @@ struct VertexOut
 	float4 Pos  : SV_POSITION;
 	float4 PosW : POSITION;
 	float3 Norm : NORMAL;
+	float2 Coord: TEXCOORD;
 };
 
 VertexOut main(VertexIn vin)
@@ -32,5 +33,6 @@ VertexOut main(VertexIn vin)
 	ret.Pos = mul(ret.PosW, gViewProj);
 
 	ret.Norm = normalize(mul(vin.Norm, gRSInvT));
+	ret.Coord = vin.Coord;
 	return ret;
 }

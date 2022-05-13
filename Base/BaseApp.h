@@ -20,6 +20,7 @@
 #include "BaseRuntimeHeap.h"
 #include "BaseRenderTexture.h"
 #include "BaseGameObjectManager.h"
+#include "BaseImageManager.h"
 
 using namespace DirectX;
 using namespace DirectX::PackedVector;
@@ -84,6 +85,7 @@ public:
 
   BaseCamera* mMainCamera;
 
+  BaseImageManager* mImageManager;
   BaseGameObjectManager* mGOManager;
 
   BaseMainHeap* mMainHeap;

@@ -207,6 +207,9 @@
     <ClCompile Include="Base\BaseDepthRenderTexture.cpp">
       <Filter>Source Files\Base</Filter>
     </ClCompile>
+    <ClCompile Include="Base\BaseImageManager.cpp">
+      <Filter>Source Files\Base</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -358,6 +361,9 @@
     </ClInclude>
     <ClInclude Include="Core\CoreMeshLoader.h">
       <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\BaseImageManager.h">
+      <Filter>Header Files\Base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

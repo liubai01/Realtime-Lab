@@ -10,10 +10,13 @@ public:
     MyApp(HINSTANCE hInstance) : CoreApp(hInstance) {};
 
     void Start() {
-
         shared_ptr<BaseObject> tower = mGOManager->CreateObject("Wood Tower");
+        shared_ptr<BaseImage> colorTexture = mImageManager->CreateImage(".\\Asset\\Wood_Tower_Col.jpg", "WoodTowerColor");
+
         tower->mTransform.SetPos(0.0f, -3.0f, 0.0f);
         shared_ptr<CoreMeshComponent> meshComponent2 = mMeshLoader->LoadObjMesh(".\\Asset\\WoodTower.obj", "WoodTower");
+        meshComponent2->mMat[0]->SetDiffuseColorTextured(colorTexture);
+
         tower->AddComponent(meshComponent2);
 
         mMainCamera->SetPos(10.0f, 10.0f, -10.0f);

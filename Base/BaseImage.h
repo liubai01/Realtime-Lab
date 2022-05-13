@@ -8,6 +8,8 @@
 #include <vector>
 #include <string>
 #include "../DebugOut.h"
+#include "../Base/BaseMainHeap.h"
+#include "../Base/BaseRuntimeHeap.h"
 
 using Microsoft::WRL::ComPtr;
 using namespace std;
@@ -15,19 +17,29 @@ using namespace std;
 
 class BaseImage {
 public:
-  ComPtr<ID3D12Resource> mTextureBuffer;
-  ComPtr<ID3D12Resource> mTextureUploadHeap;
+	ComPtr<ID3D12Resource> mTextureBuffer;
+	ComPtr<ID3D12Resource> mTextureUploadHeap;
 
-  D3D12_RESOURCE_DESC mTextureDesc = {};
-  int mImageBytesPerRow = -1;
-  int mImageSize = -1;
-  BYTE* mImageData = nullptr;
+	D3D12_RESOURCE_DESC mTextureDesc = {};
+	int mImageBytesPerRow = -1;
+	int mImageSize = -1;
+	BYTE* mImageData = nullptr;
+	string mName;
 
-  ~BaseImage();
+	bool mIsUploaded;
 
-  void AppendDesc(ID3D12Device* device, ID3D12DescriptorHeap* descHeap, int offset=0);
-  void Read(const string& filepath);
-  void Upload(ID3D12Device* device, ID3D12GraphicsCommandList* commandList);
+	BaseImage(ID3D12Device* device, const string& filepath, const string& name);
+	~BaseImage();
+
+	void RegisterMainHandle(BaseMainHeap* heap);
+	void RegisterRuntimeHandle(BaseRuntimeHeap* heap);
+
+	BaseDescHeapHandle mMainHandle;
+	BaseDescHeapHandle mRuntimeHandle;
+	
+	void Upload(ID3D12GraphicsCommandList* commandList);
+private:
+	ID3D12Device* mDevice;
 };
 
 

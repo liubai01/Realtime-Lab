@@ -12,14 +12,16 @@ CoreDrawDiffuseContext::CoreDrawDiffuseContext(ID3D12Device* device) : BaseDrawC
     mShader.AddVertexShader("Core\\Shader\\DiffuseVertexShader.hlsl");
     mShader.AddPixelShader("Core\\Shader\\DiffusePixelShader.hlsl");
 
-    // b0: transform buffer
-    // b1: camera buffer
-    // b2: matereial buffer
-    // b3: light buffer
+    // 0, b0: transform buffer
+    // 1, b1: camera buffer
+    // 2, b2: matereial buffer
+    // 3, b3: light buffer
+    // 4, t0: diffuse color texture
     for (int i = 0; i < 4; ++i)
     {
         AppendCBVDescTable();
     }
+    AppendSRVDescTable();
 }
 
 void CoreDrawDiffuseContext::InitPSO()

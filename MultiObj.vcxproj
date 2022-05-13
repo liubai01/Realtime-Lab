@@ -150,6 +150,7 @@
     <ClCompile Include="Base\BaseGeometry.cpp" />
     <ClCompile Include="Base\BaseGUIWidget.cpp" />
     <ClCompile Include="Base\BaseImage.cpp" />
+    <ClCompile Include="Base\BaseImageManager.cpp" />
     <ClCompile Include="Base\BaseMainHeap.cpp" />
     <ClCompile Include="Base\BaseObject.cpp" />
     <ClCompile Include="Base\BaseRenderTexture.cpp" />
@@ -197,6 +198,7 @@
     <ClInclude Include="Base\BaseGameObjectManager.h" />
     <ClInclude Include="Base\BaseGeometry.h" />
     <ClInclude Include="Base\BaseGUIWidget.h" />
+    <ClInclude Include="Base\BaseImageManager.h" />
     <ClInclude Include="Base\BaseUUIDGenerator.h" />
     <ClInclude Include="Base\BaseImage.h" />
     <ClInclude Include="Base\BaseMainHeap.h" />

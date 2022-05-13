@@ -62,6 +62,7 @@ void CoreApp::Render()
   mMaterialManager->RegisterRuntimeHandle(mRuntimeHeap);
   mLightManager->RegisterRuntimeHandle(mRuntimeHeap);
   mGOManager->DispatchTransformUpload(mRuntimeHeap);
+  mImageManager->RegisterRuntimeHandle(mRuntimeHeap);
   mMainCamera->RegisterRuntimeHandle(mRuntimeHeap);
 
   UploadGeometry();
@@ -107,6 +108,8 @@ void CoreApp::UploadGeometry()
     {
         mFullScreenPlane->Upload(mDevice.Get(), mUploadCmdList->mCommandList.Get());
     }
+
+    mImageManager->Upload(mUploadCmdList->mCommandList.Get());
     
     Enqueue(mUploadCmdList->mCommandList.Get());
 }
@@ -234,7 +237,29 @@ void CoreApp::RenderObjects()
             if (component->mComponentType == ComponentType::COMPONENT_MESH)
             {
                 CoreMeshComponent* com = static_cast<CoreMeshComponent*>(&(*component));
-                com->Render(commandList, 2);
+
+                for (int i = 0; i < com->mMesh.size(); ++i)
+                {
+                    auto& mesh = com->mMesh[i];
+                    auto& mat = com->mMat[i];
+                    auto& geo = com->mGeo[i];
+
+                    commandList->SetGraphicsRootDescriptorTable(2, mat->GetRuntimeHandle().GetGPUHandle());
+
+                    commandList->SetGraphicsRootDescriptorTable(4, mat->mDiffuseColorTexture->mRuntimeHandle.GetGPUHandle());
+
+                    D3D12_INDEX_BUFFER_VIEW ibView = mesh->mIndexBufferView;
+                    D3D12_VERTEX_BUFFER_VIEW vbView = mesh->mVertexBufferView;
+
+                    commandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+                    commandList->IASetVertexBuffers(0, 1, &vbView);
+                    commandList->IASetIndexBuffer(&ibView);
+
+                    commandList->DrawIndexedInstanced(
+                        static_cast<UINT>(geo->mIndices.size()),
+                        1, 0, 0, 0
+                    );
+                }
             }
         }
     }
