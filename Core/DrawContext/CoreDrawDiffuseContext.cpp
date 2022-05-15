@@ -1,13 +1,9 @@
 #include "CoreDrawDiffuseContext.h"
+#include "../CoreGeometry.h"
 
 CoreDrawDiffuseContext::CoreDrawDiffuseContext(ID3D12Device* device) : BaseDrawContext(device)
 {
-    mInputLayout =
-    {
-        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-        { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0}
-    };
+    mInputLayout = CoreGeometry::GetInputLayout();
 
     mShader.AddVertexShader("Core\\Shader\\DiffuseVertexShader.hlsl");
     mShader.AddPixelShader("Core\\Shader\\DiffusePixelShader.hlsl");
@@ -17,11 +13,13 @@ CoreDrawDiffuseContext::CoreDrawDiffuseContext(ID3D12Device* device) : BaseDrawC
     // 2, b2: matereial buffer
     // 3, b3: light buffer
     // 4, t0: diffuse color texture
+    // 5, t1: normal map texture
     for (int i = 0; i < 4; ++i)
     {
         AppendCBVDescTable();
     }
-    AppendSRVDescTable();
+    AppendSRVDescTable(); // base color texture
+    AppendSRVDescTable(); // normal texture
 }
 
 void CoreDrawDiffuseContext::InitPSO()

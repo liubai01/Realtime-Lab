@@ -96,6 +96,8 @@ shared_ptr<CoreMeshComponent> CoreMeshLoader::LoadObjMesh(string path, string na
             // per-face material
             //shapes[s].mesh.material_ids[f];
         }
+
+        geo->ComputeTangentSpace();
         ret->AddGeometry(geo, mMatManager->CreateMaterial(geo->mName));
     }
 

@@ -246,7 +246,15 @@ void CoreApp::RenderObjects()
 
                     commandList->SetGraphicsRootDescriptorTable(2, mat->GetRuntimeHandle().GetGPUHandle());
 
-                    commandList->SetGraphicsRootDescriptorTable(4, mat->mDiffuseColorTexture->mRuntimeHandle.GetGPUHandle());
+                    if (mat->mBuffer.mData.isBaseColorTextured)
+                    {
+                        commandList->SetGraphicsRootDescriptorTable(4, mat->mDiffuseColorTexture->mRuntimeHandle.GetGPUHandle());
+                    }
+                    
+                    if (mat->mBuffer.mData.isNormalTextured)
+                    {
+                        commandList->SetGraphicsRootDescriptorTable(5, mat->mNormalMapTexture->mRuntimeHandle.GetGPUHandle());
+                    }
 
                     D3D12_INDEX_BUFFER_VIEW ibView = mesh->mIndexBufferView;
                     D3D12_VERTEX_BUFFER_VIEW vbView = mesh->mVertexBufferView;
