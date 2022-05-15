@@ -81,13 +81,6 @@ void CoreGeometry::ComputeTangentSpace()
         XMVECTOR B = XMVector3Normalize((delta_u1 * e2 - delta_u2 * e1));
         XMVECTOR N = XMLoadFloat3(&v1.normal);
 
-        T = XMVector3Normalize(T - N * XMVector3Dot(N, T));
-
-        if (XMVectorGetX(XMVector3Dot(XMVector3Cross(N, T), B)) > 0.0f)
-        {
-            T = -T;
-        }
-
         ////XMVECTOR tmp = delta_u2 * T + delta_v2 * B - e2;6
         //XMVECTOR tmp = XMVector3Dot(T, N);
         //XMVECTOR tmp = T;

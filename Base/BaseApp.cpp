@@ -73,6 +73,11 @@ BaseApp::BaseApp(HINSTANCE hInstance)
   mMainCamera = new BaseCamera(mDevice.Get(), static_cast<float>(mWidth), static_cast<float>(mHeight));
   mMainCamera->RegisterMainHandle(mMainHeap);
 
+  // just for test
+  mAssetManager = new BaseAssetManager("ExampleProject\\Asset");
+  BaseAssetNode* node = mAssetManager->LoadAsset("models\\WoodTower.obj");
+  dout::printf("Full path: %s \n", mAssetManager->GetAssetFullPath(node).c_str());
+
   mApp = this;
 }
 
@@ -85,6 +90,7 @@ BaseApp::~BaseApp()
   delete mMainCamera;
   delete mGOManager;
   delete mImageManager;
+  delete mAssetManager;
   delete mMainHeap;
   delete mRuntimeHeap;
   CloseHandle(mFenceEvent);
@@ -347,7 +353,7 @@ void BaseApp::InitWindow(HINSTANCE hInstance)
   mHwnd = CreateWindowEx(
     NULL,
     L"MainWnd", // long pointer class name
-    L"Demo", // long pointer window name
+    L"Realtime Lab", // long pointer window name
     WS_OVERLAPPEDWINDOW, // dw style
     CW_USEDEFAULT, CW_USEDEFAULT, // x y
     mWidth, mHeight, // width height

@@ -21,6 +21,7 @@
 #include "BaseRenderTexture.h"
 #include "BaseGameObjectManager.h"
 #include "BaseImageManager.h"
+#include "AssetManager/BaseAssetManager.h"
 
 using namespace DirectX;
 using namespace DirectX::PackedVector;
@@ -82,6 +83,8 @@ public:
   ComPtr<ID3D12Device> mDevice;
 
   ComPtr<ID3D12CommandQueue> mCommandQueue;
+
+  BaseAssetManager* mAssetManager;
 
   BaseCamera* mMainCamera;
 

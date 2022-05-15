@@ -140,6 +140,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Base\AssetManager\BaseAssetManager.cpp" />
+    <ClCompile Include="Base\AssetManager\BaseAssetNode.cpp" />
     <ClCompile Include="Base\BaseApp.cpp" />
     <ClCompile Include="Base\BaseCamera.cpp" />
     <ClCompile Include="Base\BaseDepthRenderTexture.cpp" />
@@ -153,6 +155,7 @@
     <ClCompile Include="Base\BaseImageManager.cpp" />
     <ClCompile Include="Base\BaseMainHeap.cpp" />
     <ClCompile Include="Base\BaseObject.cpp" />
+    <ClCompile Include="Base\BaseProject.cpp" />
     <ClCompile Include="Base\BaseRenderTexture.cpp" />
     <ClCompile Include="Base\BaseRuntimeHeap.cpp" />
     <ClCompile Include="Base\BaseShaderManager.cpp" />
@@ -189,6 +192,8 @@
     <ClCompile Include="ThirdParty\ImGUI\imgui_widgets.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Base\AssetManager\BaseAssetManager.h" />
+    <ClInclude Include="Base\AssetManager\BaseAssetNode.h" />
     <ClInclude Include="Base\BaseApp.h" />
     <ClInclude Include="Base\BaseCamera.h" />
     <ClInclude Include="Base\BaseDepthRenderTexture.h" />
@@ -199,6 +204,7 @@
     <ClInclude Include="Base\BaseGeometry.h" />
     <ClInclude Include="Base\BaseGUIWidget.h" />
     <ClInclude Include="Base\BaseImageManager.h" />
+    <ClInclude Include="Base\BaseProject.h" />
     <ClInclude Include="Base\BaseUUIDGenerator.h" />
     <ClInclude Include="Base\BaseImage.h" />
     <ClInclude Include="Base\BaseMainHeap.h" />
@@ -239,6 +245,7 @@
     <ClInclude Include="ThirdParty\ImGUI\imstb_rectpack.h" />
     <ClInclude Include="ThirdParty\ImGUI\imstb_textedit.h" />
     <ClInclude Include="ThirdParty\ImGUI\imstb_truetype.h" />
+    <ClInclude Include="ThirdParty\json.h" />
     <ClInclude Include="ThirdParty\tiny_obj_loader.h" />
   </ItemGroup>
   <ItemGroup>

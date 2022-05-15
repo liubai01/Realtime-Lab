@@ -251,7 +251,7 @@ int LoadImageDataFromFile(BYTE** imageData, D3D12_RESOURCE_DESC* resourceDescrip
   // get size of image
   UINT textureWidth, textureHeight;
   hr = wicFrame->GetSize(&textureWidth, &textureHeight);
-  dout::printf("Width: %d, Height %d\n", textureWidth, textureHeight);
+  //dout::printf("Width: %d, Height %d\n", textureWidth, textureHeight);
 
   if (FAILED(hr)) return 0;
 

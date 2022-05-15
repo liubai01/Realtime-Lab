@@ -37,7 +37,7 @@ shared_ptr<CoreMeshComponent> CoreMeshLoader::LoadObjMesh(string path, string na
     auto& attrib = reader.GetAttrib();
     auto& shapes = reader.GetShapes();
 
-    dout::printf("Shape.size = %d\n", shapes.size());
+    //dout::printf("Shape.size = %d\n", shapes.size());
 
     // Loop over shapes
     for (size_t s = 0; s < shapes.size(); s++) {

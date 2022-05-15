@@ -67,6 +67,12 @@
     <Filter Include="Header Files\Core\DrawContext">
       <UniqueIdentifier>{dcf93511-6acd-403c-91b0-404483030b34}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Base\AssetManager">
+      <UniqueIdentifier>{e7051933-87d9-48ff-a258-5700c2572e2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Base\AssetManager">
+      <UniqueIdentifier>{914cabc9-d558-4e79-ade4-1c4d59a5cf70}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DebugOut.cpp">
@@ -209,6 +215,15 @@
     </ClCompile>
     <ClCompile Include="Base\BaseImageManager.cpp">
       <Filter>Source Files\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\BaseProject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\AssetManager\BaseAssetManager.cpp">
+      <Filter>Source Files\Base\AssetManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\AssetManager\BaseAssetNode.cpp">
+      <Filter>Source Files\Base\AssetManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -364,6 +379,18 @@
     </ClInclude>
     <ClInclude Include="Base\BaseImageManager.h">
       <Filter>Header Files\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="ThirdParty\json.h">
+      <Filter>Header Files\ThirdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\BaseProject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\AssetManager\BaseAssetManager.h">
+      <Filter>Header Files\Base\AssetManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\AssetManager\BaseAssetNode.h">
+      <Filter>Header Files\Base\AssetManager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

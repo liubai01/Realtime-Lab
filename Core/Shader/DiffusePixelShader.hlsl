@@ -55,7 +55,8 @@ float4 main(VertexOut pin) : SV_TARGET
 		N3 += np.z * pin.Norm;
 		N3 = normalize(N3);
 		N3 -= pin.Norm;
-		N = float4(normalize(pin.Norm + NormalStrength * N3), 0.0f);
+		N3 = pin.Norm + NormalStrength * N3;
+		N = float4(normalize(N3), 0.0f);
 	}
 
 	// Diffuse
