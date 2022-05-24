@@ -20,9 +20,9 @@
 #include "BaseRuntimeHeap.h"
 #include "BaseRenderTexture.h"
 #include "BaseGameObjectManager.h"
-#include "BaseImageManager.h"
 #include "BaseProject.h"
 #include "Resource/BaseResourceManager.h"
+#include "BaseScene.h"
 
 using namespace DirectX;
 using namespace DirectX::PackedVector;
@@ -88,9 +88,11 @@ public:
   BaseProject* mProject;
   BaseCamera* mMainCamera;
 
-  BaseImageManager* mImageManager;
+  BaseScene* mNowScene;
   BaseGameObjectManager* mGOManager;
 
+  // The mainHeap / runtimeHeap manages the descriptors of resources
+  // The descriptors in main would be copied to runtimeHeap if the resource is necessary
   BaseMainHeap* mMainHeap;
   BaseRuntimeHeap* mRuntimeHeap;
 

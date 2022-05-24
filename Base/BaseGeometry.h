@@ -24,6 +24,4 @@ public:
 
   vector<T> mVertices = {};
   vector<DWORD> mIndices = {};
-
-  //void ComputeNormal(vector<XMFLOAT3*>& pos, vector<XMFLOAT3*>& outs);
 };

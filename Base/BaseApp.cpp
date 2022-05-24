@@ -19,26 +19,29 @@ BaseApp* BaseApp::mApp = nullptr;
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
+// The callback function of windows events
 LRESULT CALLBACK BaseApp::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-  if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
-    return true;
-
-  if (msg == WM_DESTROY)
-  {
-    PostQuitMessage(0);
-    return 0;
-  } else if (msg == WM_SIZE) {
-    BaseApp* app = BaseApp::mApp;
-    if (app)
+    if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
     {
-        app->OnResize();
+        return true;
     }
 
-  }
+    if (msg == WM_DESTROY)
+    {
+        PostQuitMessage(0);
+        return 0;
+    } else if (msg == WM_SIZE) {
+        // invoke app's resize logic
+        BaseApp* app = BaseApp::mApp;
+        if (app)
+        {
+            app->OnResize();
+        }
+    }
 
-  // Default fallback
-  return DefWindowProc(hWnd, msg, wParam, lParam);
+    // Default fallback
+    return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
 BaseApp::BaseApp(HINSTANCE hInstance, const string& projectPath)
@@ -54,7 +57,6 @@ BaseApp::BaseApp(HINSTANCE hInstance, const string& projectPath)
   mTimer = clock();
 
   // Initialize the objects required for dumping in Shader, Geometry, etc.
-  
   InitWindow(hInstance);
   InitDevice();
   InitCommandQueue();
@@ -66,7 +68,6 @@ BaseApp::BaseApp(HINSTANCE hInstance, const string& projectPath)
   mMainHeap = new BaseMainHeap(mDevice.Get());
   mRuntimeHeap = new BaseRuntimeHeap(mDevice.Get());
   mGOManager = new BaseGameObjectManager(mDevice.Get(), mMainHeap);
-  mImageManager = new BaseImageManager(mDevice.Get(), mMainHeap);
 
   InitImGUI();
 
@@ -82,6 +83,7 @@ BaseApp::BaseApp(HINSTANCE hInstance, const string& projectPath)
   mProject->mAssetManager->RegisterAsset("Wood_Tower_Nor.jpg", "ExampleProject\\Asset\\Wood_Tower_Nor.jpg");
 
   mResourceManager = new BaseResourceManager(mDevice.Get(), mProject->mAssetManager, mMainHeap);
+  mNowScene = new BaseScene(mGOManager);
 
   mApp = this;
 }
@@ -92,9 +94,9 @@ BaseApp::~BaseApp()
   ImGui_ImplWin32_Shutdown();
   ImGui::DestroyContext();
 
+  delete mNowScene;
   delete mMainCamera;
   delete mGOManager;
-  delete mImageManager;
   delete mProject;
   delete mResourceManager;
 

@@ -2,7 +2,7 @@
 
 #include "../Core/Component/CoreMeshComponent.h"
 #include "../Core/CoreMaterialManager.h"
-#include "../ThirdParty/tiny_obj_loader.h"
+#include "../Base/Resource/BaseResourceMesh.h"
 #include <string>
 
 
@@ -13,7 +13,7 @@ class CoreMeshLoader
 public:
 	CoreMeshLoader(CoreMaterialManager* matManager);
 	
-	shared_ptr<CoreMeshComponent> LoadObjMesh(string path, string name);
+	shared_ptr<CoreMeshComponent> MakeComponent(BaseResourceMesh* resourceMesh);
 private:
 	CoreMaterialManager* mMatManager;
 };

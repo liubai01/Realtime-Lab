@@ -21,7 +21,6 @@ BaseObject* BaseObject::GetParent()
 
 void BaseObject::SetParent(BaseObject* obj)
 {
-	/*dout::printf("set root obj: %s\n", obj->mName.c_str());*/
 	// remove its pointer at its parent
 	if (mParentObject)
 	{

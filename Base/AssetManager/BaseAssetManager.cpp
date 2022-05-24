@@ -30,7 +30,8 @@ BaseAssetManager::BaseAssetManager(const string assetRootDirPath)
 
 string BaseAssetManager::GetAssetFullPath(BaseAssetNode* node)
 {
-    return mRootPath + "\\" + node->GetRelativePath();
+    string relPath = node->GetRelativePath();
+    return filesystem::absolute(mRootPath + "\\" + relPath).string();
 }
 
 BaseAssetNode* BaseAssetManager::RegisterAsset(const string url, const string filepath)

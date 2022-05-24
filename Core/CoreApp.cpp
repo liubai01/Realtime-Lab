@@ -60,14 +60,18 @@ void CoreApp::Render()
   mMaterialManager->RegisterRuntimeHandle(mRuntimeHeap);
   mLightManager->RegisterRuntimeHandle(mRuntimeHeap);
   mGOManager->DispatchTransformUpload(mRuntimeHeap);
-  mImageManager->RegisterRuntimeHandle(mRuntimeHeap);
   mMainCamera->RegisterRuntimeHandle(mRuntimeHeap);
   mResourceManager->RegisterRuntimeHeap(mRuntimeHeap);
 
+  // Upload newly-arrived geoemtry from CPU to GPU
   UploadGeometry();
+  // Render object of interest's mask in to a texture for edge light
   RenderEdgeLightPre();
+  // Render objects
   RenderObjects();
+  // Render edge light with a blur of mask in `RenderEdgeLightPre`
   RenderBlurred();
+  // Render the dear imGUI
   RenderUI();
   
   Swap();
@@ -76,7 +80,6 @@ void CoreApp::Render()
 void CoreApp::BeforeUpdate()
 {
     mGUIManager->Update();
-    //ImGui::ShowDemoWindow();
 }
 
 void CoreApp::UploadGeometry()
@@ -92,7 +95,7 @@ void CoreApp::UploadGeometry()
         {
             if (component->mComponentType == ComponentType::COMPONENT_MESH)
             {
-                CoreMeshComponent* com = static_cast<CoreMeshComponent*>(&(*component));
+                CoreMeshComponent* com = dynamic_cast<CoreMeshComponent*>(&(*component));
                 // component could be shared by multiple objects
                 if (!com->mUploaded)
                 {
@@ -110,8 +113,6 @@ void CoreApp::UploadGeometry()
 
     // Upload resources in reousrce Manager;
     mResourceManager->Upload(mUploadCmdList->mCommandList.Get());
-
-    mImageManager->Upload(mUploadCmdList->mCommandList.Get());
     
     Enqueue(mUploadCmdList->mCommandList.Get());
 }

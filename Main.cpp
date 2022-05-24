@@ -12,21 +12,20 @@ public:
     
 
     void Start() {
-        shared_ptr<BaseObject> tower = mGOManager->CreateObject("Wood Tower");
-        //shared_ptr<BaseImage> colorTexture = mImageManager->CreateImage(".\\Asset\\Wood_Tower_Col.jpg", "WoodTowerColor");
-        //shared_ptr<BaseImage> normalTexture = mImageManager->CreateImage(".\\Asset\\Wood_Tower_Nor.jpg", "WoodTowerNormal");
-        shared_ptr<CoreMeshComponent> meshComponent2;
+        shared_ptr<BaseObject> tower = mNowScene->CreateObject("Wood Tower");
+        shared_ptr<CoreMeshComponent> meshComponent;
 
         tower->mTransform.SetPos(0.0f, -3.0f, 0.0f);
-        meshComponent2 = mMeshLoader->LoadObjMesh(".\\Asset\\WoodTower.obj", "WoodTower");
+
+        meshComponent = mMeshLoader->MakeComponent(mResourceManager->LoadMesh("models\\WoodTower.obj"));
 
         BaseResourceImage* colorTexture = mResourceManager->LoadImage("Wood_Tower_Col.jpg");
         BaseResourceImage* normalTexture = mResourceManager->LoadImage("Wood_Tower_Nor.jpg");
 
-        meshComponent2->mMat[0]->SetDiffuseColorTextured(colorTexture);
-        meshComponent2->mMat[0]->SetNormalTextured(normalTexture);
+        meshComponent->mMat[0]->SetDiffuseColorTextured(colorTexture);
+        meshComponent->mMat[0]->SetNormalTextured(normalTexture);
 
-        tower->AddComponent(meshComponent2);
+        tower->AddComponent(meshComponent);
 
         mMainCamera->SetPos(10.0f, 10.0f, -10.0f);
 

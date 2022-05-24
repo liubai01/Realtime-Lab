@@ -79,6 +79,12 @@
     <Filter Include="Source Files\Base\Resource">
       <UniqueIdentifier>{47a7a943-81aa-4a57-b335-731640119a54}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Base\Scene">
+      <UniqueIdentifier>{905ee9b4-18c4-47cf-a44b-531f9b79dbf7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Base\Scene">
+      <UniqueIdentifier>{37539f98-342f-4e7e-b89a-1f8e0117e09d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DebugOut.cpp">
@@ -109,9 +115,6 @@
       <Filter>Source Files\Base</Filter>
     </ClCompile>
     <ClCompile Include="Base\BaseGeometry.cpp">
-      <Filter>Source Files\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="Base\BaseImage.cpp">
       <Filter>Source Files\Base</Filter>
     </ClCompile>
     <ClCompile Include="Base\BaseObject.cpp">
@@ -177,9 +180,6 @@
     <ClCompile Include="Base\BaseRenderTexture.cpp">
       <Filter>Source Files\Base</Filter>
     </ClCompile>
-    <ClCompile Include="Base\BaseGameObjectManager.cpp">
-      <Filter>Source Files\Base</Filter>
-    </ClCompile>
     <ClCompile Include="Core\GUI\CoreGUIManager.cpp">
       <Filter>Source Files\Core\GUI</Filter>
     </ClCompile>
@@ -216,9 +216,6 @@
     <ClCompile Include="Base\BaseDepthRenderTexture.cpp">
       <Filter>Source Files\Base</Filter>
     </ClCompile>
-    <ClCompile Include="Base\BaseImageManager.cpp">
-      <Filter>Source Files\Base</Filter>
-    </ClCompile>
     <ClCompile Include="Base\AssetManager\BaseAssetManager.cpp">
       <Filter>Source Files\Base\AssetManager</Filter>
     </ClCompile>
@@ -245,6 +242,15 @@
     </ClCompile>
     <ClCompile Include="ThirdParty\ImGUI\imgui.cpp">
       <Filter>Source Files\ThirdParty\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\BaseGameObjectManager.cpp">
+      <Filter>Source Files\Base\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\BaseScene.cpp">
+      <Filter>Source Files\Base\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\Resource\BaseResourceMesh.cpp">
+      <Filter>Source Files\Base\Resource</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -294,9 +300,6 @@
       <Filter>Header Files\Base</Filter>
     </ClInclude>
     <ClInclude Include="Base\BaseGeometry.h">
-      <Filter>Header Files\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="Base\BaseImage.h">
       <Filter>Header Files\Base</Filter>
     </ClInclude>
     <ClInclude Include="Base\BaseObject.h">
@@ -362,9 +365,6 @@
     <ClInclude Include="Base\BaseUUIDGenerator.h">
       <Filter>Header Files\Base</Filter>
     </ClInclude>
-    <ClInclude Include="Base\BaseGameObjectManager.h">
-      <Filter>Header Files\Base</Filter>
-    </ClInclude>
     <ClInclude Include="Core\GUI\CoreGUIManager.h">
       <Filter>Header Files\Core\GUI</Filter>
     </ClInclude>
@@ -398,9 +398,6 @@
     <ClInclude Include="Core\CoreMeshLoader.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
-    <ClInclude Include="Base\BaseImageManager.h">
-      <Filter>Header Files\Base</Filter>
-    </ClInclude>
     <ClInclude Include="ThirdParty\json.h">
       <Filter>Header Files\ThirdParty</Filter>
     </ClInclude>
@@ -426,6 +423,15 @@
       <Filter>Header Files\Base\Resource</Filter>
     </ClInclude>
     <ClInclude Include="Base\Resource\BaseResource.h">
+      <Filter>Header Files\Base\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\BaseGameObjectManager.h">
+      <Filter>Header Files\Base\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\BaseScene.h">
+      <Filter>Header Files\Base\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\Resource\BaseResourceMesh.h">
       <Filter>Header Files\Base\Resource</Filter>
     </ClInclude>
   </ItemGroup>

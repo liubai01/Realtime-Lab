@@ -5,6 +5,7 @@
 
 enum class BaseResourceType {
 	RESOURCE_IMAGE,
+	RESOURCE_MESH,
 	RESOURCE_UNKNOWN
 };
 

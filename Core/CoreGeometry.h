@@ -11,8 +11,6 @@ struct CoreVertex {
 };
 
 
-//#define CoreGeometry BaseGeometry<CoreVertex>
-
 class CoreGeometry : public BaseGeometry<CoreVertex>
 {
 public:

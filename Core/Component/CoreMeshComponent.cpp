@@ -4,6 +4,7 @@ CoreMeshComponent::CoreMeshComponent()
 {
 	mComponentType = ComponentType::COMPONENT_MESH;
     mUploaded = false;
+
 }
 
 void CoreMeshComponent::AddGeometry(shared_ptr<CoreGeometry> geo, shared_ptr<CoreMaterial> mat)

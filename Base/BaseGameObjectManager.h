@@ -16,6 +16,7 @@ public:
 
 	void DispatchTransformUpload(BaseRuntimeHeap* runtimeHeap);
 
+	// uuid to pointer of objects
 	unordered_map<string, shared_ptr<BaseObject>> mObjs;
 	unordered_set<BaseObject*> mRootObjects;
 

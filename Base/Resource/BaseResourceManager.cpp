@@ -51,6 +51,45 @@ BaseResourceImage* BaseResourceManager::LoadImage(const string& url)
 	return ret;
 }
 
+BaseResourceMesh* BaseResourceManager::LoadMesh(const string& url)
+{
+	BaseResourceMesh* ret;
+	unordered_map<string, BaseResource*>::iterator f = mUrl2ResourcePtr.find(url);
+	// check whether this resource has been requestsed (and cached in mUrl2ResourcePtr)
+	if (f != mUrl2ResourcePtr.end())
+	{
+		// check whether url points to a resources is a mesh
+		if (f->second->mType == BaseResourceType::RESOURCE_MESH)
+		{
+			return dynamic_cast<BaseResourceMesh*>(f->second);
+		}
+		// url points to a resources that is not an image
+		return nullptr;
+	}
+
+	// check whether that file is registered in asset manager
+	BaseAssetNode* node = mAssetManager->LoadAsset(url);
+	// if the asset is not registed at asset manager, return nullptr
+	if (!node)
+	{
+		return nullptr;
+	}
+	// check whether that asset is an object
+	if (node->GetAssetType() != BaseAssetType::ASSET_OBJ)
+	{
+		return nullptr;
+	}
+
+	// initialize the model
+	ret = new BaseResourceMesh(
+		mDevice,
+		mAssetManager->GetAssetFullPath(node)
+	);
+
+	mUrl2ResourcePtr[url] = ret;
+	return ret;
+}
+
 void BaseResourceManager::Upload(ID3D12GraphicsCommandList* commandList)
 {
 	for (auto& item : mUrl2ResourcePtr)
@@ -58,6 +97,7 @@ void BaseResourceManager::Upload(ID3D12GraphicsCommandList* commandList)
 		if (!item.second->mUpload)
 		{
 			item.second->Upload(commandList);
+	
 		}
 	}
 }

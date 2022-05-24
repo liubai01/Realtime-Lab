@@ -64,6 +64,11 @@ void CoreHierarchyWidget::Update()
 	ImVec2 vMin = ImGui::GetWindowContentRegionMin();
 	ImVec2 vMax = ImGui::GetWindowContentRegionMax();
 
+	vMin.x += ImGui::GetWindowPos().x;
+	vMin.y += ImGui::GetWindowPos().y;
+	vMax.x += ImGui::GetWindowPos().x;
+	vMax.y += ImGui::GetWindowPos().y;
+
 	// if left click in hierarchy menu, reset mNowSelectObjectPtr by default
 	if (ImGui::IsMouseClicked(0))
 	{

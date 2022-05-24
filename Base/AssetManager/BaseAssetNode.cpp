@@ -33,7 +33,7 @@ string BaseAssetNode::GetRelativePath()
 	string ret = "";
 
 	if (mParentAsset->mType != BaseAssetType::ASSET_ROOT) {
-		ret = mParentAsset->GetRelativePath();
+		ret = mParentAsset->GetRelativePath() + "\\";
 	}
 
 	return ret + mID;

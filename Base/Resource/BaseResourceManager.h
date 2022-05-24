@@ -1,5 +1,6 @@
 #pragma once
 #include "BaseResourceImage.h"
+#include "BaseResourceMesh.h"
 #include "../AssetManager/BaseAssetManager.h"
 #include <memory>
 #include <unordered_map>
@@ -14,6 +15,7 @@ public:
 	~BaseResourceManager();
 
 	BaseResourceImage* LoadImage(const string& url);
+	BaseResourceMesh* LoadMesh(const string& url);
 
 	void Upload(ID3D12GraphicsCommandList* commandList);
 	void RegisterRuntimeHeap(BaseRuntimeHeap* runtimeHeap);

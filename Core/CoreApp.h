@@ -5,7 +5,6 @@
 #include "../Base/BaseApp.h"
 #include "../Base/BaseGeometry.h"
 #include "../Base/BaseUploadHeap.h"
-#include "../Base/BaseImage.h"
 #include "../Base/BaseDirectCommandList.h"
 #include "CoreMaterialManager.h"
 #include "CoreLightManager.h"
