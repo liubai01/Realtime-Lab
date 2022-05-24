@@ -102,6 +102,9 @@ void BaseCamera::SetSize(float width, float height)
         mDepthDescriptorHeap->GetCPUDescriptorHandleForHeapStart()
     );
 
+    // set an initialize value away from zero point
+    // the default look at (0, 0, 0) would raise error if the camera is at the same point
+    SetPos(10.0f, 10.0f, -10.0f);
 }
 
 void BaseCamera::SetPos(float x, float y, float z)

@@ -11,6 +11,7 @@ class BaseAssetManager
 
 public:
 	BaseAssetManager(const string assetRootDirPath);
+	BaseAssetNode* RegisterAsset(const string url, const string filepath);
 	BaseAssetNode* LoadAsset(const string url);
 	string GetAssetFullPath(BaseAssetNode* node);
 

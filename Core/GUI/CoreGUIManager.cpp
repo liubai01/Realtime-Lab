@@ -1,15 +1,18 @@
 #include "CoreGUIManager.h"
 #include "CoreSceneWidget.h"
 #include "CoreInspectorWidget.h"
+#include "CoreAssetWidget.h"
 #include "../../ThirdParty/ImGUI/imgui_internal.h"
 #include "../../ThirdParty/ImGUI/imgui_impl_dx12.h"
 
 CoreGUIManager::CoreGUIManager(BaseApp* app)
 {
     mApp = app;
+    mWidgets.push_back(make_unique<CoreAssetWidget>(mApp->mProject->mAssetManager, mApp->mResourceManager));
     mWidgets.push_back(make_unique<CoreHierarchyWidget>(mApp->mGOManager, &mNowSelectedObject));
     mWidgets.push_back(make_unique<CoreSceneWidget>(mApp->mMainCamera));
     mWidgets.push_back(make_unique<CoreInspectorWidget>(&mNowSelectedObject));
+    
     mFirstLoop = true;
     mNowSelectedObject = nullptr;
 }
@@ -42,6 +45,14 @@ void CoreGUIManager::Render(ID3D12GraphicsCommandList* commandList)
 
     ImGui::Render();
     ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), commandList);
+
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    // Update and Render additional Platform Windows
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    {
+        ImGui::UpdatePlatformWindows();
+        ImGui::RenderPlatformWindowsDefault();
+    }
 }
 
 void CoreGUIManager::Update()
@@ -89,4 +100,6 @@ void CoreGUIManager::Update()
         }
     
     ImGui::End(); // end of docker space
+
+
 }

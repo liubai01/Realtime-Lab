@@ -20,15 +20,17 @@ public:
 	BaseAssetNode(BaseAssetNode* parent=nullptr);
 
 	string mID;
-	BaseAssetType mType;
+	
+	BaseAssetType GetAssetType();
+	void SetAssetType(BaseAssetType astType);
 
 	BaseAssetNode* SearchByID(const string ID);
 	BaseAssetNode* RegisterAsset(const string path);
 	string GetRelativePath();
 
-private:
-	BaseAssetNode* mParentAsset;
 	vector<unique_ptr<BaseAssetNode>> mSubAssets;
-	
+private:
+	BaseAssetType mType;
+	BaseAssetNode* mParentAsset;
 };
 

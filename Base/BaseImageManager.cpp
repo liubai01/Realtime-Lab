@@ -6,6 +6,15 @@ BaseImageManager::BaseImageManager(ID3D12Device* device, BaseMainHeap* mainHeap)
 	mDevice = device;
 }
 
+BaseImageManager::~BaseImageManager()
+{
+	for (auto i : mUUID2Image)
+	{
+		mMainHeap->FreeHeapHandle(i.second->mMainHandle);
+	}
+	
+}
+
 shared_ptr<BaseImage> BaseImageManager::CreateImage(string filepath, string name)
 {
 	shared_ptr<BaseImage> ret;

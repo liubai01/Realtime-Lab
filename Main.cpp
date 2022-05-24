@@ -3,27 +3,34 @@
 #include "Core/Component/CoreMeshComponent.h"
 #include "Core/CoreGeometryUtils.h"
 
+#include "Base/Resource/BaseResourceImage.h"
 
 
 class MyApp : public CoreApp {
 public:
-    MyApp(HINSTANCE hInstance) : CoreApp(hInstance) {};
+    MyApp(HINSTANCE hInstance, const string& ProjectPath) : CoreApp(hInstance, ProjectPath) {};
     
 
     void Start() {
         shared_ptr<BaseObject> tower = mGOManager->CreateObject("Wood Tower");
-        shared_ptr<BaseImage> colorTexture = mImageManager->CreateImage(".\\Asset\\Wood_Tower_Col.jpg", "WoodTowerColor");
-        shared_ptr<BaseImage> normalTexture = mImageManager->CreateImage(".\\Asset\\Wood_Tower_Nor.jpg", "WoodTowerNormal");
+        //shared_ptr<BaseImage> colorTexture = mImageManager->CreateImage(".\\Asset\\Wood_Tower_Col.jpg", "WoodTowerColor");
+        //shared_ptr<BaseImage> normalTexture = mImageManager->CreateImage(".\\Asset\\Wood_Tower_Nor.jpg", "WoodTowerNormal");
         shared_ptr<CoreMeshComponent> meshComponent2;
 
         tower->mTransform.SetPos(0.0f, -3.0f, 0.0f);
         meshComponent2 = mMeshLoader->LoadObjMesh(".\\Asset\\WoodTower.obj", "WoodTower");
+
+        BaseResourceImage* colorTexture = mResourceManager->LoadImage("Wood_Tower_Col.jpg");
+        BaseResourceImage* normalTexture = mResourceManager->LoadImage("Wood_Tower_Nor.jpg");
+
         meshComponent2->mMat[0]->SetDiffuseColorTextured(colorTexture);
         meshComponent2->mMat[0]->SetNormalTextured(normalTexture);
 
         tower->AddComponent(meshComponent2);
 
         mMainCamera->SetPos(10.0f, 10.0f, -10.0f);
+
+        
     }
 
     void Update()
@@ -58,16 +65,17 @@ public:
 
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPTSTR lpCmdLine, _In_ int nShowCmd)
 {
-  MyApp app = MyApp(hInstance);
-
-  try
-  {
-    app.Run();
-  }
-  catch (dout::DxException e) {
-    dout::printf("%s\n", e.ToString().c_str());
-  }
+    string projectPath = "ExampleProject";
+    MyApp app = MyApp(hInstance, projectPath);
 
 
-  return 0;
+    try
+    {
+        app.Run();
+    }
+    catch (dout::DxException e) {
+        dout::printf("%s\n", e.ToString().c_str());
+    }
+
+    return 0;
 }

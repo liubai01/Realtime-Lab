@@ -17,15 +17,11 @@ using namespace std;
 
 class BaseImage {
 public:
-	ComPtr<ID3D12Resource> mTextureBuffer;
-	ComPtr<ID3D12Resource> mTextureUploadHeap;
 
-	D3D12_RESOURCE_DESC mTextureDesc = {};
-	int mImageBytesPerRow = -1;
-	int mImageSize = -1;
-	BYTE* mImageData = nullptr;
+	// a name for identification
 	string mName;
 
+	// for a lazy upload policy, the variable indicate whether the image has been uploaded before
 	bool mIsUploaded;
 
 	BaseImage(ID3D12Device* device, const string& filepath, const string& name);
@@ -40,19 +36,16 @@ public:
 	void Upload(ID3D12GraphicsCommandList* commandList);
 private:
 	ID3D12Device* mDevice;
+
+	// D3D12 Wrapper of image buffer in GPU
+	ComPtr<ID3D12Resource> mTextureBuffer;
+	// The heap used to upload image from CPU to GPU
+	ComPtr<ID3D12Resource> mTextureUploadHeap;
+
+	// Resource description of image
+	D3D12_RESOURCE_DESC mTextureDesc = {};
+	int mImageBytesPerRow = -1;
+	int mImageSize = -1;
+	// Pointer to linear buffer of image in CPU
+	BYTE* mImageData = nullptr;
 };
-
-
-// give reference to https://www.braynzarsoft.net/viewtutorial/q16390-directx-12-textures-from-file
-
-// get the dxgi format equivilent of a wic format
-DXGI_FORMAT GetDXGIFormatFromWICFormat(WICPixelFormatGUID& wicFormatGUID);
-
-// get a dxgi compatible wic format from another wic format
-WICPixelFormatGUID GetConvertToWICFormat(WICPixelFormatGUID& wicFormatGUID);
-
-// get the number of bits per pixel for a dxgi format
-int GetDXGIFormatBitsPerPixel(DXGI_FORMAT& dxgiFormat);
-
-// load and decode image from file
-int LoadImageDataFromFile(BYTE** imageData, D3D12_RESOURCE_DESC* resourceDescription, LPCWSTR filename, int* bytesPerRow);

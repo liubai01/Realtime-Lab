@@ -52,6 +52,16 @@ BaseAssetNode* BaseAssetNode::SearchByID(const string ID)
 	return nullptr;
 }
 
+BaseAssetType BaseAssetNode::GetAssetType()
+{
+	return mType;
+}
+
+void BaseAssetNode::SetAssetType(BaseAssetType astType)
+{
+	mType = astType;
+}
+
 BaseAssetNode* BaseAssetNode::RegisterAsset(const string path)
 {
 	unique_ptr<BaseAssetNode> ret = nullptr;
@@ -83,7 +93,7 @@ BaseAssetNode* BaseAssetNode::RegisterAsset(const string path)
 		ret->mType = BaseAssetType::ASSET_OBJ;
 	}
 	// image
-	else if (postfix == ".jpg" || postfix == ".png") {
+	else if (postfix == "jpg" || postfix == "png") {
 		ret->mType = BaseAssetType::ASSET_IMAGE;
 	}
 	// unknown

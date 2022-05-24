@@ -7,6 +7,7 @@ class BaseImageManager
 {
 public:
 	BaseImageManager(ID3D12Device* device, BaseMainHeap* mainHeap);
+	~BaseImageManager();
 	shared_ptr<BaseImage> CreateImage(string filepath, string name);
 	void RegisterRuntimeHandle(BaseRuntimeHeap* runtimeHeap);
 	void Upload(ID3D12GraphicsCommandList* commandList);

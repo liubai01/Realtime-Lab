@@ -1,17 +1,115 @@
 #include "BaseAssetManager.h"
+#include <filesystem>
+
+
+inline bool dirExists(const std::string& path)
+{
+    struct stat info;
+
+    if (stat(path.c_str(), &info) != 0)
+        return false;
+    else if (info.st_mode & S_IFDIR)
+        return true;
+    else
+        return false;
+}
+
+inline bool fileExists(const std::string& name) {
+    struct stat buffer;
+    return (stat(name.c_str(), &buffer) == 0);
+}
 
 BaseAssetManager::BaseAssetManager(const string assetRootDirPath)
 {
 	mRootPath = assetRootDirPath;
 
     mRootAsset = make_unique<BaseAssetNode>();
-    mRootAsset->mID = "Root";
-    mRootAsset->mType = BaseAssetType::ASSET_ROOT;
+    mRootAsset->mID = "AssetRoot";
+    mRootAsset->SetAssetType(BaseAssetType::ASSET_ROOT);
 }
 
 string BaseAssetManager::GetAssetFullPath(BaseAssetNode* node)
 {
     return mRootPath + "\\" + node->GetRelativePath();
+}
+
+BaseAssetNode* BaseAssetManager::RegisterAsset(const string url, const string filepath)
+{
+    // initialize the folder of the url
+    string delimiter = "\\";
+    string urltail = url;
+
+    BaseAssetNode* nowAssetNode = mRootAsset.get();
+    string nowFullPath = mRootPath;
+
+    size_t pos = 0;
+    std::string token;
+    // this loop would not include the tail filename
+    while ((pos = urltail.find(delimiter)) != std::string::npos) {
+        token = urltail.substr(0, pos);
+        BaseAssetNode* tmpNode;
+        tmpNode = nowAssetNode->SearchByID(token);
+        nowFullPath += delimiter + token;
+        
+        // this folder has not been registered / not exists
+        if (!tmpNode) {
+            // fallback: try to retrieve it by checking whether it exists physically
+            // in file system (file system hierarchy should be the same as the asset tree)
+
+            if (!fileExists(nowFullPath) && !dirExists(nowFullPath))
+            {
+                // file/folder not exsits
+                // create a folder
+                if (!filesystem::create_directory(nowFullPath.c_str()))
+                {
+                    // folder fails to create
+                    return nullptr;
+                }
+                nowAssetNode = nowAssetNode->RegisterAsset(nowFullPath);
+            }
+            else if (dirExists(nowFullPath)) {
+                nowAssetNode = nowAssetNode->RegisterAsset(nowFullPath);
+            }
+        }
+        else {
+            // this folder is found
+            // Error: could not add an asset under a non-folder asset
+            if (tmpNode->GetAssetType() != BaseAssetType::ASSET_FOLDER)
+            {
+                return nullptr;
+            }
+            nowAssetNode = tmpNode;
+        }
+
+        urltail.erase(0, pos + delimiter.length());
+    }
+
+    // the url tail goes to a file
+    if (urltail.size() > 0)
+    {
+        // get the full path of the file
+        BaseAssetNode* tmpNode;
+        tmpNode = nowAssetNode->SearchByID(urltail);
+        nowFullPath += delimiter + urltail;
+
+        // this asset has been registered
+        if (tmpNode) {
+            return nullptr;
+        }
+    }
+
+    // check whether file has already been in a proper position
+    // if not copy it first
+    error_code err;
+    if (!filesystem::equivalent(filepath, nowFullPath, err))
+    {
+        filesystem::copy(filepath, nowFullPath);
+    }
+
+    // register the file
+    nowAssetNode = nowAssetNode->RegisterAsset(nowFullPath);
+
+    return nowAssetNode;
 }
 
 BaseAssetNode* BaseAssetManager::LoadAsset(const string url)
@@ -32,21 +130,11 @@ BaseAssetNode* BaseAssetManager::LoadAsset(const string url)
         nowFullPath += delimiter + token;
         // this asset has not been registered / not exists
         if (!tmpNode) {
-            // fallback: try to retrieve it by checking whether it exists physically
-            // in file system (file system hierarchy should be the same as the asset tree)
-            nowAssetNode = nowAssetNode->RegisterAsset(nowFullPath);
-            
-            if (!nowAssetNode)
-            {
-                // file/folder not exsits
-                return nullptr;
-            }
+            return nullptr;
         }
-        else {
-            // this asset is found
-            // if it is possibly a folder, proceed
-            nowAssetNode = tmpNode;
-        }
+
+        // this asset is found
+        nowAssetNode = tmpNode;
 
         urltail.erase(0, pos + delimiter.length());
     }
@@ -60,21 +148,9 @@ BaseAssetNode* BaseAssetManager::LoadAsset(const string url)
         nowFullPath += delimiter + urltail;
         // this asset has not been registered / not exists
         if (!tmpNode) {
-            // fallback: try to retrieve it by checking whether it exists physically
-            // in file system (file system hierarchy should be the same as the asset tree)
-            nowAssetNode = nowAssetNode->RegisterAsset(nowFullPath);
-
-            if (!nowAssetNode)
-            {
-                // file/folder not exsits
-                return nullptr;
-            }
+            return nullptr;
         }
-        else {
-            // this asset is found
-            // it is possibly a folder, proceed
-            nowAssetNode = tmpNode;
-        }
+        nowAssetNode = tmpNode;
     }
 
     return nowAssetNode;

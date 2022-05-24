@@ -21,7 +21,8 @@
 #include "BaseRenderTexture.h"
 #include "BaseGameObjectManager.h"
 #include "BaseImageManager.h"
-#include "AssetManager/BaseAssetManager.h"
+#include "BaseProject.h"
+#include "Resource/BaseResourceManager.h"
 
 using namespace DirectX;
 using namespace DirectX::PackedVector;
@@ -32,7 +33,7 @@ using namespace std;
 class BaseApp
 {
 public:
-  BaseApp(HINSTANCE hInstance);
+  BaseApp(HINSTANCE hInstance, const string& ProjectPath);
   virtual ~BaseApp();
 
   void Run();
@@ -84,8 +85,7 @@ public:
 
   ComPtr<ID3D12CommandQueue> mCommandQueue;
 
-  BaseAssetManager* mAssetManager;
-
+  BaseProject* mProject;
   BaseCamera* mMainCamera;
 
   BaseImageManager* mImageManager;
@@ -93,7 +93,8 @@ public:
 
   BaseMainHeap* mMainHeap;
   BaseRuntimeHeap* mRuntimeHeap;
-  BaseDescHeapHandle mUIResourceHandle;
+
 
   static BaseApp* mApp;
+  BaseResourceManager* mResourceManager;
 };

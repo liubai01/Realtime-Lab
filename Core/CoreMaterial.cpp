@@ -12,13 +12,13 @@ CoreMaterial::CoreMaterial(ID3D12Device* device): BaseStagedBuffer(device) {
 	mName = "Unnamed";
 }
 
-void CoreMaterial::SetDiffuseColorTextured(shared_ptr<BaseImage> diffuseColorTexture)
+void CoreMaterial::SetDiffuseColorTextured(BaseResourceImage* diffuseColorTexture)
 {
 	mBuffer.mData.isBaseColorTextured = true;
 	mDiffuseColorTexture = diffuseColorTexture;
 }
 
-void CoreMaterial::SetNormalTextured(shared_ptr<BaseImage> normalMapTexture)
+void CoreMaterial::SetNormalTextured(BaseResourceImage* normalMapTexture)
 {
 	mBuffer.mData.isNormalTextured = true;
 	mNormalMapTexture = normalMapTexture;

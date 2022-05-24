@@ -73,6 +73,12 @@
     <Filter Include="Source Files\Base\AssetManager">
       <UniqueIdentifier>{914cabc9-d558-4e79-ade4-1c4d59a5cf70}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Base\Resource">
+      <UniqueIdentifier>{4ce0859e-34d5-4eb0-bda6-2618be2cf6d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Base\Resource">
+      <UniqueIdentifier>{47a7a943-81aa-4a57-b335-731640119a54}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DebugOut.cpp">
@@ -80,9 +86,6 @@
     </ClCompile>
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ThirdParty\ImGUI\imgui.cpp">
-      <Filter>Header Files\ThirdParty\ImGUI</Filter>
     </ClCompile>
     <ClCompile Include="ThirdParty\ImGUI\imgui_draw.cpp">
       <Filter>Source Files\ThirdParty\ImGUI</Filter>
@@ -216,14 +219,32 @@
     <ClCompile Include="Base\BaseImageManager.cpp">
       <Filter>Source Files\Base</Filter>
     </ClCompile>
-    <ClCompile Include="Base\BaseProject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Base\AssetManager\BaseAssetManager.cpp">
       <Filter>Source Files\Base\AssetManager</Filter>
     </ClCompile>
     <ClCompile Include="Base\AssetManager\BaseAssetNode.cpp">
       <Filter>Source Files\Base\AssetManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\BaseProject.cpp">
+      <Filter>Source Files\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\GUI\CoreAssetWidget.cpp">
+      <Filter>Source Files\Core\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\AssetManager\BaseAssetMetadata.cpp">
+      <Filter>Source Files\Base\AssetManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\Resource\BaseResourceManager.cpp">
+      <Filter>Source Files\Base\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\Resource\BaseResourceImage.cpp">
+      <Filter>Source Files\Base\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\Resource\BaseResource.cpp">
+      <Filter>Source Files\Base\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="ThirdParty\ImGUI\imgui.cpp">
+      <Filter>Source Files\ThirdParty\ImGUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -383,19 +404,37 @@
     <ClInclude Include="ThirdParty\json.h">
       <Filter>Header Files\ThirdParty</Filter>
     </ClInclude>
-    <ClInclude Include="Base\BaseProject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Base\AssetManager\BaseAssetManager.h">
       <Filter>Header Files\Base\AssetManager</Filter>
     </ClInclude>
     <ClInclude Include="Base\AssetManager\BaseAssetNode.h">
       <Filter>Header Files\Base\AssetManager</Filter>
     </ClInclude>
+    <ClInclude Include="Base\BaseProject.h">
+      <Filter>Header Files\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\GUI\CoreAssetWidget.h">
+      <Filter>Header Files\Core\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\AssetManager\BaseAssetMetadata.h">
+      <Filter>Header Files\Base\AssetManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\Resource\BaseResourceImage.h">
+      <Filter>Header Files\Base\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\Resource\BaseResourceManager.h">
+      <Filter>Header Files\Base\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\Resource\BaseResource.h">
+      <Filter>Header Files\Base\Resource</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Asset\grass.jpg">
       <Filter>Resource Files</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

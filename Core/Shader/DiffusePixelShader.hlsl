@@ -43,6 +43,8 @@ float4 main(VertexOut pin) : SV_TARGET
 	if (isDiffuseColorTextured)
 	{
 		diffuseCoff = colorTexture.Sample(s0, pin.Coord);
+		// Gamma correction
+		diffuseCoff = pow(diffuseCoff, 2.2);
 	}
 
 	float4 N = float4(pin.Norm, 0.0f);
@@ -69,6 +71,9 @@ float4 main(VertexOut pin) : SV_TARGET
 	float4 V = normalize(gEyePos - pin.PosW);
 	float4 H = (V + gLightDir) / length(V + gLightDir);
 	ret += pow(max(dot(N, H), 0), Ns) * Ks * ims;
+
+	// Gamma encoding
+	ret = pow(ret, 0.45);
 
 	return ret;
 }

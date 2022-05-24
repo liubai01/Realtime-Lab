@@ -41,7 +41,7 @@ LRESULT CALLBACK BaseApp::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
   return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
-BaseApp::BaseApp(HINSTANCE hInstance)
+BaseApp::BaseApp(HINSTANCE hInstance, const string& projectPath)
 {
 #if defined(DEBUG) || defined(_DEBUG) 
   // Enable the D3D12 debug layer.
@@ -73,10 +73,15 @@ BaseApp::BaseApp(HINSTANCE hInstance)
   mMainCamera = new BaseCamera(mDevice.Get(), static_cast<float>(mWidth), static_cast<float>(mHeight));
   mMainCamera->RegisterMainHandle(mMainHeap);
 
-  // just for test
-  mAssetManager = new BaseAssetManager("ExampleProject\\Asset");
-  BaseAssetNode* node = mAssetManager->LoadAsset("models\\WoodTower.obj");
-  dout::printf("Full path: %s \n", mAssetManager->GetAssetFullPath(node).c_str());
+  mProject = new BaseProject(projectPath);
+
+  // Should be removed after scene could be serialized
+  BaseAssetNode* node = mProject->mAssetManager->RegisterAsset("models\\WoodTower.obj", "ExampleProject\\Asset\\models\\WoodTower.obj");
+  mProject->mAssetManager->RegisterAsset("Wood_Tower_Col.jpg", "ExampleProject\\Asset\\Wood_Tower_Col.jpg");
+  //node = mProject->mAssetManager->LoadAsset("Wood_Tower_Col.jpg");
+  mProject->mAssetManager->RegisterAsset("Wood_Tower_Nor.jpg", "ExampleProject\\Asset\\Wood_Tower_Nor.jpg");
+
+  mResourceManager = new BaseResourceManager(mDevice.Get(), mProject->mAssetManager, mMainHeap);
 
   mApp = this;
 }
@@ -90,7 +95,9 @@ BaseApp::~BaseApp()
   delete mMainCamera;
   delete mGOManager;
   delete mImageManager;
-  delete mAssetManager;
+  delete mProject;
+  delete mResourceManager;
+
   delete mMainHeap;
   delete mRuntimeHeap;
   CloseHandle(mFenceEvent);
@@ -199,6 +206,7 @@ void BaseApp::InitImGUI()
   ImGui::CreateContext();
   ImGuiIO& io = ImGui::GetIO(); (void)io;
   io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+  io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
   io.Fonts->AddFontFromFileTTF("ThirdParty\\ImGUI\\Cousine-Regular.ttf", 16);
 
   ImGui::StyleColorsDark();

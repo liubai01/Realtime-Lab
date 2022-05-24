@@ -117,6 +117,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -141,6 +142,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Base\AssetManager\BaseAssetManager.cpp" />
+    <ClCompile Include="Base\AssetManager\BaseAssetMetadata.cpp" />
     <ClCompile Include="Base\AssetManager\BaseAssetNode.cpp" />
     <ClCompile Include="Base\BaseApp.cpp" />
     <ClCompile Include="Base\BaseCamera.cpp" />
@@ -165,6 +167,9 @@
     <ClCompile Include="Base\BaseUUIDGenerator.cpp" />
     <ClCompile Include="Base\Component\BaseComponent.cpp" />
     <ClCompile Include="Base\Component\BaseMesh.cpp" />
+    <ClCompile Include="Base\Resource\BaseResource.cpp" />
+    <ClCompile Include="Base\Resource\BaseResourceImage.cpp" />
+    <ClCompile Include="Base\Resource\BaseResourceManager.cpp" />
     <ClCompile Include="Core\Component\CoreMeshComponent.cpp" />
     <ClCompile Include="Core\CoreApp.cpp" />
     <ClCompile Include="Core\CoreGeometry.cpp" />
@@ -177,6 +182,7 @@
     <ClCompile Include="Core\DrawContext\CoreDrawBlurContext.cpp" />
     <ClCompile Include="Core\DrawContext\CoreDrawDiffuseContext.cpp" />
     <ClCompile Include="Core\DrawContext\CoreDrawEdgeContext.cpp" />
+    <ClCompile Include="Core\GUI\CoreAssetWidget.cpp" />
     <ClCompile Include="Core\GUI\CoreGUIManager.cpp" />
     <ClCompile Include="Core\GUI\CoreHierarchyWidget.cpp" />
     <ClCompile Include="Core\GUI\CoreInspectorWidget.cpp" />
@@ -193,6 +199,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Base\AssetManager\BaseAssetManager.h" />
+    <ClInclude Include="Base\AssetManager\BaseAssetMetadata.h" />
     <ClInclude Include="Base\AssetManager\BaseAssetNode.h" />
     <ClInclude Include="Base\BaseApp.h" />
     <ClInclude Include="Base\BaseCamera.h" />
@@ -217,6 +224,9 @@
     <ClInclude Include="Base\BaseUploadHeap.h" />
     <ClInclude Include="Base\Component\BaseComponent.h" />
     <ClInclude Include="Base\Component\BaseMesh.h" />
+    <ClInclude Include="Base\Resource\BaseResource.h" />
+    <ClInclude Include="Base\Resource\BaseResourceImage.h" />
+    <ClInclude Include="Base\Resource\BaseResourceManager.h" />
     <ClInclude Include="Core\Component\CoreMeshComponent.h" />
     <ClInclude Include="Core\CoreApp.h" />
     <ClInclude Include="Core\CoreGeometry.h" />
@@ -229,6 +239,7 @@
     <ClInclude Include="Core\DrawContext\CoreDrawBlurContext.h" />
     <ClInclude Include="Core\DrawContext\CoreDrawDiffuseContext.h" />
     <ClInclude Include="Core\DrawContext\CoreDrawEdgeContext.h" />
+    <ClInclude Include="Core\GUI\CoreAssetWidget.h" />
     <ClInclude Include="Core\GUI\CoreGUIManager.h" />
     <ClInclude Include="Core\GUI\CoreHierarchyWidget.h" />
     <ClInclude Include="Core\GUI\CoreInspectorWidget.h" />
@@ -251,6 +262,17 @@
   <ItemGroup>
     <Image Include="Asset\grass.jpg" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="packages\directxtex_desktop_win10.2022.5.10.1\build\native\directxtex_desktop_win10.targets" Condition="Exists('packages\directxtex_desktop_win10.2022.5.10.1\build\native\directxtex_desktop_win10.targets')" />
+  </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\directxtex_desktop_win10.2022.5.10.1\build\native\directxtex_desktop_win10.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\directxtex_desktop_win10.2022.5.10.1\build\native\directxtex_desktop_win10.targets'))" />
+  </Target>
 </Project>

@@ -1,6 +1,22 @@
 #include "BaseImage.h"
 #include "../DebugOut.h"
 
+
+// give reference to https://www.braynzarsoft.net/viewtutorial/q16390-directx-12-textures-from-file
+
+// get the dxgi format equivilent of a wic format
+DXGI_FORMAT GetDXGIFormatFromWICFormat(WICPixelFormatGUID& wicFormatGUID);
+
+// get a dxgi compatible wic format from another wic format
+WICPixelFormatGUID GetConvertToWICFormat(WICPixelFormatGUID& wicFormatGUID);
+
+// get the number of bits per pixel for a dxgi format
+int GetDXGIFormatBitsPerPixel(DXGI_FORMAT& dxgiFormat);
+
+// load and decode image from file
+int LoadImageDataFromFile(BYTE** imageData, D3D12_RESOURCE_DESC* resourceDescription, LPCWSTR filename, int* bytesPerRow);
+
+
 BaseImage::BaseImage(ID3D12Device* device, const string& filepath, const string& name)
 {
     mDevice = device;
@@ -56,7 +72,7 @@ void BaseImage::Upload(ID3D12GraphicsCommandList* commandList)
   D3D12_SUBRESOURCE_DATA textureData = {};
   textureData.pData = mImageData; // pointer to our image data
   textureData.RowPitch = mImageBytesPerRow; 
-  textureData.SlicePitch = mImageBytesPerRow * mTextureDesc.Height; 
+  textureData.SlicePitch = static_cast<LONG_PTR>(mImageBytesPerRow) * mTextureDesc.Height;
 
   // Now we copy the upload buffer contents to the default heap
   UpdateSubresources(commandList, mTextureBuffer.Get(), mTextureUploadHeap.Get(), 0, 0, 1, &textureData);
@@ -70,6 +86,10 @@ void BaseImage::Upload(ID3D12GraphicsCommandList* commandList)
   commandList->ResourceBarrier(1, &trans);
 
   mIsUploaded = true;
+
+  // the data in the CPU would be no longer used
+  free(mImageData);
+  mImageData = NULL;
 
 }
 
@@ -103,6 +123,7 @@ BaseImage::~BaseImage()
   {
     free(mImageData);
     mImageData = NULL;
+    
   }
 }
 

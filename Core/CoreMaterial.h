@@ -5,7 +5,8 @@
 #include <DirectXPackedVector.h>
 #include "../DebugOut.h"
 #include "../MathUtils.h"
-#include "../Base/BaseImage.h"
+//#include "../Base/BaseImage.h"
+#include "../Base/Resource/BaseResourceImage.h"
 #include <time.h>
 
 using namespace DirectX;
@@ -24,13 +25,13 @@ class CoreMaterial: public BaseStagedBuffer<CoreMaterialConsts>
 {
 public:
 	string mName;
-	shared_ptr<BaseImage> mDiffuseColorTexture;
-	shared_ptr<BaseImage> mNormalMapTexture;
+	BaseResourceImage* mDiffuseColorTexture;
+	BaseResourceImage* mNormalMapTexture;
 
 	CoreMaterial(ID3D12Device* device);
 
-	void SetDiffuseColorTextured(shared_ptr<BaseImage> diffuseColorTexture);
-	void SetNormalTextured(shared_ptr<BaseImage> normalMapTexture);
+	void SetDiffuseColorTextured(BaseResourceImage* diffuseColorTexture);
+	void SetNormalTextured(BaseResourceImage* normalMapTexture);
 	void SetNormalStrength(float val);
 
 	void Upload();
