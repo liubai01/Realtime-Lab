@@ -4,6 +4,9 @@ CoreGeometry GetCubeGeometry()
 {
   CoreGeometry geo;
   geo.mName = "Cube";
+  geo.mID = "<cube>";
+  geo.mGeoType = CoreGeometryType::GEO_PRIMITIVE;
+
   geo.mVertices = {
     // front
     { { -1.0f, +1.0f, -1.0f }, { 0.0f, 0.0f, 0.0f }, {0.0f, 0.0f} },
@@ -80,6 +83,9 @@ CoreGeometry GetPlaneGeometry()
 {
     CoreGeometry geo;
     geo.mName = "Plane";
+    geo.mID = "<plane>";
+    geo.mGeoType = CoreGeometryType::GEO_PRIMITIVE;
+
     geo.mVertices = {
         // front
         { { -1.0f, +1.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, {0.0f, 0.0f} },

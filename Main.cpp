@@ -4,14 +4,16 @@
 #include "Core/CoreGeometryUtils.h"
 
 #include "Base/Resource/BaseResourceImage.h"
+#include "Base/BaseProject.h"
 
 
 class MyApp : public CoreApp {
 public:
-    MyApp(HINSTANCE hInstance, const string& ProjectPath) : CoreApp(hInstance, ProjectPath) {};
+    MyApp(HINSTANCE hInstance, BaseProject* proj) : CoreApp(hInstance, proj) {};
     
 
     void Start() {
+        // textured tower
         shared_ptr<BaseObject> tower = mNowScene->CreateObject("Wood Tower");
         shared_ptr<CoreMeshComponent> meshComponent;
 
@@ -27,9 +29,12 @@ public:
 
         tower->AddComponent(meshComponent);
 
-        mMainCamera->SetPos(10.0f, 10.0f, -10.0f);
+        // light GO
+        shared_ptr<BaseObject> light = mNowScene->CreateObject("Directional Light");
+        shared_ptr<CoreLightComponent> lightComponent = mLightManager->MakeLightComponent();
+        light->AddComponent(lightComponent);
 
-        
+        mMainCamera->SetPos(10.0f, 10.0f, -10.0f);
     }
 
     void Update()
@@ -61,13 +66,25 @@ public:
     }
 };
 
+BaseProject* GetProject(const string& projectPath)
+{
+    BaseProject* proj = new BaseProject(projectPath);
+
+    // Should be removed after scene could be serialized
+    BaseAssetNode* node = proj->mAssetManager->RegisterAsset("models\\WoodTower.obj", "ExampleProject\\Asset\\models\\WoodTower.obj");
+    proj->mAssetManager->RegisterAsset("Wood_Tower_Col.jpg", "ExampleProject\\Asset\\Wood_Tower_Col.jpg");
+    proj->mAssetManager->RegisterAsset("Wood_Tower_Nor.jpg", "ExampleProject\\Asset\\Wood_Tower_Nor.jpg");
+
+    return proj;
+}
 
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPTSTR lpCmdLine, _In_ int nShowCmd)
 {
     string projectPath = "ExampleProject";
-    MyApp app = MyApp(hInstance, projectPath);
-
-
+    BaseProject* proj = GetProject(projectPath);
+    
+    MyApp app = MyApp(hInstance, proj);
+    
     try
     {
         app.Run();
@@ -75,6 +92,8 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     catch (dout::DxException e) {
         dout::printf("%s\n", e.ToString().c_str());
     }
+
+    delete proj;
 
     return 0;
 }

@@ -42,7 +42,7 @@ public:
   shared_ptr<BaseRenderTexture> mSceneRenderTexture;
   shared_ptr<BaseRenderTexture> mEdgeRenderTexture;
   
-  CoreApp(HINSTANCE hInstance, const string& ProjectPath);
+  CoreApp(HINSTANCE hInstance, BaseProject* proj);
 
   virtual void Start();
   virtual void Update();

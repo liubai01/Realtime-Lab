@@ -5,7 +5,7 @@
 #include "../ThirdParty/ImGUI/imgui_internal.h"
 #include "../ThirdParty/ImGUI/imgui.h"
 
-CoreApp::CoreApp(HINSTANCE hInstance, const string& ProjectPath) : BaseApp(hInstance, ProjectPath)
+CoreApp::CoreApp(HINSTANCE hInstance, BaseProject* proj) : BaseApp(hInstance, proj)
 {
     mUploadCmdList = make_unique<BaseDirectCommandList>(mDevice.Get());
     mUIDrawCmdList = make_unique<BaseDirectCommandList>(mDevice.Get());
@@ -56,6 +56,9 @@ void CoreApp::Render()
   // Set resource to runtime heap
   mRuntimeHeap->Reset();
 
+  // Flush data from light component to light manager
+  mLightManager->Update();
+
   // Register Runtime Heap
   mMaterialManager->RegisterRuntimeHandle(mRuntimeHeap);
   mLightManager->RegisterRuntimeHandle(mRuntimeHeap);
@@ -80,6 +83,7 @@ void CoreApp::Render()
 void CoreApp::BeforeUpdate()
 {
     mGUIManager->Update();
+    ImGui::ShowDemoWindow();
 }
 
 void CoreApp::UploadGeometry()

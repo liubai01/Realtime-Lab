@@ -33,7 +33,7 @@ using namespace std;
 class BaseApp
 {
 public:
-  BaseApp(HINSTANCE hInstance, const string& ProjectPath);
+  BaseApp(HINSTANCE hInstance, BaseProject* proj);
   virtual ~BaseApp();
 
   void Run();

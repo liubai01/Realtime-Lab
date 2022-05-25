@@ -252,6 +252,9 @@
     <ClCompile Include="Base\Resource\BaseResourceMesh.cpp">
       <Filter>Source Files\Base\Resource</Filter>
     </ClCompile>
+    <ClCompile Include="Core\Component\CoreLightComponent.cpp">
+      <Filter>Source Files\Core\Component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -433,6 +436,12 @@
     </ClInclude>
     <ClInclude Include="Base\Resource\BaseResourceMesh.h">
       <Filter>Header Files\Base\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Component\CoreLightComponent.h">
+      <Filter>Header Files\Core\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\CoreStructs.h">
+      <Filter>Header Files\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -170,6 +170,7 @@
     <ClCompile Include="Base\Resource\BaseResourceImage.cpp" />
     <ClCompile Include="Base\Resource\BaseResourceManager.cpp" />
     <ClCompile Include="Base\Resource\BaseResourceMesh.cpp" />
+    <ClCompile Include="Core\Component\CoreLightComponent.cpp" />
     <ClCompile Include="Core\Component\CoreMeshComponent.cpp" />
     <ClCompile Include="Core\CoreApp.cpp" />
     <ClCompile Include="Core\CoreGeometry.cpp" />
@@ -227,6 +228,7 @@
     <ClInclude Include="Base\Resource\BaseResourceImage.h" />
     <ClInclude Include="Base\Resource\BaseResourceManager.h" />
     <ClInclude Include="Base\Resource\BaseResourceMesh.h" />
+    <ClInclude Include="Core\Component\CoreLightComponent.h" />
     <ClInclude Include="Core\Component\CoreMeshComponent.h" />
     <ClInclude Include="Core\CoreApp.h" />
     <ClInclude Include="Core\CoreGeometry.h" />
@@ -236,6 +238,7 @@
     <ClInclude Include="Core\CoreMaterialManager.h" />
     <ClInclude Include="Core\CoreMeshLoader.h" />
     <ClInclude Include="Core\CoreRenderTextureManager.h" />
+    <ClInclude Include="Core\CoreStructs.h" />
     <ClInclude Include="Core\DrawContext\CoreDrawBlurContext.h" />
     <ClInclude Include="Core\DrawContext\CoreDrawDiffuseContext.h" />
     <ClInclude Include="Core\DrawContext\CoreDrawEdgeContext.h" />

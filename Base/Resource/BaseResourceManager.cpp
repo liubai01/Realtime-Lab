@@ -117,6 +117,11 @@ BaseResourceManager::~BaseResourceManager()
 	for (auto& item: mUrl2ResourcePtr)
 	{
 		BaseResource* resource = item.second;
+		// resource image gets the runtime handle
+		if (resource->mType == BaseResourceType::RESOURCE_IMAGE)
+		{
+			mMainHeap->FreeHeapHandle(resource->mMainHandle);
+		}
 		delete resource;
 		item.second = nullptr;
 	}

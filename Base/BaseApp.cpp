@@ -44,7 +44,7 @@ LRESULT CALLBACK BaseApp::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
     return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
-BaseApp::BaseApp(HINSTANCE hInstance, const string& projectPath)
+BaseApp::BaseApp(HINSTANCE hInstance, BaseProject* proj)
 {
 #if defined(DEBUG) || defined(_DEBUG) 
   // Enable the D3D12 debug layer.
@@ -74,13 +74,7 @@ BaseApp::BaseApp(HINSTANCE hInstance, const string& projectPath)
   mMainCamera = new BaseCamera(mDevice.Get(), static_cast<float>(mWidth), static_cast<float>(mHeight));
   mMainCamera->RegisterMainHandle(mMainHeap);
 
-  mProject = new BaseProject(projectPath);
-
-  // Should be removed after scene could be serialized
-  BaseAssetNode* node = mProject->mAssetManager->RegisterAsset("models\\WoodTower.obj", "ExampleProject\\Asset\\models\\WoodTower.obj");
-  mProject->mAssetManager->RegisterAsset("Wood_Tower_Col.jpg", "ExampleProject\\Asset\\Wood_Tower_Col.jpg");
-  //node = mProject->mAssetManager->LoadAsset("Wood_Tower_Col.jpg");
-  mProject->mAssetManager->RegisterAsset("Wood_Tower_Nor.jpg", "ExampleProject\\Asset\\Wood_Tower_Nor.jpg");
+  mProject = proj;
 
   mResourceManager = new BaseResourceManager(mDevice.Get(), mProject->mAssetManager, mMainHeap);
   mNowScene = new BaseScene(mGOManager);
@@ -97,7 +91,6 @@ BaseApp::~BaseApp()
   delete mNowScene;
   delete mMainCamera;
   delete mGOManager;
-  delete mProject;
   delete mResourceManager;
 
   delete mMainHeap;

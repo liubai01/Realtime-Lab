@@ -7,9 +7,12 @@ class CoreInspectorWidget :
 {
 public:
 	CoreInspectorWidget(BaseObject** nowSelectObjectPtr);
+
 	void Start(ImGuiID& dockspace_id);
 	void Update();
 private:
 	BaseObject** mNowSelectObjectPtr;
+
+	void UpdateTransformGUI(BaseObject* obj);
 };
 

@@ -5,25 +5,25 @@
 #include <DirectXPackedVector.h>
 #include "../DebugOut.h"
 #include "../MathUtils.h"
-
-struct CoreDirectLightConsts {
-	XMFLOAT4 Ims = { 1.0f, 1.0f, 1.0f, 1.0f }; // intensity of specular
-	XMFLOAT4 Ia = { 0.5f, 0.5f, 0.5f, 1.0f }; // intensity of ambient
-	XMFLOAT4 Id = { 1.0f, 1.0f, 1.0f ,1.0f }; // intensity of diffuse
-	XMFLOAT4 LightDir = { 0.577f, 0.577f, 0.577f, 0.0f}; // light direction
-};
-
+#include "CoreStructs.h"
+#include "Component/CoreLightComponent.h"
+#include <list>
 
 class CoreLightManager
 {
 public:
 	CoreLightManager(ID3D12Device* device);
 
-	void SetLightDir(float x, float y, float z);
+	shared_ptr<CoreLightComponent> MakeLightComponent();
+
+	// Check whether there is dead component
+	// and migrate data into manager
+	void Update();
 
 	void RegisterMainHandle(BaseMainHeap* mainHeap);
 	void RegisterRuntimeHandle(BaseRuntimeHeap* runtimeHeap);
 
+	list<shared_ptr<CoreLightComponent>> mLightComponents;
 	BaseStagedBuffer<CoreDirectLightConsts> mLightData;
 };
 
