@@ -26,6 +26,7 @@ public:
 
         meshComponent->mMat[0]->SetDiffuseColorTextured(colorTexture);
         meshComponent->mMat[0]->SetNormalTextured(normalTexture);
+        meshComponent->mMat[0]->SetNormalStrength(0.2f);
 
         tower->AddComponent(meshComponent);
 

@@ -19,7 +19,8 @@ class BaseAssetNode
 public:
 	BaseAssetNode(BaseAssetNode* parent=nullptr);
 
-	string mID;
+	string mUUID; // the unique global ID
+	string mID; // the name
 	
 	BaseAssetType GetAssetType();
 	void SetAssetType(BaseAssetType astType);

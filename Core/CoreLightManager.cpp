@@ -39,7 +39,10 @@ void CoreLightManager::Update()
 
 	if (!mLightComponents.empty())
 	{
-		mLightData.mBuffer.mData = mLightComponents.front()->mData;
+		// TBD: we only take first light component as the only directional light source
+		// support multiple one in future pipeline
+		mLightData.mBuffer.mData.Id = mLightComponents.front()->mData.Id;
+		mLightData.mBuffer.mData.LightDir = mLightComponents.front()->mData.LightDir;
 	}
 	else {
 		// unlit everything

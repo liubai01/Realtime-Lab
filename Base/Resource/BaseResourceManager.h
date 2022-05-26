@@ -25,6 +25,6 @@ private:
 
 	BaseMainHeap* mMainHeap;
 
-	unordered_map<string, BaseResource*> mUrl2ResourcePtr;
+	unordered_map<string, BaseResource*> mAssetUUID2ResourcePtr;
 };
 

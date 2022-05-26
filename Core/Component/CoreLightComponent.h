@@ -12,5 +12,8 @@ public:
 	void SetLightDir(float x, float y, float z);
 
 	CoreDirectLightConsts mData;
+
+	XMFLOAT4 mDiffuseColor;
+	float mIdMag;
 };
 

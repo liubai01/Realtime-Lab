@@ -1,10 +1,10 @@
 #include "CoreMeshComponent.h"
+#include "../../ThirdParty/ImGUI/imgui.h"
 
 CoreMeshComponent::CoreMeshComponent()
 {
 	mComponentType = ComponentType::COMPONENT_MESH;
     mUploaded = false;
-
 }
 
 void CoreMeshComponent::AddGeometry(shared_ptr<CoreGeometry> geo, shared_ptr<CoreMaterial> mat)
@@ -52,4 +52,14 @@ void CoreMeshComponent::Render(ID3D12GraphicsCommandList* commandList, int matRe
         );
     }
 
+}
+
+void CoreMeshComponent::OnEditorGUI()
+{
+    if (ImGui::TreeNodeEx("Mesh Component", ImGuiTreeNodeFlags_Framed))
+    {
+
+        ImGui::Separator();
+        ImGui::TreePop();
+    }
 }

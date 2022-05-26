@@ -15,6 +15,8 @@ public:
 
   CoreMeshComponent();
 
+  void OnEditorGUI();
+
   void AddGeometry(shared_ptr<CoreGeometry> geo, shared_ptr<CoreMaterial> mat=nullptr);
 
   void Upload(ID3D12Device* device, ID3D12GraphicsCommandList* commandList);

@@ -1,4 +1,5 @@
 #include "BaseAssetNode.h"
+#include "../BaseUUIDGenerator.h"
 
 using namespace std;
 
@@ -25,6 +26,7 @@ BaseAssetNode::BaseAssetNode(BaseAssetNode* parent)
 	mParentAsset = parent;
 	mSubAssets.clear();
 	mType = BaseAssetType::ASSET_UNKNOWN;
+	mUUID = uuid::generate_uuid();
 }
 
 
