@@ -4,6 +4,7 @@
 #include "../../Base/BaseGUIWidget.h"
 #include "../../Base/BaseApp.h"
 #include "CoreHierarchyWidget.h"
+#include "../Resource/CoreResourceManager.h"
 #include<vector>
 
 using namespace std;
@@ -12,7 +13,7 @@ class CoreGUIManager
 {
 public:
 
-	CoreGUIManager(BaseApp* app);
+	CoreGUIManager(BaseApp* app, CoreResourceManager* resourceManager);
 
 	void Render(ID3D12GraphicsCommandList* commandList);
 	void Update();
@@ -24,5 +25,6 @@ public:
 private:
 	bool mFirstLoop;
 	BaseApp* mApp;
+	CoreResourceManager* mResourceManager;
 };
 

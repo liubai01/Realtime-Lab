@@ -1,4 +1,5 @@
 #pragma once
+#include "../BaseInterfaceSerializable.h"
 
 typedef enum class ComponentType
 {
@@ -6,7 +7,7 @@ typedef enum class ComponentType
   COMPONENT_LIGHT
 } ComponentType;
 
-class BaseComponent
+class BaseComponent: public BaseInterfaceSerializable
 {
 public:
   ComponentType mComponentType;

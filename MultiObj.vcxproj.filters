@@ -85,6 +85,12 @@
     <Filter Include="Source Files\Base\Scene">
       <UniqueIdentifier>{37539f98-342f-4e7e-b89a-1f8e0117e09d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Core\Resource">
+      <UniqueIdentifier>{cc790a2b-c8aa-4e4c-bf0c-7bb454f5e179}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\Resource">
+      <UniqueIdentifier>{3337fa0f-26df-4ba6-af49-cac085265b1e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DebugOut.cpp">
@@ -254,6 +260,15 @@
     </ClCompile>
     <ClCompile Include="Core\Component\CoreLightComponent.cpp">
       <Filter>Source Files\Core\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Base\BaseInterfaceSerializable.cpp">
+      <Filter>Source Files\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Resource\CoreResourceManager.cpp">
+      <Filter>Source Files\Core\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Resource\CoreResourceMaterial.cpp">
+      <Filter>Source Files\Core\Resource</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -442,6 +457,15 @@
     </ClInclude>
     <ClInclude Include="Core\CoreStructs.h">
       <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\BaseInterfaceSerializable.h">
+      <Filter>Header Files\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Resource\CoreResourceManager.h">
+      <Filter>Header Files\Core\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Resource\CoreResourceMaterial.h">
+      <Filter>Header Files\Core\Resource</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

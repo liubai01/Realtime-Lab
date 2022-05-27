@@ -27,7 +27,14 @@ void DFSTreeNode(BaseObject* obj, BaseObject** nowSelectObjectPtr)
 		{
 			*nowSelectObjectPtr = obj;
 		}
-		
+		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+		{
+			ImGui::SetDragDropPayload("GAMEOBJECT", obj, sizeof(BaseObject*));
+
+			ImGui::Text(obj->mName.c_str());
+			ImGui::EndDragDropSource();
+		}
+
 
 		if (treeNode)
 		{
@@ -51,6 +58,14 @@ void DFSTreeNode(BaseObject* obj, BaseObject** nowSelectObjectPtr)
 		{
 			*nowSelectObjectPtr = obj;
 		}
+		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+		{
+			ImGui::SetDragDropPayload("GAMEOBJECT", obj, sizeof(BaseObject*));
+
+			ImGui::Text(("<GameObject> " + obj->mName).c_str());
+			ImGui::EndDragDropSource();
+		}
+
 	}
 }
 

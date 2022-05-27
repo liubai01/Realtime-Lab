@@ -2,22 +2,35 @@
 #include "../BaseDescHeapHandle.h"
 #include "../BaseMainHeap.h"
 #include "../BaseRuntimeHeap.h"
+#include "../AssetManager/BaseAssetNode.h"
 
 enum class BaseResourceType {
 	RESOURCE_IMAGE,
 	RESOURCE_MESH,
+	RESOURCE_MATERIAL,
 	RESOURCE_UNKNOWN
 };
 
 class BaseResource
 {
 public:
-	BaseResource(ID3D12Device* device, const string& path);
+	static const BaseResourceType ClassResourceType = BaseResourceType::RESOURCE_UNKNOWN;
+	static const BaseAssetType ClassAssetType = BaseAssetType::ASSET_UNKNOWN;
+
+	BaseResource(ID3D12Device* device, BaseAssetNode* assetNode);
 	virtual ~BaseResource() { };
 
 	string mName;
-	string mUUID;
+	// the UUID of this resource
+	// Remark: one asset could have multiple instances of resource
+	string mUUIDResource;
+	// the UUID of corresponding asset (used for serialization)
+	string mUUIDAsset;
 	BaseResourceType mType;
+
+	// whether the resource needs being registered, by default is false
+	bool mIsRuntimeResource;
+
 	bool mUpload;
 
 	virtual void RegisterMainHandle(BaseMainHeap* heap) = 0;

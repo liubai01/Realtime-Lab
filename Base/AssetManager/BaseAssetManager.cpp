@@ -2,28 +2,11 @@
 #include <filesystem>
 
 
-inline bool dirExists(const std::string& path)
-{
-    struct stat info;
-
-    if (stat(path.c_str(), &info) != 0)
-        return false;
-    else if (info.st_mode & S_IFDIR)
-        return true;
-    else
-        return false;
-}
-
-inline bool fileExists(const std::string& name) {
-    struct stat buffer;
-    return (stat(name.c_str(), &buffer) == 0);
-}
-
 BaseAssetManager::BaseAssetManager(const string assetRootDirPath)
 {
-	mRootPath = assetRootDirPath;
+	mRootPath = filesystem::absolute(assetRootDirPath).string();
 
-    mRootAsset = make_unique<BaseAssetNode>();
+    mRootAsset = make_unique<BaseAssetNode>(mRootPath);
     mRootAsset->mID = "AssetRoot";
     mRootAsset->SetAssetType(BaseAssetType::ASSET_ROOT);
 }
@@ -57,7 +40,7 @@ BaseAssetNode* BaseAssetManager::RegisterAsset(const string url, const string fi
             // fallback: try to retrieve it by checking whether it exists physically
             // in file system (file system hierarchy should be the same as the asset tree)
 
-            if (!fileExists(nowFullPath) && !dirExists(nowFullPath))
+            if (!filesystem::exists(nowFullPath) && !filesystem::is_directory(nowFullPath))
             {
                 // file/folder not exsits
                 // create a folder
@@ -68,7 +51,7 @@ BaseAssetNode* BaseAssetManager::RegisterAsset(const string url, const string fi
                 }
                 nowAssetNode = nowAssetNode->RegisterAsset(nowFullPath);
             }
-            else if (dirExists(nowFullPath)) {
+            else if (filesystem::is_directory(nowFullPath)) {
                 nowAssetNode = nowAssetNode->RegisterAsset(nowFullPath);
             }
         }

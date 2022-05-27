@@ -11,7 +11,10 @@ using namespace std;
 class BaseResourceImage : public BaseResource
 {
 public:
-	BaseResourceImage(ID3D12Device* device, const string& path);
+	static const BaseResourceType ClassResourceType = BaseResourceType::RESOURCE_IMAGE;
+	static const BaseAssetType ClassAssetType = BaseAssetType::ASSET_IMAGE;
+
+	BaseResourceImage(ID3D12Device* device, BaseAssetNode* assetNode);
 	~BaseResourceImage();
 
 	unique_ptr<DirectX::ScratchImage> mScratchImage;

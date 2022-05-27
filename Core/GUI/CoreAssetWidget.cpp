@@ -62,7 +62,7 @@ void CoreAssetWidget::UpdateAssetContentWindow()
 			//ImGui::Button(assetNode->mID.c_str(), ImVec2(iconSize, iconSize));
 			if (assetNode->GetAssetType() == BaseAssetType::ASSET_IMAGE)
 			{
-				BaseResourceImage* img = mResourceManager->LoadImage(assetNode->GetRelativePath());
+				BaseResourceImage* img = mResourceManager->Load<BaseResourceImage>(assetNode->GetRelativePath());
 				ImGui::Image((ImTextureID) (img->mRuntimeHandle.GetGPUHandle().ptr), ImVec2(iconSize, iconSize));
 
 				if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))

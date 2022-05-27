@@ -21,9 +21,13 @@ class BaseResourceGeometry : public BaseGeometry<BaseResourceVertex>
 class BaseResourceMesh : public BaseResource
 {
 public:
-	BaseResourceMesh(ID3D12Device* device, const string& path);
+	static const BaseResourceType ClassResourceType = BaseResourceType::RESOURCE_MESH;
+	static const BaseAssetType ClassAssetType = BaseAssetType::ASSET_OBJ;
+
+	BaseResourceMesh(ID3D12Device* device, BaseAssetNode* assetNode);
 	~BaseResourceMesh();
 
+	string mAssetUUID;
 	vector<BaseResourceGeometry> mGeos;
 
 	// handle override methods of BaseResource

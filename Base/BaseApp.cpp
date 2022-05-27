@@ -46,56 +46,61 @@ LRESULT CALLBACK BaseApp::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPa
 
 BaseApp::BaseApp(HINSTANCE hInstance, BaseProject* proj)
 {
+    if (mApp)
+    {
+        dout::printf("[BaseApp] The App is a singleton and could be only initialized once!");
+    }
 #if defined(DEBUG) || defined(_DEBUG) 
-  // Enable the D3D12 debug layer.
-  {
-    ComPtr<ID3D12Debug> debugController;
-    ThrowIfFailed(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)));
-    debugController->EnableDebugLayer();
-  }
+    // Enable the D3D12 debug layer.
+    {
+        ComPtr<ID3D12Debug> debugController;
+        ThrowIfFailed(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)));
+        debugController->EnableDebugLayer();
+    }
 #endif
-  mTimer = clock();
+    mTimer = clock();
 
-  // Initialize the objects required for dumping in Shader, Geometry, etc.
-  InitWindow(hInstance);
-  InitDevice();
-  InitCommandQueue();
-  InitFence();
-  InitSwapChain();
+    // Initialize the objects required for dumping in Shader, Geometry, etc.
+    InitWindow(hInstance);
+    InitDevice();
+    InitCommandQueue();
+    InitFence();
+    InitSwapChain();
 
-  InitRTV();
+    InitRTV();
 
-  mMainHeap = new BaseMainHeap(mDevice.Get());
-  mRuntimeHeap = new BaseRuntimeHeap(mDevice.Get());
-  mGOManager = new BaseGameObjectManager(mDevice.Get(), mMainHeap);
+    mMainHeap = new BaseMainHeap(mDevice.Get());
+    mRuntimeHeap = new BaseRuntimeHeap(mDevice.Get());
+    mGOManager = new BaseGameObjectManager(mDevice.Get(), mMainHeap);
 
-  InitImGUI();
+    InitImGUI();
 
-  mMainCamera = new BaseCamera(mDevice.Get(), static_cast<float>(mWidth), static_cast<float>(mHeight));
-  mMainCamera->RegisterMainHandle(mMainHeap);
+    mMainCamera = new BaseCamera(mDevice.Get(), static_cast<float>(mWidth), static_cast<float>(mHeight));
+    mMainCamera->RegisterMainHandle(mMainHeap);
 
-  mProject = proj;
+    mProject = proj;
 
-  mResourceManager = new BaseResourceManager(mDevice.Get(), mProject->mAssetManager, mMainHeap);
-  mNowScene = new BaseScene(mGOManager);
+    mNowScene = new BaseScene(mGOManager);
 
-  mApp = this;
+    mApp = this;
 }
 
 BaseApp::~BaseApp()
 {
-  ImGui_ImplDX12_Shutdown();
-  ImGui_ImplWin32_Shutdown();
-  ImGui::DestroyContext();
+    ImGui_ImplDX12_Shutdown();
+    ImGui_ImplWin32_Shutdown();
+    ImGui::DestroyContext();
 
-  delete mNowScene;
-  delete mMainCamera;
-  delete mGOManager;
-  delete mResourceManager;
+    delete mNowScene;
+    delete mMainCamera;
+    delete mGOManager;
 
-  delete mMainHeap;
-  delete mRuntimeHeap;
-  CloseHandle(mFenceEvent);
+    // The heap should be freed at last.
+    // Because they should be deleted before all other managers
+    // release their resoures
+    delete mMainHeap;
+    delete mRuntimeHeap;
+    CloseHandle(mFenceEvent);
 
 }
 
@@ -169,6 +174,7 @@ void BaseApp::OnResize()
         mRenderTargets[i].Reset();
     }
 
+    // reset the height
     RECT rect = { 0, 0, 0, 0 };
     GetClientRect(mHwnd, &rect);
     mHeight = rect.bottom;

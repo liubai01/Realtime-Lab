@@ -5,16 +5,18 @@
 #include "../../ThirdParty/ImGUI/imgui_internal.h"
 #include "../../ThirdParty/ImGUI/imgui_impl_dx12.h"
 
-CoreGUIManager::CoreGUIManager(BaseApp* app)
+CoreGUIManager::CoreGUIManager(BaseApp* app, CoreResourceManager* resourceManager)
 {
     mApp = app;
-    mWidgets.push_back(make_unique<CoreAssetWidget>(mApp->mProject->mAssetManager, mApp->mResourceManager));
+    mWidgets.push_back(make_unique<CoreAssetWidget>(mApp->mProject->mAssetManager, resourceManager));
     mWidgets.push_back(make_unique<CoreHierarchyWidget>(mApp->mGOManager, &mNowSelectedObject));
     mWidgets.push_back(make_unique<CoreSceneWidget>(mApp->mMainCamera));
     mWidgets.push_back(make_unique<CoreInspectorWidget>(&mNowSelectedObject));
     
     mFirstLoop = true;
     mNowSelectedObject = nullptr;
+
+    mResourceManager = resourceManager;
 }
 
 void CoreGUIManager::Start()

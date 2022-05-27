@@ -14,7 +14,10 @@ CoreApp::CoreApp(HINSTANCE hInstance, BaseProject* proj) : BaseApp(hInstance, pr
     mLightManager = make_unique<CoreLightManager>(mDevice.Get());
 
     mLightManager->RegisterMainHandle(mMainHeap);
-    mGUIManager = make_unique<CoreGUIManager>(this);
+    
+    mResourceManager = make_unique<CoreResourceManager>(mDevice.Get(), mProject->mAssetManager, mMainHeap);
+
+    mGUIManager = make_unique<CoreGUIManager>(this, mResourceManager.get());
 
     mRenderTextureManager = make_unique<CoreRenderTextureManager>(mRuntimeHeap, mDevice.Get());
     mSceneRenderTexture = mRenderTextureManager->AllocateRenderTexture();

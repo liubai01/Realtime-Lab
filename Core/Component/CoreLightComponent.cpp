@@ -13,7 +13,7 @@ CoreLightComponent::CoreLightComponent()
 	mData.Id = { 1.0f, 1.0f, 1.0f, 1.0f };
 	mData.LightDir = { 0.577f, 0.577f, 0.577f, 0.0f };
 
-	mIdMag = 1.0f;
+	mLightIntensity = 1.0f;
 	mDiffuseColor = { 1.0f, 1.0f, 1.0f, 1.0f };
 }
 
@@ -32,14 +32,31 @@ void CoreLightComponent::OnEditorGUI()
 
 		ImGui::NewLine();
 		ImGui::Text("Light Intensity");
-		ImGui::DragFloat("LightIntensity##", &mIdMag, 0.01f, 0.00f, 10.0f, "%03.02f");
+		ImGui::DragFloat("LightIntensity##", &mLightIntensity, 0.01f, 0.00f, 10.0f, "%03.02f");
 		
-		mData.Id.x = mIdMag * mDiffuseColor.x;
-		mData.Id.y = mIdMag * mDiffuseColor.y;
-		mData.Id.z = mIdMag * mDiffuseColor.z;
+		mData.Id.x = mLightIntensity * mDiffuseColor.x;
+		mData.Id.y = mLightIntensity * mDiffuseColor.y;
+		mData.Id.z = mLightIntensity * mDiffuseColor.z;
 
 		ImGui::Separator();
 		ImGui::TreePop();
 	}
+}
+
+json CoreLightComponent::Serialize()
+{
+	json j = json{ 
+		{"lightIntensity", mLightIntensity},
+		{"diffuseColor", {mDiffuseColor.x, mDiffuseColor.y, mDiffuseColor.z} }
+	};
+	return j;
+}
+
+void CoreLightComponent::Deserialize(const json& j)
+{
+	j.at("lightIntensity").get_to(mLightIntensity);
+	j.at("diffuseColor")[0].get_to(mDiffuseColor.x);
+	j.at("diffuseColor")[1].get_to(mDiffuseColor.y);
+	j.at("diffuseColor")[2].get_to(mDiffuseColor.z);
 }
 

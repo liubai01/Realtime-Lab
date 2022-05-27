@@ -21,5 +21,9 @@ public:
 
   void Upload(ID3D12Device* device, ID3D12GraphicsCommandList* commandList);
   void Render(ID3D12GraphicsCommandList* commandList, int matRegIdx=-1);
+
+  // Serailization
+  json Serialize();
+  void Deserialize(const json& j);
 };
 

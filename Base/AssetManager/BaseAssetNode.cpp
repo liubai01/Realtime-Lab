@@ -1,5 +1,14 @@
 #include "BaseAssetNode.h"
 #include "../BaseUUIDGenerator.h"
+#include <filesystem>
+#include <type_traits>
+#include <fstream>
+
+template <typename E>
+constexpr auto to_underlying(E e) noexcept
+{
+	return static_cast<std::underlying_type_t<E>>(e);
+}
 
 using namespace std;
 
@@ -21,12 +30,13 @@ inline bool fileExists(const std::string& name) {
 }
 
 
-BaseAssetNode::BaseAssetNode(BaseAssetNode* parent)
+BaseAssetNode::BaseAssetNode(const string& path, BaseAssetNode* parent)
 {
 	mParentAsset = parent;
 	mSubAssets.clear();
 	mType = BaseAssetType::ASSET_UNKNOWN;
 	mUUID = uuid::generate_uuid();
+	mFullPath = path;
 }
 
 
@@ -64,6 +74,22 @@ void BaseAssetNode::SetAssetType(BaseAssetType astType)
 	mType = astType;
 }
 
+json BaseAssetNode::Serialize()
+{
+	json ret = json{ 
+		{"AssetType", to_underlying(mType)}, 
+		{"UUID", mUUID}
+	};
+
+	return ret;
+}
+
+void BaseAssetNode::Deserialize(const json& j)
+{
+	j.at("AssetType").get_to(mType);
+	j.at("UUID").get_to(mUUID);
+}
+
 BaseAssetNode* BaseAssetNode::RegisterAsset(const string path)
 {
 	unique_ptr<BaseAssetNode> ret = nullptr;
@@ -75,32 +101,49 @@ BaseAssetNode* BaseAssetNode::RegisterAsset(const string path)
 		return nullptr;
 	}
 
-	ret = make_unique<BaseAssetNode>(this);
+	ret = make_unique<BaseAssetNode>(path, this);
 	ret->mID = ID;
 
-	// if the path points to a directory, register it
-	if (dirExists(path)) {
-		ret->mType = BaseAssetType::ASSET_FOLDER;
-		mSubAssets.push_back(move(ret));
-		return mSubAssets.back().get();
-	}
+	string pathMeta = path + ".asset";
 
-	// if program reaches here, it means that it is a file,
-	// we decide its type by its extension postfix
-	string postfix = ID.substr(ID.find_last_of(".") + 1);
-
-	// wavefront model
-	if (postfix == "obj")
+	// load the metadata if we have assigned it before
+	if (filesystem::exists(pathMeta))
 	{
-		ret->mType = BaseAssetType::ASSET_OBJ;
+		// load meta
+		std::ifstream i(pathMeta);
+		json j;
+		i >> j;
+		ret->Deserialize(j);
 	}
-	// image
-	else if (postfix == "jpg" || postfix == "png") {
-		ret->mType = BaseAssetType::ASSET_IMAGE;
-	}
-	// unknown
 	else {
-		ret->mType = BaseAssetType::ASSET_UNKNOWN;
+		// dump meta
+		// if the path points to a directory, register it
+		if (dirExists(path)) {
+			ret->mType = BaseAssetType::ASSET_FOLDER;
+			mSubAssets.push_back(move(ret));
+			return mSubAssets.back().get();
+		}
+
+		// if program reaches here, it means that it is a file,
+		// we decide its type by its extension postfix
+		string postfix = ID.substr(ID.find_last_of(".") + 1);
+
+		// wavefront model
+		if (postfix == "obj")
+		{
+			ret->mType = BaseAssetType::ASSET_OBJ;
+		}
+		// image
+		else if (postfix == "jpg" || postfix == "png") {
+			ret->mType = BaseAssetType::ASSET_IMAGE;
+		}
+		// unknown
+		else {
+			ret->mType = BaseAssetType::ASSET_UNKNOWN;
+		}
+
+		std::ofstream o(pathMeta);
+		o << std::setw(4) << ret->Serialize() << std::endl;
 	}
 
 	mSubAssets.push_back(move(ret));

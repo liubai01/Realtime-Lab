@@ -1,14 +1,14 @@
 #include "BaseResourceMesh.h"
 #include "../../DebugOut.h"
 
-BaseResourceMesh::BaseResourceMesh(ID3D12Device* device, const string& path) : BaseResource(device, path)
+BaseResourceMesh::BaseResourceMesh(ID3D12Device* device, BaseAssetNode* assetNode) : BaseResource(device, assetNode)
 {
     mType = BaseResourceType::RESOURCE_MESH;
 
     tinyobj::ObjReaderConfig reader_config;
     tinyobj::ObjReader reader;
 
-    if (!reader.ParseFromFile(path, reader_config)) {
+    if (!reader.ParseFromFile(assetNode->mFullPath, reader_config)) {
         if (!reader.Error().empty()) {
             dout::printf("[BaseResourceMesh]: %s", reader.Error().c_str());
         }

@@ -19,14 +19,17 @@ public:
 
         tower->mTransform.SetPos(0.0f, -3.0f, 0.0f);
 
-        meshComponent = mMeshLoader->MakeComponent(mResourceManager->LoadMesh("models\\WoodTower.obj"));
+        meshComponent = mMeshLoader->MakeComponent(mResourceManager->Load<BaseResourceMesh>("models\\WoodTower.obj"));
 
-        BaseResourceImage* colorTexture = mResourceManager->LoadImage("Wood_Tower_Col.jpg");
-        BaseResourceImage* normalTexture = mResourceManager->LoadImage("Wood_Tower_Nor.jpg");
+        BaseResourceImage* colorTexture = mResourceManager->Load<BaseResourceImage>("Wood_Tower_Col.jpg");
+        BaseResourceImage* normalTexture = mResourceManager->Load<BaseResourceImage>("Wood_Tower_Nor.jpg");
 
         meshComponent->mMat[0]->SetDiffuseColorTextured(colorTexture);
         meshComponent->mMat[0]->SetNormalTextured(normalTexture);
         meshComponent->mMat[0]->SetNormalStrength(0.2f);
+
+        //json j = meshComponent->Serialize();
+        //dout::printf("%s", j.dump().c_str());
 
         tower->AddComponent(meshComponent);
 
@@ -34,6 +37,9 @@ public:
         shared_ptr<BaseObject> light = mNowScene->CreateObject("Directional Light");
         shared_ptr<CoreLightComponent> lightComponent = mLightManager->MakeLightComponent();
         light->AddComponent(lightComponent);
+
+        //json j = lightComponent->Serialize();
+        //lightComponent->Deserialize(j);
 
         mMainCamera->SetPos(10.0f, 10.0f, -10.0f);
     }
@@ -73,8 +79,8 @@ BaseProject* GetProject(const string& projectPath)
 
     // Should be removed after scene could be serialized
     BaseAssetNode* node = proj->mAssetManager->RegisterAsset("models\\WoodTower.obj", "ExampleProject\\Asset\\models\\WoodTower.obj");
-    proj->mAssetManager->RegisterAsset("Wood_Tower_Col.jpg", "ExampleProject\\Asset\\Wood_Tower_Col.jpg");
-    proj->mAssetManager->RegisterAsset("Wood_Tower_Nor.jpg", "ExampleProject\\Asset\\Wood_Tower_Nor.jpg");
+    node = proj->mAssetManager->RegisterAsset("Wood_Tower_Col.jpg", "ExampleProject\\Asset\\Wood_Tower_Col.jpg");
+    node = proj->mAssetManager->RegisterAsset("Wood_Tower_Nor.jpg", "ExampleProject\\Asset\\Wood_Tower_Nor.jpg");
 
     return proj;
 }

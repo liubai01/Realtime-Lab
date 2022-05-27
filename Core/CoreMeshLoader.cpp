@@ -25,7 +25,7 @@ shared_ptr<CoreMeshComponent> CoreMeshLoader::MakeComponent(BaseResourceMesh* re
         shared_ptr<CoreGeometry> geo = make_shared<CoreGeometry>();
         geo->mName = geoSrc.mName;
         geo->mGeoType = CoreGeometryType::GEO_ASSET;
-        geo->mID = resourceMesh->mUUID;
+        geo->mID = resourceMesh->mAssetUUID;
 
         for (size_t idx = 0; idx < geoSrc.mVertices.size(); idx++)
         {

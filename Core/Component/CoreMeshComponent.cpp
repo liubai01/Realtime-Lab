@@ -1,5 +1,12 @@
 #include "CoreMeshComponent.h"
 #include "../../ThirdParty/ImGUI/imgui.h"
+#include <type_traits>
+
+template <typename E>
+constexpr auto to_underlying(E e) noexcept
+{
+    return static_cast<std::underlying_type_t<E>>(e);
+}
 
 CoreMeshComponent::CoreMeshComponent()
 {
@@ -9,8 +16,11 @@ CoreMeshComponent::CoreMeshComponent()
 
 void CoreMeshComponent::AddGeometry(shared_ptr<CoreGeometry> geo, shared_ptr<CoreMaterial> mat)
 {
+    // the geometry info (could be potentially shared by multiple mesh component)
     mGeo.push_back(geo);
+    // the material
     mMat.push_back(mat);
+    // the runtime mesh data (should be uploaded to GPU before accessing vertexBuffer & indexBuffer)
     mMesh.push_back(make_unique<BaseMesh>());
 }
 
@@ -62,4 +72,26 @@ void CoreMeshComponent::OnEditorGUI()
         ImGui::Separator();
         ImGui::TreePop();
     }
+}
+
+json CoreMeshComponent::Serialize()
+{
+    vector<json> geoMeta;
+    for (shared_ptr<CoreGeometry>& geo : mGeo)
+    {
+        geoMeta.push_back(json{
+            { "geoType", to_underlying(geo->mGeoType)},
+            { "geoID", geo->mID }
+        });
+    }
+
+    json j = json{
+        {"GeometryMetadata", geoMeta}
+    };
+    return j;
+}
+
+void CoreMeshComponent::Deserialize(const json& j)
+{
+
 }

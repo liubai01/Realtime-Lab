@@ -33,70 +33,69 @@ using namespace std;
 class BaseApp
 {
 public:
-  BaseApp(HINSTANCE hInstance, BaseProject* proj);
-  virtual ~BaseApp();
+	BaseApp(HINSTANCE hInstance, BaseProject* proj);
+	virtual ~BaseApp();
 
-  void Run();
+	void Run();
 
-  virtual void BeforeUpdate() = 0;
-  virtual void Update() = 0;
-  virtual void Render() = 0;
-  virtual void Start() {};
+	virtual void BeforeUpdate() = 0;
+	virtual void Update() = 0;
+	virtual void Render() = 0;
+	virtual void Start() {};
 
-  void Enqueue(ID3D12GraphicsCommandList* commandList);
-  void Flush(ID3D12GraphicsCommandList* commandList);
-  void Swap();
+	void Enqueue(ID3D12GraphicsCommandList* commandList);
+	void Flush(ID3D12GraphicsCommandList* commandList);
+	void Swap();
 
-  static LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+	static LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-  void InitImGUI();
-  void InitWindow(HINSTANCE hInstance);
-  void InitDevice();
-  void InitCommandQueue();
-  void InitFence();
-  void InitSwapChain();
-  void InitRTV();
+	void InitImGUI();
+	void InitWindow(HINSTANCE hInstance);
+	void InitDevice();
+	void InitCommandQueue();
+	void InitFence();
+	void InitSwapChain();
+	void InitRTV();
 
-  void OnResize();
+	void OnResize();
 
-  D3D12_CPU_DESCRIPTOR_HANDLE CurrentBackBufferView() const;
+	D3D12_CPU_DESCRIPTOR_HANDLE CurrentBackBufferView() const;
 
-  int mFrameCnt = 3;
-  int mFrameIdx = 0;
-  bool mIsRunning = true;
-  vector<ComPtr<ID3D12Fence>> mFence;
-  vector<UINT64> mExpectedFenceValue;
-  HANDLE mFenceEvent;
+	int mFrameCnt = 3;
+	int mFrameIdx = 0;
+	bool mIsRunning = true;
+	vector<ComPtr<ID3D12Fence>> mFence;
+	vector<UINT64> mExpectedFenceValue;
+	HANDLE mFenceEvent;
 
-  ComPtr<ID3D12DescriptorHeap> mRtvDescriptorHeap;
-  vector<ComPtr<ID3D12Resource>> mRenderTargets;
+	ComPtr<ID3D12DescriptorHeap> mRtvDescriptorHeap;
+	vector<ComPtr<ID3D12Resource>> mRenderTargets;
 
-  int mWidth = 1440;
-  int mHeight = 900;
-  HWND mHwnd;
+	int mWidth = 1440;
+	int mHeight = 900;
+	HWND mHwnd;
 
-  clock_t mTimer;
-  float mTimeDelta;
+	clock_t mTimer;
+	float mTimeDelta;
 
-  ComPtr<IDXGIFactory4> mDxgiFactory;
-  ComPtr<IDXGISwapChain3> mSwapChain;
+	ComPtr<IDXGIFactory4> mDxgiFactory;
+	ComPtr<IDXGISwapChain3> mSwapChain;
 
-  ComPtr<ID3D12Device> mDevice;
+	ComPtr<ID3D12Device> mDevice;
 
-  ComPtr<ID3D12CommandQueue> mCommandQueue;
+	ComPtr<ID3D12CommandQueue> mCommandQueue;
 
-  BaseProject* mProject;
-  BaseCamera* mMainCamera;
+	BaseProject* mProject;
+	BaseCamera* mMainCamera;
 
-  BaseScene* mNowScene;
-  BaseGameObjectManager* mGOManager;
+	BaseScene* mNowScene;
+	BaseGameObjectManager* mGOManager;
 
-  // The mainHeap / runtimeHeap manages the descriptors of resources
-  // The descriptors in main would be copied to runtimeHeap if the resource is necessary
-  BaseMainHeap* mMainHeap;
-  BaseRuntimeHeap* mRuntimeHeap;
+	// The mainHeap / runtimeHeap manages the descriptors of resources
+	// The descriptors in main would be copied to runtimeHeap if the resource is necessary
+	BaseMainHeap* mMainHeap;
+	BaseRuntimeHeap* mRuntimeHeap;
 
 
-  static BaseApp* mApp;
-  BaseResourceManager* mResourceManager;
+	static BaseApp* mApp;
 };

@@ -159,6 +159,7 @@
     <ClCompile Include="Base\BaseRenderTexture.cpp" />
     <ClCompile Include="Base\BaseRuntimeHeap.cpp" />
     <ClCompile Include="Base\BaseScene.cpp" />
+    <ClCompile Include="Base\BaseInterfaceSerializable.cpp" />
     <ClCompile Include="Base\BaseShaderManager.cpp" />
     <ClCompile Include="Base\BaseStagedBuffer.cpp" />
     <ClCompile Include="Base\BaseTransform.cpp" />
@@ -188,6 +189,8 @@
     <ClCompile Include="Core\GUI\CoreHierarchyWidget.cpp" />
     <ClCompile Include="Core\GUI\CoreInspectorWidget.cpp" />
     <ClCompile Include="Core\GUI\CoreSceneWidget.cpp" />
+    <ClCompile Include="Core\Resource\CoreResourceManager.cpp" />
+    <ClCompile Include="Core\Resource\CoreResourceMaterial.cpp" />
     <ClCompile Include="DebugOut.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="ThirdParty\ImGUI\imgui.cpp" />
@@ -213,6 +216,7 @@
     <ClInclude Include="Base\BaseGUIWidget.h" />
     <ClInclude Include="Base\BaseProject.h" />
     <ClInclude Include="Base\BaseScene.h" />
+    <ClInclude Include="Base\BaseInterfaceSerializable.h" />
     <ClInclude Include="Base\BaseUUIDGenerator.h" />
     <ClInclude Include="Base\BaseMainHeap.h" />
     <ClInclude Include="Base\BaseObject.h" />
@@ -247,6 +251,8 @@
     <ClInclude Include="Core\GUI\CoreHierarchyWidget.h" />
     <ClInclude Include="Core\GUI\CoreInspectorWidget.h" />
     <ClInclude Include="Core\GUI\CoreSceneWidget.h" />
+    <ClInclude Include="Core\Resource\CoreResourceManager.h" />
+    <ClInclude Include="Core\Resource\CoreResourceMaterial.h" />
     <ClInclude Include="DebugOut.h" />
     <ClInclude Include="MathUtils.h" />
     <ClInclude Include="resource.h" />

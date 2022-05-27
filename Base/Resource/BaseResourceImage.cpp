@@ -1,13 +1,14 @@
 #include "BaseResourceImage.h"
 #include "../../DebugOut.h"
 
-BaseResourceImage::BaseResourceImage(ID3D12Device* device, const string& path) : BaseResource(device, path)
+BaseResourceImage::BaseResourceImage(ID3D12Device* device, BaseAssetNode* assetNode) : BaseResource(device, assetNode)
 {
     // for runtime deciding the acutal type of BaseResource base pointer
     mType = BaseResourceType::RESOURCE_IMAGE;
+    mIsRuntimeResource = true;
 
     // for invoking LoadFromWICFile, convert path of image to wide char string 
-    wstring widepath = wstring(path.begin(), path.end());
+    wstring widepath = wstring(assetNode->mFullPath.begin(), assetNode->mFullPath.end());
 
     mScratchImage = std::make_unique<DirectX::ScratchImage>();
     HRESULT hr = LoadFromWICFile(widepath.c_str(), DirectX::WIC_FLAGS_NONE, nullptr, *mScratchImage);
