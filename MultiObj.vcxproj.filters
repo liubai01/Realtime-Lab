@@ -67,12 +67,6 @@
     <Filter Include="Header Files\Core\DrawContext">
       <UniqueIdentifier>{dcf93511-6acd-403c-91b0-404483030b34}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Base\AssetManager">
-      <UniqueIdentifier>{e7051933-87d9-48ff-a258-5700c2572e2b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Base\AssetManager">
-      <UniqueIdentifier>{914cabc9-d558-4e79-ade4-1c4d59a5cf70}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Base\Resource">
       <UniqueIdentifier>{4ce0859e-34d5-4eb0-bda6-2618be2cf6d1}</UniqueIdentifier>
     </Filter>
@@ -91,381 +85,387 @@
     <Filter Include="Source Files\Core\Resource">
       <UniqueIdentifier>{3337fa0f-26df-4ba6-af49-cac085265b1e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Base\Asset">
+      <UniqueIdentifier>{e7051933-87d9-48ff-a258-5700c2572e2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Base\Asset">
+      <UniqueIdentifier>{914cabc9-d558-4e79-ade4-1c4d59a5cf70}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DebugOut.cpp">
-      <Filter>Source Files\Base</Filter>
-    </ClCompile>
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ThirdParty\ImGUI\imgui_draw.cpp">
-      <Filter>Source Files\ThirdParty\ImGUI</Filter>
+    <ClCompile Include="Engine\Base\Asset\BaseAssetManager.cpp">
+      <Filter>Source Files\Base\Asset</Filter>
     </ClCompile>
-    <ClCompile Include="ThirdParty\ImGUI\imgui_impl_dx12.cpp">
-      <Filter>Source Files\ThirdParty\ImGUI</Filter>
+    <ClCompile Include="Engine\Base\Asset\BaseAssetMetadata.cpp">
+      <Filter>Source Files\Base\Asset</Filter>
     </ClCompile>
-    <ClCompile Include="ThirdParty\ImGUI\imgui_impl_win32.cpp">
-      <Filter>Source Files\ThirdParty\ImGUI</Filter>
+    <ClCompile Include="Engine\Base\Asset\BaseAssetNode.cpp">
+      <Filter>Source Files\Base\Asset</Filter>
     </ClCompile>
-    <ClCompile Include="ThirdParty\ImGUI\imgui_widgets.cpp">
-      <Filter>Source Files\ThirdParty\ImGUI</Filter>
-    </ClCompile>
-    <ClCompile Include="ThirdParty\ImGUI\imgui_tables.cpp">
-      <Filter>Source Files\ThirdParty\ImGUI</Filter>
-    </ClCompile>
-    <ClCompile Include="Base\BaseApp.cpp">
-      <Filter>Source Files\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="Base\BaseDrawContext.cpp">
-      <Filter>Source Files\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="Base\BaseGeometry.cpp">
-      <Filter>Source Files\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="Base\BaseObject.cpp">
-      <Filter>Source Files\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\CoreApp.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Base\BaseShaderManager.cpp">
-      <Filter>Source Files\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="Base\BaseTransform.cpp">
-      <Filter>Source Files\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="Base\Component\BaseComponent.cpp">
+    <ClCompile Include="Engine\Base\Component\BaseMesh.cpp">
       <Filter>Source Files\Base\Component</Filter>
     </ClCompile>
-    <ClCompile Include="Base\Component\BaseMesh.cpp">
+    <ClCompile Include="Engine\Base\Component\BaseComponent.cpp">
       <Filter>Source Files\Base\Component</Filter>
     </ClCompile>
-    <ClCompile Include="Core\CoreGeometry.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\CoreGeometryUtils.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Base\BaseDirectCommandList.cpp">
-      <Filter>Source Files\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\Component\CoreMeshComponent.cpp">
-      <Filter>Source Files\Core\Component</Filter>
-    </ClCompile>
-    <ClCompile Include="Base\BaseCamera.cpp">
-      <Filter>Source Files\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="Base\BaseDescHeapHandle.cpp">
+    <ClCompile Include="Engine\Base\BaseStagedBuffer.cpp">
       <Filter>Source Files\Base\Heap</Filter>
     </ClCompile>
-    <ClCompile Include="Base\BaseMainHeap.cpp">
+    <ClCompile Include="Engine\Base\BaseUploadHeap.cpp">
       <Filter>Source Files\Base\Heap</Filter>
     </ClCompile>
-    <ClCompile Include="Base\BaseRuntimeHeap.cpp">
+    <ClCompile Include="Engine\Base\BaseMainHeap.cpp">
       <Filter>Source Files\Base\Heap</Filter>
     </ClCompile>
-    <ClCompile Include="Base\BaseUploadHeap.cpp">
+    <ClCompile Include="Engine\Base\BaseRuntimeHeap.cpp">
       <Filter>Source Files\Base\Heap</Filter>
     </ClCompile>
-    <ClCompile Include="Base\BaseStagedBuffer.cpp">
+    <ClCompile Include="Engine\Base\BaseDescHeapHandle.cpp">
       <Filter>Source Files\Base\Heap</Filter>
     </ClCompile>
-    <ClCompile Include="Core\CoreMaterial.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\CoreMaterialManager.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\CoreLightManager.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="ThirdParty\ImGUI\imgui_demo.cpp">
-      <Filter>Source Files\ThirdParty\ImGUI</Filter>
-    </ClCompile>
-    <ClCompile Include="Base\BaseRenderTexture.cpp">
-      <Filter>Source Files\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\GUI\CoreGUIManager.cpp">
-      <Filter>Source Files\Core\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\GUI\CoreHierarchyWidget.cpp">
-      <Filter>Source Files\Core\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="Base\BaseGUIWidget.cpp">
-      <Filter>Source Files\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\GUI\CoreSceneWidget.cpp">
-      <Filter>Source Files\Core\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\GUI\CoreInspectorWidget.cpp">
-      <Filter>Source Files\Core\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\CoreRenderTextureManager.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Base\BaseUUIDGenerator.cpp">
-      <Filter>Source Files\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\DrawContext\CoreDrawDiffuseContext.cpp">
-      <Filter>Source Files\Core\DrawContext</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\DrawContext\CoreDrawEdgeContext.cpp">
-      <Filter>Source Files\Core\DrawContext</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\DrawContext\CoreDrawBlurContext.cpp">
-      <Filter>Source Files\Core\DrawContext</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\CoreMeshLoader.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Base\BaseDepthRenderTexture.cpp">
-      <Filter>Source Files\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="Base\AssetManager\BaseAssetManager.cpp">
-      <Filter>Source Files\Base\AssetManager</Filter>
-    </ClCompile>
-    <ClCompile Include="Base\AssetManager\BaseAssetNode.cpp">
-      <Filter>Source Files\Base\AssetManager</Filter>
-    </ClCompile>
-    <ClCompile Include="Base\BaseProject.cpp">
-      <Filter>Source Files\Base</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\GUI\CoreAssetWidget.cpp">
-      <Filter>Source Files\Core\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="Base\AssetManager\BaseAssetMetadata.cpp">
-      <Filter>Source Files\Base\AssetManager</Filter>
-    </ClCompile>
-    <ClCompile Include="Base\Resource\BaseResourceManager.cpp">
+    <ClCompile Include="Engine\Base\Resource\BaseResourceMesh.cpp">
       <Filter>Source Files\Base\Resource</Filter>
     </ClCompile>
-    <ClCompile Include="Base\Resource\BaseResourceImage.cpp">
+    <ClCompile Include="Engine\Base\Resource\BaseResource.cpp">
       <Filter>Source Files\Base\Resource</Filter>
     </ClCompile>
-    <ClCompile Include="Base\Resource\BaseResource.cpp">
+    <ClCompile Include="Engine\Base\Resource\BaseResourceImage.cpp">
       <Filter>Source Files\Base\Resource</Filter>
     </ClCompile>
-    <ClCompile Include="ThirdParty\ImGUI\imgui.cpp">
-      <Filter>Source Files\ThirdParty\ImGUI</Filter>
+    <ClCompile Include="Engine\Base\Resource\BaseResourceManager.cpp">
+      <Filter>Source Files\Base\Resource</Filter>
     </ClCompile>
-    <ClCompile Include="Base\BaseGameObjectManager.cpp">
+    <ClCompile Include="Engine\Base\BaseScene.cpp">
       <Filter>Source Files\Base\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Base\BaseScene.cpp">
-      <Filter>Source Files\Base\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="Base\Resource\BaseResourceMesh.cpp">
-      <Filter>Source Files\Base\Resource</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\Component\CoreLightComponent.cpp">
-      <Filter>Source Files\Core\Component</Filter>
-    </ClCompile>
-    <ClCompile Include="Base\BaseInterfaceSerializable.cpp">
+    <ClCompile Include="Engine\Base\BaseApp.cpp">
       <Filter>Source Files\Base</Filter>
     </ClCompile>
-    <ClCompile Include="Core\Resource\CoreResourceManager.cpp">
+    <ClCompile Include="Engine\Base\BaseCamera.cpp">
+      <Filter>Source Files\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Base\BaseDepthRenderTexture.cpp">
+      <Filter>Source Files\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Base\BaseDirectCommandList.cpp">
+      <Filter>Source Files\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Base\BaseGameObjectManager.cpp">
+      <Filter>Source Files\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Base\BaseDrawContext.cpp">
+      <Filter>Source Files\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Base\BaseInterfaceSerializable.cpp">
+      <Filter>Source Files\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Base\BaseGeometry.cpp">
+      <Filter>Source Files\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Base\BaseGUIWidget.cpp">
+      <Filter>Source Files\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Base\BaseRenderTexture.cpp">
+      <Filter>Source Files\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Base\BaseObject.cpp">
+      <Filter>Source Files\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Base\BaseProject.cpp">
+      <Filter>Source Files\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Base\BaseTransform.cpp">
+      <Filter>Source Files\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Base\BaseUUIDGenerator.cpp">
+      <Filter>Source Files\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Base\BaseShaderManager.cpp">
+      <Filter>Source Files\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Core\Component\CoreMeshComponent.cpp">
+      <Filter>Source Files\Core\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Core\Component\CoreLightComponent.cpp">
+      <Filter>Source Files\Core\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Core\DrawContext\CoreDrawEdgeContext.cpp">
+      <Filter>Source Files\Core\DrawContext</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Core\DrawContext\CoreDrawBlurContext.cpp">
+      <Filter>Source Files\Core\DrawContext</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Core\DrawContext\CoreDrawDiffuseContext.cpp">
+      <Filter>Source Files\Core\DrawContext</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Core\GUI\CoreSceneWidget.cpp">
+      <Filter>Source Files\Core\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Core\GUI\CoreAssetWidget.cpp">
+      <Filter>Source Files\Core\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Core\GUI\CoreGUIManager.cpp">
+      <Filter>Source Files\Core\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Core\GUI\CoreHierarchyWidget.cpp">
+      <Filter>Source Files\Core\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Core\GUI\CoreInspectorWidget.cpp">
+      <Filter>Source Files\Core\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Core\Resource\CoreResourceMaterial.cpp">
       <Filter>Source Files\Core\Resource</Filter>
     </ClCompile>
-    <ClCompile Include="Core\Resource\CoreResourceMaterial.cpp">
+    <ClCompile Include="Engine\Core\Resource\CoreResourceManager.cpp">
       <Filter>Source Files\Core\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Core\CoreRenderTextureManager.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Core\CoreApp.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Core\CoreGeometry.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Core\CoreGeometryUtils.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Core\CoreLightManager.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Core\CoreMaterial.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Core\CoreMaterialManager.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Core\CoreMeshLoader.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\ThirdParty\ImGUI\imgui_draw.cpp">
+      <Filter>Source Files\ThirdParty\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\ThirdParty\ImGUI\imgui_impl_dx12.cpp">
+      <Filter>Source Files\ThirdParty\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\ThirdParty\ImGUI\imgui_impl_win32.cpp">
+      <Filter>Source Files\ThirdParty\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\ThirdParty\ImGUI\imgui_tables.cpp">
+      <Filter>Source Files\ThirdParty\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\ThirdParty\ImGUI\imgui_widgets.cpp">
+      <Filter>Source Files\ThirdParty\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\ThirdParty\ImGUI\imgui.cpp">
+      <Filter>Source Files\ThirdParty\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\ThirdParty\ImGUI\imgui_demo.cpp">
+      <Filter>Source Files\ThirdParty\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\DebugOut.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DebugOut.h">
-      <Filter>Header Files\Base</Filter>
+    <ClInclude Include="Engine\Base\AssetManager\BaseAssetManager.h">
+      <Filter>Header Files\Base\Asset</Filter>
     </ClInclude>
-    <ClInclude Include="MathUtils.h">
-      <Filter>Header Files\Base</Filter>
+    <ClInclude Include="Engine\Base\AssetManager\BaseAssetMetadata.h">
+      <Filter>Header Files\Base\Asset</Filter>
     </ClInclude>
-    <ClInclude Include="ThirdParty\tiny_obj_loader.h">
-      <Filter>Header Files\ThirdParty</Filter>
+    <ClInclude Include="Engine\Base\AssetManager\BaseAssetNode.h">
+      <Filter>Header Files\Base\Asset</Filter>
     </ClInclude>
-    <ClInclude Include="ThirdParty\ImGUI\imgui_internal.h">
-      <Filter>Header Files\ThirdParty\ImGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="ThirdParty\ImGUI\imstb_rectpack.h">
-      <Filter>Header Files\ThirdParty\ImGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="ThirdParty\ImGUI\imstb_textedit.h">
-      <Filter>Header Files\ThirdParty\ImGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="ThirdParty\ImGUI\imstb_truetype.h">
-      <Filter>Header Files\ThirdParty\ImGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="ThirdParty\ImGUI\imconfig.h">
-      <Filter>Header Files\ThirdParty\ImGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="ThirdParty\ImGUI\imgui.h">
-      <Filter>Header Files\ThirdParty\ImGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="ThirdParty\ImGUI\imgui_impl_dx12.h">
-      <Filter>Header Files\ThirdParty\ImGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="ThirdParty\ImGUI\imgui_impl_win32.h">
-      <Filter>Header Files\ThirdParty\ImGUI</Filter>
-    </ClInclude>
-    <ClInclude Include="Base\BaseApp.h">
-      <Filter>Header Files\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="Base\BaseCamera.h">
-      <Filter>Header Files\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="Base\BaseDrawContext.h">
-      <Filter>Header Files\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="Base\BaseGeometry.h">
-      <Filter>Header Files\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="Base\BaseObject.h">
-      <Filter>Header Files\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="ThirdParty\d3dx12.h">
-      <Filter>Header Files\ThirdParty</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\CoreApp.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Base\BaseShaderManager.h">
-      <Filter>Header Files\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="Base\BaseTransform.h">
-      <Filter>Header Files\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="Base\Component\BaseComponent.h">
+    <ClInclude Include="Engine\Base\Component\BaseComponent.h">
       <Filter>Header Files\Base\Component</Filter>
     </ClInclude>
-    <ClInclude Include="Base\Component\BaseMesh.h">
+    <ClInclude Include="Engine\Base\Component\BaseMesh.h">
       <Filter>Header Files\Base\Component</Filter>
     </ClInclude>
-    <ClInclude Include="Core\CoreGeometryUtils.h">
-      <Filter>Header Files\Core</Filter>
+    <ClInclude Include="Engine\Base\BaseUploadHeap.h">
+      <Filter>Header Files\Base\Heap</Filter>
     </ClInclude>
-    <ClInclude Include="Core\CoreGeometry.h">
-      <Filter>Header Files\Core</Filter>
+    <ClInclude Include="Engine\Base\BaseDescHeapHandle.h">
+      <Filter>Header Files\Base\Heap</Filter>
     </ClInclude>
-    <ClInclude Include="Base\BaseDirectCommandList.h">
+    <ClInclude Include="Engine\Base\BaseMainHeap.h">
+      <Filter>Header Files\Base\Heap</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Base\BaseRuntimeHeap.h">
+      <Filter>Header Files\Base\Heap</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Base\BaseStagedBuffer.h">
+      <Filter>Header Files\Base\Heap</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Base\Resource\BaseResource.h">
+      <Filter>Header Files\Base\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Base\Resource\BaseResourceImage.h">
+      <Filter>Header Files\Base\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Base\Resource\BaseResourceManager.h">
+      <Filter>Header Files\Base\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Base\Resource\BaseResourceMesh.h">
+      <Filter>Header Files\Base\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Base\BaseScene.h">
+      <Filter>Header Files\Base\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Base\BaseUUIDGenerator.h">
       <Filter>Header Files\Base</Filter>
     </ClInclude>
-    <ClInclude Include="Core\Component\CoreMeshComponent.h">
+    <ClInclude Include="Engine\Base\BaseApp.h">
+      <Filter>Header Files\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Base\BaseCamera.h">
+      <Filter>Header Files\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Base\BaseDepthRenderTexture.h">
+      <Filter>Header Files\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Base\BaseDirectCommandList.h">
+      <Filter>Header Files\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Base\BaseDrawContext.h">
+      <Filter>Header Files\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Base\BaseGameObjectManager.h">
+      <Filter>Header Files\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Base\BaseGeometry.h">
+      <Filter>Header Files\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Base\BaseGUIWidget.h">
+      <Filter>Header Files\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Base\BaseInterfaceSerializable.h">
+      <Filter>Header Files\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Base\BaseObject.h">
+      <Filter>Header Files\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Base\BaseProject.h">
+      <Filter>Header Files\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Base\BaseRenderTexture.h">
+      <Filter>Header Files\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Base\BaseShaderManager.h">
+      <Filter>Header Files\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Base\BaseTransform.h">
+      <Filter>Header Files\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Core\Component\CoreMeshComponent.h">
       <Filter>Header Files\Core\Component</Filter>
     </ClInclude>
-    <ClInclude Include="Base\BaseDescHeapHandle.h">
-      <Filter>Header Files\Base\Heap</Filter>
+    <ClInclude Include="Engine\Core\Component\CoreLightComponent.h">
+      <Filter>Header Files\Core\Component</Filter>
     </ClInclude>
-    <ClInclude Include="Base\BaseMainHeap.h">
-      <Filter>Header Files\Base\Heap</Filter>
-    </ClInclude>
-    <ClInclude Include="Base\BaseRuntimeHeap.h">
-      <Filter>Header Files\Base\Heap</Filter>
-    </ClInclude>
-    <ClInclude Include="Base\BaseUploadHeap.h">
-      <Filter>Header Files\Base\Heap</Filter>
-    </ClInclude>
-    <ClInclude Include="Base\BaseStagedBuffer.h">
-      <Filter>Header Files\Base\Heap</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\CoreMaterial.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\CoreMaterialManager.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\CoreLightManager.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Base\BaseRenderTexture.h">
-      <Filter>Header Files\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="Base\BaseUUIDGenerator.h">
-      <Filter>Header Files\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\GUI\CoreGUIManager.h">
-      <Filter>Header Files\Core\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\GUI\CoreHierarchyWidget.h">
-      <Filter>Header Files\Core\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="Base\BaseGUIWidget.h">
-      <Filter>Header Files\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\GUI\CoreSceneWidget.h">
-      <Filter>Header Files\Core\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\GUI\CoreInspectorWidget.h">
-      <Filter>Header Files\Core\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\CoreRenderTextureManager.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Base\BaseDepthRenderTexture.h">
-      <Filter>Header Files\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\DrawContext\CoreDrawDiffuseContext.h">
+    <ClInclude Include="Engine\Core\DrawContext\CoreDrawBlurContext.h">
       <Filter>Header Files\Core\DrawContext</Filter>
     </ClInclude>
-    <ClInclude Include="Core\DrawContext\CoreDrawEdgeContext.h">
+    <ClInclude Include="Engine\Core\DrawContext\CoreDrawDiffuseContext.h">
       <Filter>Header Files\Core\DrawContext</Filter>
     </ClInclude>
-    <ClInclude Include="Core\DrawContext\CoreDrawBlurContext.h">
+    <ClInclude Include="Engine\Core\DrawContext\CoreDrawEdgeContext.h">
       <Filter>Header Files\Core\DrawContext</Filter>
     </ClInclude>
-    <ClInclude Include="Core\CoreMeshLoader.h">
+    <ClInclude Include="Engine\Core\GUI\CoreSceneWidget.h">
+      <Filter>Header Files\Core\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Core\GUI\CoreAssetWidget.h">
+      <Filter>Header Files\Core\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Core\GUI\CoreGUIManager.h">
+      <Filter>Header Files\Core\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Core\GUI\CoreHierarchyWidget.h">
+      <Filter>Header Files\Core\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Core\GUI\CoreInspectorWidget.h">
+      <Filter>Header Files\Core\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Core\Resource\CoreResourceManager.h">
+      <Filter>Header Files\Core\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Core\Resource\CoreResourceMaterial.h">
+      <Filter>Header Files\Core\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Core\CoreApp.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
-    <ClInclude Include="ThirdParty\json.h">
+    <ClInclude Include="Engine\Core\CoreGeometry.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Core\CoreGeometryUtils.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Core\CoreLightManager.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Core\CoreMaterial.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Core\CoreMaterialManager.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Core\CoreMeshLoader.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Core\CoreRenderTextureManager.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Core\CoreStructs.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ThirdParty\ImGUI\imstb_rectpack.h">
+      <Filter>Header Files\ThirdParty\ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ThirdParty\ImGUI\imstb_textedit.h">
+      <Filter>Header Files\ThirdParty\ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ThirdParty\ImGUI\imstb_truetype.h">
+      <Filter>Header Files\ThirdParty\ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ThirdParty\ImGUI\imconfig.h">
+      <Filter>Header Files\ThirdParty\ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ThirdParty\ImGUI\imgui.h">
+      <Filter>Header Files\ThirdParty\ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ThirdParty\ImGUI\imgui_impl_dx12.h">
+      <Filter>Header Files\ThirdParty\ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ThirdParty\ImGUI\imgui_impl_win32.h">
+      <Filter>Header Files\ThirdParty\ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ThirdParty\ImGUI\imgui_internal.h">
+      <Filter>Header Files\ThirdParty\ImGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ThirdParty\d3dx12.h">
       <Filter>Header Files\ThirdParty</Filter>
     </ClInclude>
-    <ClInclude Include="Base\AssetManager\BaseAssetManager.h">
-      <Filter>Header Files\Base\AssetManager</Filter>
+    <ClInclude Include="Engine\ThirdParty\json.h">
+      <Filter>Header Files\ThirdParty</Filter>
     </ClInclude>
-    <ClInclude Include="Base\AssetManager\BaseAssetNode.h">
-      <Filter>Header Files\Base\AssetManager</Filter>
+    <ClInclude Include="Engine\ThirdParty\tiny_obj_loader.h">
+      <Filter>Header Files\ThirdParty</Filter>
     </ClInclude>
-    <ClInclude Include="Base\BaseProject.h">
-      <Filter>Header Files\Base</Filter>
+    <ClInclude Include="Engine\DebugOut.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Core\GUI\CoreAssetWidget.h">
-      <Filter>Header Files\Core\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="Base\AssetManager\BaseAssetMetadata.h">
-      <Filter>Header Files\Base\AssetManager</Filter>
-    </ClInclude>
-    <ClInclude Include="Base\Resource\BaseResourceImage.h">
-      <Filter>Header Files\Base\Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="Base\Resource\BaseResourceManager.h">
-      <Filter>Header Files\Base\Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="Base\Resource\BaseResource.h">
-      <Filter>Header Files\Base\Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="Base\BaseGameObjectManager.h">
-      <Filter>Header Files\Base\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="Base\BaseScene.h">
-      <Filter>Header Files\Base\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="Base\Resource\BaseResourceMesh.h">
-      <Filter>Header Files\Base\Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\Component\CoreLightComponent.h">
-      <Filter>Header Files\Core\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\CoreStructs.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Base\BaseInterfaceSerializable.h">
-      <Filter>Header Files\Base</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\Resource\CoreResourceManager.h">
-      <Filter>Header Files\Core\Resource</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\Resource\CoreResourceMaterial.h">
-      <Filter>Header Files\Core\Resource</Filter>
+    <ClInclude Include="Engine\MathUtils.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

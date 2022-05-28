@@ -1,10 +1,10 @@
-#include "Core/CoreApp.h"
-#include "Core/CoreGeometry.h"
-#include "Core/Component/CoreMeshComponent.h"
-#include "Core/CoreGeometryUtils.h"
+#include "Engine/Core/CoreApp.h"
+#include "Engine/Core/CoreGeometry.h"
+#include "Engine/Core/Component/CoreMeshComponent.h"
+#include "Engine/Core/CoreGeometryUtils.h"
 
-#include "Base/Resource/BaseResourceImage.h"
-#include "Base/BaseProject.h"
+#include "Engine/Base/Resource/BaseResourceImage.h"
+#include "Engine/Base/BaseProject.h"
 
 
 class MyApp : public CoreApp {
@@ -19,10 +19,10 @@ public:
 
         tower->mTransform.SetPos(0.0f, -3.0f, 0.0f);
 
-        meshComponent = mMeshLoader->MakeComponent(mResourceManager->Load<BaseResourceMesh>("models\\WoodTower.obj"));
+        meshComponent = mMeshLoader->MakeComponent(mResourceManager->LoadByURL<BaseResourceMesh>("models\\WoodTower.obj"));
 
-        BaseResourceImage* colorTexture = mResourceManager->Load<BaseResourceImage>("Wood_Tower_Col.jpg");
-        BaseResourceImage* normalTexture = mResourceManager->Load<BaseResourceImage>("Wood_Tower_Nor.jpg");
+        BaseResourceImage* colorTexture = mResourceManager->LoadByURL<BaseResourceImage>("Wood_Tower_Col.jpg");
+        BaseResourceImage* normalTexture = mResourceManager->LoadByURL<BaseResourceImage>("Wood_Tower_Nor.jpg");
 
         meshComponent->mMat[0]->SetDiffuseColorTextured(colorTexture);
         meshComponent->mMat[0]->SetNormalTextured(normalTexture);
@@ -42,6 +42,8 @@ public:
         //lightComponent->Deserialize(j);
 
         mMainCamera->SetPos(10.0f, 10.0f, -10.0f);
+
+        //mResourceManager->CreateMaterial("Example.mat");
     }
 
     void Update()
@@ -81,6 +83,7 @@ BaseProject* GetProject(const string& projectPath)
     BaseAssetNode* node = proj->mAssetManager->RegisterAsset("models\\WoodTower.obj", "ExampleProject\\Asset\\models\\WoodTower.obj");
     node = proj->mAssetManager->RegisterAsset("Wood_Tower_Col.jpg", "ExampleProject\\Asset\\Wood_Tower_Col.jpg");
     node = proj->mAssetManager->RegisterAsset("Wood_Tower_Nor.jpg", "ExampleProject\\Asset\\Wood_Tower_Nor.jpg");
+    node = proj->mAssetManager->RegisterAsset("Example.mat", "ExampleProject\\Asset\\Example.mat");
 
     return proj;
 }
