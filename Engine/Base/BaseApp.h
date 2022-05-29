@@ -28,7 +28,6 @@ using namespace DirectX;
 using namespace DirectX::PackedVector;
 
 using Microsoft::WRL::ComPtr;
-using namespace std;
 
 class BaseApp
 {
@@ -64,12 +63,12 @@ public:
 	int mFrameCnt = 3;
 	int mFrameIdx = 0;
 	bool mIsRunning = true;
-	vector<ComPtr<ID3D12Fence>> mFence;
-	vector<UINT64> mExpectedFenceValue;
+	std::vector<ComPtr<ID3D12Fence>> mFence;
+	std::vector<UINT64> mExpectedFenceValue;
 	HANDLE mFenceEvent;
 
 	ComPtr<ID3D12DescriptorHeap> mRtvDescriptorHeap;
-	vector<ComPtr<ID3D12Resource>> mRenderTargets;
+	std::vector<ComPtr<ID3D12Resource>> mRenderTargets;
 
 	int mWidth = 1440;
 	int mHeight = 900;

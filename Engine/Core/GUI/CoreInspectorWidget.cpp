@@ -3,14 +3,16 @@
 
 #define PI 3.145926535897f
 
-CoreInspectorWidget::CoreInspectorWidget(BaseObject** nowSelectObjectPtr)
+CoreInspectorWidget::CoreInspectorWidget(BaseObject** nowSelectObjectPtr, BaseResourceManager* resourceManager, BaseAssetManager* assetManager)
 {
 	mNowSelectObjectPtr = nowSelectObjectPtr;
+	mResourceManager = resourceManager;
+	mAssetManager = assetManager;
 }
 
 void CoreInspectorWidget::Start(ImGuiID& dockspace_id)
 {
-	ImGuiID dock_right_id = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Right, 0.2f, nullptr, &dockspace_id);
+	ImGuiID dock_right_id = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Right, 0.25f, nullptr, &dockspace_id);
 	ImGui::DockBuilderDockWindow("Inspector", dock_right_id);
 }
 void CoreInspectorWidget::Update()
@@ -28,16 +30,16 @@ void CoreInspectorWidget::Update()
 		{
 			if (strlen(name) > 0)
 			{
-				obj->mName = string(name);
+				obj->mName = std::string(name);
 			}
 		}
 
 		UpdateTransformGUI(obj);
 
 
-		for (shared_ptr<BaseComponent>& com : obj->mComponents)
+		for (std::shared_ptr<BaseComponent>& com : obj->mComponents)
 		{
-			com->OnEditorGUI();
+			com->OnEditorGUI(mAssetManager, mResourceManager);
 		}
 
 	}

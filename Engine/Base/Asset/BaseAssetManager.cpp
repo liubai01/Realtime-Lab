@@ -2,29 +2,29 @@
 #include <filesystem>
 
 
-BaseAssetManager::BaseAssetManager(const string assetRootDirPath)
+BaseAssetManager::BaseAssetManager(const std::string assetRootDirPath)
 {
-	mRootPath = filesystem::absolute(assetRootDirPath).string();
+	mRootPath = std::filesystem::absolute(assetRootDirPath).string();
 
-    mRootAsset = make_unique<BaseAssetNode>(mRootPath);
+    mRootAsset = std::make_unique<BaseAssetNode>(mRootPath);
     mRootAsset->mID = "AssetRoot";
     mRootAsset->SetAssetType(BaseAssetType::ASSET_ROOT);
 }
 
-string BaseAssetManager::GetAssetFullPath(BaseAssetNode* node)
+std::string BaseAssetManager::GetAssetFullPath(BaseAssetNode* node)
 {
-    string relPath = node->GetRelativePath();
-    return filesystem::absolute(mRootPath + "\\" + relPath).string();
+    std::string relPath = node->GetRelativePath();
+    return std::filesystem::absolute(mRootPath + "\\" + relPath).string();
 }
 
-BaseAssetNode* BaseAssetManager::RegisterAsset(const string url, const string filepath)
+BaseAssetNode* BaseAssetManager::RegisterAsset(const std::string url, const std::string filepath)
 {
     // initialize the folder of the url
-    string delimiter = "\\";
-    string urltail = url;
+    std::string delimiter = "\\";
+    std::string urltail = url;
 
     BaseAssetNode* nowAssetNode = mRootAsset.get();
-    string nowFullPath = mRootPath;
+    std::string nowFullPath = mRootPath;
 
     size_t pos = 0;
     std::string token;
@@ -40,11 +40,11 @@ BaseAssetNode* BaseAssetManager::RegisterAsset(const string url, const string fi
             // fallback: try to retrieve it by checking whether it exists physically
             // in file system (file system hierarchy should be the same as the asset tree)
 
-            if (!filesystem::exists(nowFullPath) && !filesystem::is_directory(nowFullPath))
+            if (!std::filesystem::exists(nowFullPath) && !std::filesystem::is_directory(nowFullPath))
             {
                 // file/folder not exsits
                 // create a folder
-                if (!filesystem::create_directory(nowFullPath.c_str()))
+                if (!std::filesystem::create_directory(nowFullPath.c_str()))
                 {
                     // folder fails to create
                     return nullptr;
@@ -52,7 +52,7 @@ BaseAssetNode* BaseAssetManager::RegisterAsset(const string url, const string fi
                 nowAssetNode = nowAssetNode->RegisterAsset(nowFullPath);
                 mUUID2AssetNode[nowAssetNode->mUUID] = nowAssetNode;
             }
-            else if (filesystem::is_directory(nowFullPath)) {
+            else if (std::filesystem::is_directory(nowFullPath)) {
                 nowAssetNode = nowAssetNode->RegisterAsset(nowFullPath);
                 mUUID2AssetNode[nowAssetNode->mUUID] = nowAssetNode;
             }
@@ -86,10 +86,10 @@ BaseAssetNode* BaseAssetManager::RegisterAsset(const string url, const string fi
 
     // check whether file has already been in a proper position
     // if not copy it first
-    error_code err;
-    if (!filesystem::equivalent(filepath, nowFullPath, err))
+    std::error_code err;
+    if (!std::filesystem::equivalent(filepath, nowFullPath, err))
     {
-        filesystem::copy(filepath, nowFullPath);
+        std::filesystem::copy(filepath, nowFullPath);
     }
 
     // register the file
@@ -99,14 +99,14 @@ BaseAssetNode* BaseAssetManager::RegisterAsset(const string url, const string fi
     return nowAssetNode;
 }
 
-BaseAssetNode* BaseAssetManager::LoadAsset(const string url)
+BaseAssetNode* BaseAssetManager::LoadAsset(const std::string url)
 {
     // traverse the url folders to the file
-    string delimiter = "\\";
-    string urltail = url;
+    std::string delimiter = "\\";
+    std::string urltail = url;
     
     BaseAssetNode* nowAssetNode = mRootAsset.get();
-    string nowFullPath = mRootPath;
+    std::string nowFullPath = mRootPath;
 
     size_t pos = 0;
     std::string token;
@@ -129,7 +129,7 @@ BaseAssetNode* BaseAssetManager::LoadAsset(const string url)
     // the url tail goes to a file
     if (urltail.size() > 0)
     {
-        // run the same logic as above, except for slicing the url string
+        // run the same logic as above, except for slicing the url std::string
         BaseAssetNode* tmpNode;
         tmpNode = nowAssetNode->SearchByID(urltail);
         nowFullPath += delimiter + urltail;
@@ -143,7 +143,7 @@ BaseAssetNode* BaseAssetManager::LoadAsset(const string url)
     return nowAssetNode;
 }
 
-BaseAssetNode* BaseAssetManager::LoadAssetByUUID(const string uuid)
+BaseAssetNode* BaseAssetManager::LoadAssetByUUID(const std::string uuid)
 {
     auto f = mUUID2AssetNode.find(uuid);
 

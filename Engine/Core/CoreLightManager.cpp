@@ -53,9 +53,9 @@ void CoreLightManager::Update()
 	}
 }
 
-shared_ptr<CoreLightComponent> CoreLightManager::MakeLightComponent()
+std::shared_ptr<CoreLightComponent> CoreLightManager::MakeLightComponent()
 {
-	shared_ptr<CoreLightComponent> ret = make_shared<CoreLightComponent>();
+	std::shared_ptr<CoreLightComponent> ret = std::make_shared<CoreLightComponent>();
 	mLightComponents.push_back(ret);
 	return ret;
 }

@@ -274,12 +274,9 @@ void BaseApp::InitImGUI()
 {
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
-  ImGuiIO& io = ImGui::GetIO(); (void)io;
+  ImGuiIO& io = ImGui::GetIO();
   io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
   io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-  
-  BaseAssetNode* fontNode = mProject->mAssetManager->LoadAsset("EditorAsset\\Cousine-Regular.ttf");
-  io.Fonts->AddFontFromFileTTF(fontNode->mFullPath.c_str(), 16);
 
   SetStyleColor();
   ImGui_ImplWin32_Init(mHwnd);

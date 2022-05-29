@@ -28,7 +28,7 @@ void BaseCamera::SetDepthWrite(bool depthOn)
     mDepthOn = depthOn;
 }
 
-void BaseCamera::SetRenderTexture(shared_ptr<BaseRenderTexture> renderTexture)
+void BaseCamera::SetRenderTexture(std::shared_ptr<BaseRenderTexture> renderTexture)
 {
     mRenderTexture = renderTexture;
     if (mRenderTexture->mHeight != mHeight || mRenderTexture->mWidth != mWidth)

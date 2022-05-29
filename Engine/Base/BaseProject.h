@@ -6,17 +6,16 @@
 
 // for convenience
 using json = nlohmann::json;
-using namespace std;
 
 class BaseProject
 {
 public:
-	BaseProject(const string& projectPath);
+	BaseProject(const std::string& projectPath);
 	~BaseProject();
-	string GetProjectPath();
+	std::string GetProjectPath();
 
 	BaseAssetManager* mAssetManager;
 private:
-	string mProjectPath;
+	std::string mProjectPath;
 };
 

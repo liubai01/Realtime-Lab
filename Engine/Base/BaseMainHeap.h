@@ -11,28 +11,27 @@
 #include "BaseDescHeapHandle.h"
 
 using Microsoft::WRL::ComPtr;
-using namespace std;
 
 // refer to: https://alextardif.com/D3D11To12P2.html
 
 class BaseMainHeap
 {
 public:
-  BaseMainHeap(ID3D12Device* device, int maxNumDesc=64);
-  ~BaseMainHeap();
+	BaseMainHeap(ID3D12Device* device, int maxNumDesc=64);
+	~BaseMainHeap();
 
-  BaseDescHeapHandle GetNewHeapHandle();
-  void FreeHeapHandle(BaseDescHeapHandle handle);
+	BaseDescHeapHandle GetNewHeapHandle();
+	void FreeHeapHandle(BaseDescHeapHandle handle);
 
-  ComPtr<ID3D12DescriptorHeap> mDescHeap;
+	ComPtr<ID3D12DescriptorHeap> mDescHeap;
 private:
-  queue<UINT32> mFreeDescriptors;
-  UINT32 mCurrentDescriptorIndex;
-  UINT32 mActiveHandleCount;
+	std::queue<UINT32> mFreeDescriptors;
+	UINT32 mCurrentDescriptorIndex;
+	UINT32 mActiveHandleCount;
 
-  UINT32 mMaxDesc;
-  D3D12_CPU_DESCRIPTOR_HANDLE mDescriptorHeapCPUStart;
-  D3D12_GPU_DESCRIPTOR_HANDLE mDescriptorHeapGPUStart;
-  UINT32 mDescriptorSize;
+	UINT32 mMaxDesc;
+	D3D12_CPU_DESCRIPTOR_HANDLE mDescriptorHeapCPUStart;
+	D3D12_GPU_DESCRIPTOR_HANDLE mDescriptorHeapGPUStart;
+	UINT32 mDescriptorSize;
 };
 

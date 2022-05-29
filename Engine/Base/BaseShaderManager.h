@@ -7,7 +7,6 @@
 #include <memory>
 #include <unordered_map>
 
-using namespace std;
 using Microsoft::WRL::ComPtr;
 
 class BaseShader
@@ -20,13 +19,13 @@ public:
 class BaseShaderManager
 {
 public:
-  void AddVertexShader(string name, string entry = "main");
-  void AddPixelShader(string name, string entry = "main");
+  void AddVertexShader(std::string name, std::string entry = "main");
+  void AddPixelShader(std::string name, std::string entry = "main");
 
   D3D12_SHADER_BYTECODE VertexShaderByteCode();
   D3D12_SHADER_BYTECODE PixelShaderByteCode();
 
 private:
-  unordered_map<string, unique_ptr<BaseShader>> mName2Shader;
+	std::unordered_map<std::string, std::unique_ptr<BaseShader>> mName2Shader;
 };
 

@@ -44,14 +44,14 @@ void CoreAssetWidget::UpdateAssetContentWindow()
 {
 	if (mNowSelectedAssetNodeDir)
 	{
-		for (unique_ptr<BaseAssetNode>& assetNode : mNowSelectedAssetNodeDir->mSubAssets)
+		for (std::unique_ptr<BaseAssetNode>& assetNode : mNowSelectedAssetNodeDir->mSubAssets)
 		{
 			if (assetNode->IsHidden()) 
 			{
 				continue;
 			}
 
-			string displayName;
+			std::string displayName;
 			static float iconSize = 120;
 			static float nameTabHeight = 20;
 
@@ -124,7 +124,7 @@ void CoreAssetWidget::DFSConstructExploererNode(BaseAssetNode* nowNode)
 {
 	bool hasChild;
 	int cnt = 0;
-	for (unique_ptr<BaseAssetNode>& assetNode : nowNode->mSubAssets)
+	for (std::unique_ptr<BaseAssetNode>& assetNode : nowNode->mSubAssets)
 	{
 		if (assetNode->GetAssetType() == BaseAssetType::ASSET_FOLDER && !assetNode->IsHidden())
 		{
@@ -150,7 +150,7 @@ void CoreAssetWidget::DFSConstructExploererNode(BaseAssetNode* nowNode)
 
 		if (treeNode)
 		{
-			for (unique_ptr<BaseAssetNode>& assetNode :nowNode->mSubAssets)
+			for (std::unique_ptr<BaseAssetNode>& assetNode :nowNode->mSubAssets)
 			{
 				if (assetNode->GetAssetType() == BaseAssetType::ASSET_FOLDER && !assetNode->IsHidden())
 				{

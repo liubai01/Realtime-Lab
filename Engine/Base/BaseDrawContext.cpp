@@ -152,7 +152,7 @@ void BaseDrawContext::ResetCommandList()
 void BaseDrawContext::AppendCBVDescTable()
 {
     mDescTableRanges.emplace_back(1);
-    vector<D3D12_DESCRIPTOR_RANGE>& descTableRanges = mDescTableRanges.back();
+    std::vector<D3D12_DESCRIPTOR_RANGE>& descTableRanges = mDescTableRanges.back();
 
     descTableRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV; // this is a range of constant buffer views (descriptors)
     descTableRanges[0].NumDescriptors = 1; // we only have one constant buffer, so the range is only 1
@@ -175,7 +175,7 @@ void BaseDrawContext::AppendCBVDescTable()
 void BaseDrawContext::AppendSRVDescTable()
 {
     mDescTableRanges.emplace_back(1);
-    vector<D3D12_DESCRIPTOR_RANGE>& descTableRanges = mDescTableRanges.back();
+    std::vector<D3D12_DESCRIPTOR_RANGE>& descTableRanges = mDescTableRanges.back();
 
     descTableRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV; // this is a range of constant buffer views (descriptors)
     descTableRanges[0].NumDescriptors = 1; // we only have one constant buffer, so the range is only 1

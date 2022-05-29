@@ -8,7 +8,7 @@ BaseResourceImage::BaseResourceImage(ID3D12Device* device, BaseAssetNode* assetN
     mIsRuntimeResource = true;
 
     // for invoking LoadFromWICFile, convert path of image to wide char string 
-    wstring widepath = wstring(assetNode->mFullPath.begin(), assetNode->mFullPath.end());
+    std::wstring widepath = std::wstring(assetNode->mFullPath.begin(), assetNode->mFullPath.end());
 
     mScratchImage = std::make_unique<DirectX::ScratchImage>();
     HRESULT hr = LoadFromWICFile(widepath.c_str(), DirectX::WIC_FLAGS_NONE, nullptr, *mScratchImage);

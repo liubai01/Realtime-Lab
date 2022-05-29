@@ -6,15 +6,13 @@
 #include "../Base/Asset/BaseAssetManager.h"
 
 
-using namespace std;
-
 class CoreMeshLoader
 {
 public:
-	CoreMeshLoader(BaseAssetManager* assetManager);
+	CoreMeshLoader();
 
-	shared_ptr<CoreMeshComponent> MakeComponent(BaseResourceMesh* resourceMesh);
-	void BindResource2MeshComponent(shared_ptr<CoreMeshComponent>, BaseResourceMesh* resourceMesh);
+	std::shared_ptr<CoreMeshComponent> MakeComponent(BaseResourceMesh* resourceMesh);
+	void BindResource2MeshComponent(std::shared_ptr<CoreMeshComponent>, BaseResourceMesh* resourceMesh);
 private:
 	BaseAssetManager* mAssetManager;
 };

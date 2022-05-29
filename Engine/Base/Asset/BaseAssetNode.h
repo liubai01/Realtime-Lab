@@ -5,8 +5,6 @@
 #include <memory>
 #include "../BaseInterfaceSerializable.h"
 
-using namespace std;
-
 enum class BaseAssetType { 
 	ASSET_ROOT,
 	ASSET_IMAGE,
@@ -20,11 +18,11 @@ enum class BaseAssetType {
 class BaseAssetNode: public BaseInterfaceSerializable
 {
 public:
-	BaseAssetNode(const string& path, BaseAssetNode* parent=nullptr);
+	BaseAssetNode(const std::string& path, BaseAssetNode* parent=nullptr);
 
-	string mUUID; // the unique global ID
-	string mID; // the name
-	string mFullPath;
+	std::string mUUID; // the unique global ID
+	std::string mID; // the name
+	std::string mFullPath;
 	
 	
 	BaseAssetType GetAssetType();
@@ -32,11 +30,11 @@ public:
 	void SetHidden(bool value);
 	bool IsHidden();
 
-	BaseAssetNode* SearchByID(const string ID);
-	BaseAssetNode* RegisterAsset(const string path);
-	string GetRelativePath();
+	BaseAssetNode* SearchByID(const std::string ID);
+	BaseAssetNode* RegisterAsset(const std::string path);
+	std::string GetRelativePath();
 
-	vector<unique_ptr<BaseAssetNode>> mSubAssets;
+	std::vector<std::unique_ptr<BaseAssetNode>> mSubAssets;
 
 	json Serialize();
 	void Deserialize(const json& j);

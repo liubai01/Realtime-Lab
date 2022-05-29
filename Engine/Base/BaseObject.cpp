@@ -1,14 +1,14 @@
 #include "BaseObject.h"
 #include "../MathUtils.h"
 
-void BaseObject::AddComponent(shared_ptr<BaseComponent> component)
+void BaseObject::AddComponent(std::shared_ptr<BaseComponent> component)
 {
   mComponents.push_back(component);
   mChildObjects.clear();
   mParentObject = nullptr;
 }
 
-string BaseObject::GetUUID()
+std::string BaseObject::GetUUID()
 {
 	return mUuid;
 }
@@ -58,7 +58,7 @@ void BaseObject::DispatchTransformUpload(BaseRuntimeHeap* runtimeHeap)
 }
 
 
-const unordered_set<BaseObject*>& BaseObject::GetChildObjects()
+const std::unordered_set<BaseObject*>& BaseObject::GetChildObjects()
 {
 	return mChildObjects;
 }

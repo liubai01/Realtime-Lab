@@ -7,8 +7,6 @@
 #include "../Resource/CoreResourceManager.h"
 #include<vector>
 
-using namespace std;
-
 class CoreGUIManager
 {
 public:
@@ -19,7 +17,7 @@ public:
 	void Update();
 	void Start();
 
-	vector<unique_ptr<BaseGUIWidget>> mWidgets;
+	std::vector<std::unique_ptr<BaseGUIWidget>> mWidgets;
 	BaseObject* mNowSelectedObject;
 
 private:

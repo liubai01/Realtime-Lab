@@ -8,15 +8,19 @@
 CoreGUIManager::CoreGUIManager(BaseApp* app, CoreResourceManager* resourceManager)
 {
     mApp = app;
-    mWidgets.push_back(make_unique<CoreAssetWidget>(mApp->mProject->mAssetManager, resourceManager));
-    mWidgets.push_back(make_unique<CoreHierarchyWidget>(mApp->mGOManager, &mNowSelectedObject));
-    mWidgets.push_back(make_unique<CoreSceneWidget>(mApp->mMainCamera));
-    mWidgets.push_back(make_unique<CoreInspectorWidget>(&mNowSelectedObject));
+    mWidgets.push_back(std::make_unique<CoreAssetWidget>(mApp->mProject->mAssetManager, resourceManager));
+    mWidgets.push_back(std::make_unique<CoreHierarchyWidget>(mApp->mGOManager, &mNowSelectedObject));
+    mWidgets.push_back(std::make_unique<CoreSceneWidget>(mApp->mMainCamera));
+    mWidgets.push_back(std::make_unique<CoreInspectorWidget>(&mNowSelectedObject, resourceManager, app->mProject->mAssetManager));
     
     mFirstLoop = true;
     mNowSelectedObject = nullptr;
 
     mResourceManager = resourceManager;
+
+    ImGuiIO& io = ImGui::GetIO();
+    BaseAssetNode* fontNode = app->mProject->mAssetManager->LoadAsset("EditorAsset\\Cousine-Regular.ttf");
+    io.Fonts->AddFontFromFileTTF(fontNode->mFullPath.c_str(), 16);
 }
 
 void CoreGUIManager::Start()
@@ -30,7 +34,7 @@ void CoreGUIManager::Start()
     ImGui::DockBuilderSetNodeSize(dockspace_id, ImGui::GetMainViewport()->WorkSize);
     ImGui::DockBuilderSetNodePos(dockspace_id, ImGui::GetMainViewport()->WorkPos);
 
-    for (unique_ptr<BaseGUIWidget>& widget : mWidgets)
+    for (std::unique_ptr<BaseGUIWidget>& widget : mWidgets)
     {
         widget->Start(dockspace_id);
     }
@@ -96,7 +100,7 @@ void CoreGUIManager::Update()
             mFirstLoop = false;
         }
 
-        for (unique_ptr<BaseGUIWidget>& widget : mWidgets)
+        for (std::unique_ptr<BaseGUIWidget>& widget : mWidgets)
         {
             widget->Update();
         }

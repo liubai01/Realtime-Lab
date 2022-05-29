@@ -7,16 +7,16 @@ BaseGameObjectManager::BaseGameObjectManager(ID3D12Device* device, BaseMainHeap*
     mMainHeap = mainHeap;
 }
 
-shared_ptr<BaseObject> BaseGameObjectManager::CreateObject(const string& name)
+std::shared_ptr<BaseObject> BaseGameObjectManager::CreateObject(const std::string& name)
 {
-    string uuid = uuid::generate_uuid();
+    std::string uuid = uuid::generate_uuid();
     auto f = mObjs.find(uuid);
     if (f != mObjs.end())
     {
         dout::printf("[BaseGameObjectManager] Create Object UUID %s Repeated!", name.c_str());
         return nullptr;
     }
-    shared_ptr<BaseObject> obj = make_shared<BaseObject>(name, uuid, mDevice, &mRootObjects);
+    std::shared_ptr<BaseObject> obj = std::make_shared<BaseObject>(name, uuid, mDevice, &mRootObjects);
     obj->mTransform.RegisterMainHandle(mMainHeap);
     mRootObjects.insert(obj.get());
 
@@ -25,7 +25,7 @@ shared_ptr<BaseObject> BaseGameObjectManager::CreateObject(const string& name)
     return obj;
 }
 
-shared_ptr<BaseObject>BaseGameObjectManager::GetObject(const string& uuid)
+std::shared_ptr<BaseObject>BaseGameObjectManager::GetObject(const std::string& uuid)
 {
     auto f = mObjs.find(uuid);
 

@@ -4,22 +4,22 @@
 
 #pragma region Shader
 
-void BaseShaderManager::AddVertexShader(string name, string entry)
+void BaseShaderManager::AddVertexShader(std::string name, std::string entry)
 {
-  unique_ptr<BaseShader> vertexShader(new BaseShader());
-  ComPtr<ID3DBlob> errorBuff;
+    std::unique_ptr<BaseShader> vertexShader(new BaseShader());
+    ComPtr<ID3DBlob> errorBuff;
 
-  std::wstring stemp = std::wstring(name.begin(), name.end());
-  HRESULT hr = D3DCompileFromFile(stemp.c_str(),
-    nullptr,
-    nullptr,
-    entry.c_str(),
-    "vs_5_0",
-    D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
-    0,
-    vertexShader->shaderCPU.GetAddressOf(),
-    errorBuff.GetAddressOf()
-  );
+    std::wstring stemp = std::wstring(name.begin(), name.end());
+    HRESULT hr = D3DCompileFromFile(stemp.c_str(),
+        nullptr,
+        nullptr,
+        entry.c_str(),
+        "vs_5_0",
+        D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
+        0,
+        vertexShader->shaderCPU.GetAddressOf(),
+        errorBuff.GetAddressOf()
+    );
 
   if (FAILED(hr))
   {
@@ -33,9 +33,9 @@ void BaseShaderManager::AddVertexShader(string name, string entry)
   mName2Shader["VS"] = move(vertexShader);
 }
 
-void BaseShaderManager::AddPixelShader(string name, string entry)
+void BaseShaderManager::AddPixelShader(std::string name, std::string entry)
 {
-  unique_ptr<BaseShader> pixelShader(new BaseShader());
+    std::unique_ptr<BaseShader> pixelShader(new BaseShader());
   ComPtr<ID3DBlob> errorBuff;
 
   std::wstring stemp = std::wstring(name.begin(), name.end());

@@ -3,22 +3,20 @@
 #include <unordered_map>
 #include "../DebugOut.h"
 
-using namespace std;
 
-CoreMeshLoader::CoreMeshLoader(BaseAssetManager* assetManager)
+CoreMeshLoader::CoreMeshLoader()
 {
-    mAssetManager = assetManager;
 }
 
-shared_ptr<CoreMeshComponent> CoreMeshLoader::MakeComponent(BaseResourceMesh* resourceMesh)
+std::shared_ptr<CoreMeshComponent> CoreMeshLoader::MakeComponent(BaseResourceMesh* resourceMesh)
 {
-    shared_ptr<CoreMeshComponent> ret = make_shared<CoreMeshComponent>(mAssetManager);
+    std::shared_ptr<CoreMeshComponent> ret = std::make_shared<CoreMeshComponent>();
     BindResource2MeshComponent(ret, resourceMesh);
 
     return ret;
 }
 
-void CoreMeshLoader::BindResource2MeshComponent(shared_ptr<CoreMeshComponent> ret, BaseResourceMesh* resourceMesh)
+void CoreMeshLoader::BindResource2MeshComponent(std::shared_ptr<CoreMeshComponent> ret, BaseResourceMesh* resourceMesh)
 {
     ret->ClearGeometry();
     ret->mMeshType = CoreMeshComponentType::ASSET_COMPONENT;
@@ -27,7 +25,7 @@ void CoreMeshLoader::BindResource2MeshComponent(shared_ptr<CoreMeshComponent> re
     for (BaseResourceGeometry& geoSrc : resourceMesh->mGeos)
     {
         // TBD: a cache system of geometry
-        shared_ptr<CoreGeometry> geo = make_shared<CoreGeometry>();
+        std::shared_ptr<CoreGeometry> geo = std::make_shared<CoreGeometry>();
         geo->mName = geoSrc.mName;
 
         for (size_t idx = 0; idx < geoSrc.mVertices.size(); idx++)

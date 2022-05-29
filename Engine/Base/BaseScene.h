@@ -5,10 +5,10 @@ class BaseScene
 {
 public:
 	BaseScene(BaseGameObjectManager* gOManager);
-	shared_ptr<BaseObject> CreateObject(const string& name);
+	std::shared_ptr<BaseObject> CreateObject(const std::string& name);
 
 private:
 	BaseGameObjectManager* mGOManager;
-	vector<shared_ptr<BaseObject>> mRootObjects;
+	std::vector<std::shared_ptr<BaseObject>> mRootObjects;
 };
 

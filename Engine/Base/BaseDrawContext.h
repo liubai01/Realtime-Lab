@@ -17,16 +17,15 @@ using namespace DirectX;
 using namespace DirectX::PackedVector;
 
 using Microsoft::WRL::ComPtr;
-using namespace std;
 
 class BaseDrawContext: public BaseDirectCommandList
 {
 public:
-	vector<D3D12_ROOT_PARAMETER> mRootParams;
+	std::vector<D3D12_ROOT_PARAMETER> mRootParams;
 	// root params would carry a pointer to descriptor range, which is stored here
-	vector<vector<D3D12_DESCRIPTOR_RANGE>> mDescTableRanges;
+	std::vector<std::vector<D3D12_DESCRIPTOR_RANGE>> mDescTableRanges;
 
-	vector<D3D12_INPUT_ELEMENT_DESC> mInputLayout;
+	std::vector<D3D12_INPUT_ELEMENT_DESC> mInputLayout;
 	BaseShaderManager mShader;
   
 	BaseDrawContext(ID3D12Device* device);

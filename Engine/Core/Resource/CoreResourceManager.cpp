@@ -7,11 +7,11 @@ CoreResourceManager::CoreResourceManager(ID3D12Device* device, BaseAssetManager*
 	LoadByURL<CoreResourceMaterial>("EditorAsset\\Default.mat");
 }
 
-CoreResourceMaterial* CoreResourceManager::CreateMaterial(const string& url)
+CoreResourceMaterial* CoreResourceManager::CreateMaterial(const std::string& url)
 {
 	CoreResourceMaterial* ret = nullptr;
 
-	string postfix = url.substr(url.find_last_of(".") + 1);
+	std::string postfix = url.substr(url.find_last_of(".") + 1);
 	if (postfix != "mat")
 	{
 		dout::printf("[CoreResourceManager] Invalid material postfix: %s\n", postfix.c_str());
@@ -28,7 +28,7 @@ CoreResourceMaterial* CoreResourceManager::CreateMaterial(const string& url)
 		return nullptr;
 	}
 
-	string toPath = mAssetManager->mRootPath + "\\" + url;
+	std::string toPath = mAssetManager->mRootPath + "\\" + url;
 	
 	// Create an empty matereial
 	CoreResourceMaterial::CreateEmpty(toPath);

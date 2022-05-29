@@ -13,34 +13,33 @@
 
 using namespace DirectX;
 using Microsoft::WRL::ComPtr;
-using namespace std;
 
 class BaseObject
 {
 public:
-  BaseObject(const string& name, const string& uuid, ID3D12Device* device, unordered_set<BaseObject*>* rootObjects) : mName(name), mTransform(device) {
+  BaseObject(const std::string& name, const std::string& uuid, ID3D12Device* device, std::unordered_set<BaseObject*>* rootObjects) : mName(name), mTransform(device) {
 	  this->mUuid = uuid;
 	  this->mRootObjects = rootObjects;
   }
 
   BaseObject* GetParent();
   void SetParent(BaseObject* obj);
-  const unordered_set<BaseObject*>& GetChildObjects();
+  const std::unordered_set<BaseObject*>& GetChildObjects();
 
   void DispatchTransformUpload(BaseRuntimeHeap* runtimeHeap);
 
-  string mName;
+  std::string mName;
   BaseTransform mTransform;
 
-  void AddComponent(shared_ptr<BaseComponent> component);
-  string GetUUID();
-  vector<shared_ptr<BaseComponent>> mComponents;
+  void AddComponent(std::shared_ptr<BaseComponent> component);
+  std::string GetUUID();
+  std::vector<std::shared_ptr<BaseComponent>> mComponents;
 
 private:
-	string mUuid;
+	std::string mUuid;
 
 	BaseObject* mParentObject;
-	unordered_set<BaseObject*> mChildObjects;
-	unordered_set<BaseObject*>* mRootObjects;
+	std::unordered_set<BaseObject*> mChildObjects;
+	std::unordered_set<BaseObject*>* mRootObjects;
 };
 

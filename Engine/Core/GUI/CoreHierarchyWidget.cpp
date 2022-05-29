@@ -1,8 +1,6 @@
 #include "CoreHierarchyWidget.h"
 #include <stack>
 
-using namespace std;
-
 CoreHierarchyWidget::CoreHierarchyWidget(BaseGameObjectManager* GOManager, BaseObject** nowSelectObjectPtr)
 {
 	mGOManager = GOManager;

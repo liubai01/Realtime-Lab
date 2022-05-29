@@ -8,9 +8,8 @@ constexpr auto to_underlying(E e) noexcept
     return static_cast<std::underlying_type_t<E>>(e);
 }
 
-CoreMeshComponent::CoreMeshComponent(BaseAssetManager* assetManager)
+CoreMeshComponent::CoreMeshComponent()
 {
-    mAssetManager = assetManager;
 	mComponentType = ComponentType::COMPONENT_MESH;
     mMeshType = CoreMeshComponentType::UNKNOWN_COMPONENT;
     mID = "<unknown>";
@@ -34,7 +33,7 @@ void CoreMeshComponent::ClearGeometry()
 *  Before adding geometry, you should set mMeshType and mID which notifies its source.
 *  If the source is not set correctly, (de)serialization would fail.
 */
-void CoreMeshComponent::AddGeometry(shared_ptr<CoreGeometry> geo, CoreResourceMaterial* mat)
+void CoreMeshComponent::AddGeometry(std::shared_ptr<CoreGeometry> geo, CoreResourceMaterial* mat)
 {
 
     // the geometry info (could be potentially shared by multiple mesh component)
@@ -42,7 +41,7 @@ void CoreMeshComponent::AddGeometry(shared_ptr<CoreGeometry> geo, CoreResourceMa
     // the material
     mMat.push_back(mat);
     // the runtime mesh data (should be uploaded to GPU before accessing vertexBuffer & indexBuffer)
-    mMesh.push_back(make_unique<BaseMesh>());
+    mMesh.push_back(std::make_unique<BaseMesh>());
 }
 
 void CoreMeshComponent::Upload(ID3D12Device* device, ID3D12GraphicsCommandList* commandList)
@@ -86,41 +85,91 @@ void CoreMeshComponent::Render(ID3D12GraphicsCommandList* commandList, int matRe
 }
 
 
-void CoreMeshComponent::OnEditorGUI()
+void CoreMeshComponent::OnEditorGUI(BaseAssetManager* assetManager, BaseResourceManager* resourceManager)
 {
-    if (ImGui::TreeNodeEx("Mesh Component", ImGuiTreeNodeFlags_Framed))
+    ImGuiIO& io = ImGui::GetIO();
+    if (ImGui::TreeNodeEx("Mesh Component", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen))
     {
+
         ImGui::Text("Mesh ");
         ImGui::SameLine();
 
+        // TBD: support primitive
         if (mMeshType == CoreMeshComponentType::ASSET_COMPONENT)
         {
-            BaseAssetNode* node = mAssetManager->LoadAssetByUUID(mID);
+            BaseAssetNode* node = assetManager->LoadAssetByUUID(mID);
 
             if (node)
             {
-                //ImGui::Text(node->mID.c_str());
+                // Show the slot of the mesh
                 char name[128]{ 0 };
                 strcpy_s(name, node->mID.c_str());
-
+                // the slot is rendered as a read-only input-text
+                // TBD: support search for asset of resource mesh in the future
                 ImGui::InputText("NameMesh", name, IM_ARRAYSIZE(name), ImGuiInputTextFlags_ReadOnly);
 
+                // Enable drag & drop of the slot of mesh
                 if (ImGui::BeginDragDropTarget())
                 {
                     if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_CELL"))
                     {
                         BaseAssetNode* node = nullptr;
                         memcpy(&node, payload->Data, sizeof(BaseAssetNode*));
+
+                        // TBD: change the mesh
                     }
 
                     ImGui::EndDragDropTarget();
                 }
+
+                // Show the material slots
+                int flag = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_OpenOnArrow;
+                bool treeNodeOpen = ImGui::TreeNodeEx("Matereial", flag, "Material");
+
+                if (treeNodeOpen)
+                {
+                    for (int i = 0; i < mMat.size(); ++i)
+                    {
+                        ImGui::BulletText("Mat[%d]: ", i);
+                        ImGui::SameLine();
+                        
+                        // check whether material exists
+                        if (!mMat[i])
+                        {
+                            char namemat[128]{ 0 };
+                            strcpy_s(namemat, "<Empty>");
+                            ImGui::InputText("NameMat", namemat, IM_ARRAYSIZE(namemat), ImGuiInputTextFlags_ReadOnly);
+                        }
+                        else {
+                            char namemat[128]{ 0 };
+                            strcpy_s(namemat, mMat[i]->mName.c_str());
+                            ImGui::InputText("NameMat", namemat, IM_ARRAYSIZE(namemat), ImGuiInputTextFlags_ReadOnly);
+                        }
+
+                        // Enable drag & drop of the matereial slot
+                        if (ImGui::BeginDragDropTarget())
+                        {
+                            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_CELL"))
+                            {
+                                BaseAssetNode* node = nullptr;
+                                memcpy(&node, payload->Data, sizeof(BaseAssetNode*));
+
+                                // TBD: change the material
+                            }
+
+                            ImGui::EndDragDropTarget();
+                        }
+                    }
+                    ImGui::TreePop();
+                }
             }
             else {
+                // `node == nullptr` branch
                 // when the reference is broken, clean the component
                 ClearGeometry();
                 ImGui::Text("<Broken Asset>");
             }
+
         }
 
         ImGui::Separator();
@@ -130,7 +179,7 @@ void CoreMeshComponent::OnEditorGUI()
 
 json CoreMeshComponent::Serialize()
 {
-    vector<json> geoMeta = vector<json>();
+    std::vector<json> geoMeta = std::vector<json>();
     
     //for (int i = 0; i < mGeo.size(); ++i)
     //{

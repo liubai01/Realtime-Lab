@@ -7,25 +7,25 @@
 
 CoreApp::CoreApp(HINSTANCE hInstance, BaseProject* proj) : BaseApp(hInstance, proj)
 {
-    mUploadCmdList = make_unique<BaseDirectCommandList>(mDevice.Get());
-    mUIDrawCmdList = make_unique<BaseDirectCommandList>(mDevice.Get());
-    mLightManager = make_unique<CoreLightManager>(mDevice.Get());
+    mUploadCmdList = std::make_unique<BaseDirectCommandList>(mDevice.Get());
+    mUIDrawCmdList = std::make_unique<BaseDirectCommandList>(mDevice.Get());
+    mLightManager = std::make_unique<CoreLightManager>(mDevice.Get());
 
     mLightManager->RegisterMainHandle(mMainHeap);
     
-    mResourceManager = make_unique<CoreResourceManager>(mDevice.Get(), mProject->mAssetManager, mMainHeap);
+    mResourceManager = std::make_unique<CoreResourceManager>(mDevice.Get(), mProject->mAssetManager, mMainHeap);
 
-    mGUIManager = make_unique<CoreGUIManager>(this, mResourceManager.get());
+    mGUIManager = std::make_unique<CoreGUIManager>(this, mResourceManager.get());
 
-    mRenderTextureManager = make_unique<CoreRenderTextureManager>(mRuntimeHeap, mDevice.Get());
+    mRenderTextureManager = std::make_unique<CoreRenderTextureManager>(mRuntimeHeap, mDevice.Get());
     mSceneRenderTexture = mRenderTextureManager->AllocateRenderTexture();
     mSceneRenderTexture->SetClearColor({ 0.1f, 0.1f, 0.3f, 1.0f });
     mEdgeRenderTexture = mRenderTextureManager->AllocateRenderTexture();
     mEdgeRenderTexture->SetClearColor({0.0f, 0.0f, 0.0f, 0.0f});
 
     // TBD: the generation of primitives should be moved in mesh loader
-    shared_ptr<CoreGeometry> planeGeo = make_shared<CoreGeometry>(GetPlaneGeometry());
-    mFullScreenPlane = make_unique<CoreMeshComponent>(mProject->mAssetManager);
+    std::shared_ptr<CoreGeometry> planeGeo = std::make_shared<CoreGeometry>(GetPlaneGeometry());
+    mFullScreenPlane = std::make_unique<CoreMeshComponent>();
     mFullScreenPlane->mMeshType = CoreMeshComponentType::PRIMITIVE_COMPONENT;
     mFullScreenPlane->mID = "<plane>";
     mFullScreenPlane->AddGeometry(planeGeo);
@@ -33,15 +33,15 @@ CoreApp::CoreApp(HINSTANCE hInstance, BaseProject* proj) : BaseApp(hInstance, pr
     mMainCamera->SetRenderTexture(mSceneRenderTexture);
 
     // Diffuse Draw Context
-    mDrawContext = make_unique<CoreDrawDiffuseContext>(mDevice.Get());
+    mDrawContext = std::make_unique<CoreDrawDiffuseContext>(mDevice.Get());
 
     // Edge Light Draw Context
-    mEdgeLightDrawContext = make_unique<CoreDrawEdgeContext>(mDevice.Get());
+    mEdgeLightDrawContext = std::make_unique<CoreDrawEdgeContext>(mDevice.Get());
 
     // Edge Light Blur Draw Context
-    mBlurDrawContext = make_unique<CoreDrawBlurContext>(mDevice.Get());
+    mBlurDrawContext = std::make_unique<CoreDrawBlurContext>(mDevice.Get());
 
-    mMeshLoader = make_unique<CoreMeshLoader>(mProject->mAssetManager);
+    mMeshLoader = std::make_unique<CoreMeshLoader>();
 }
 
 void CoreApp::Start() 
@@ -96,7 +96,7 @@ void CoreApp::UploadGeometry()
 
     for (auto& elem : mGOManager->mObjs)
     {
-        shared_ptr<BaseObject>& obj = elem.second;
+        std::shared_ptr<BaseObject>& obj = elem.second;
 
         for (auto component : obj->mComponents)
         {
@@ -171,7 +171,7 @@ void CoreApp::RenderEdgeLightPre()
 
     for (auto& elem : mGOManager->mObjs)
     {
-        shared_ptr<BaseObject>& obj = elem.second;
+        std::shared_ptr<BaseObject>& obj = elem.second;
         if (&*obj != mGUIManager->mNowSelectedObject)
         {
             continue;
@@ -240,7 +240,7 @@ void CoreApp::RenderObjects()
 
     for (auto& elem : mGOManager->mObjs)
     {
-        shared_ptr<BaseObject>& obj = elem.second;
+        std::shared_ptr<BaseObject>& obj = elem.second;
         commandList->SetGraphicsRootDescriptorTable(0, obj->mTransform.GetRuntimeHandle().GetGPUHandle());
         for (auto component : obj->mComponents)
         {

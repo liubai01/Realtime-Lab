@@ -22,7 +22,7 @@ BaseResource::BaseResource(ID3D12Device* device, BaseAssetNode* assetNode)
 
 }
 
-string BaseResourceType2String(enum class BaseResourceType& t)
+std::string BaseResourceType2String(enum class BaseResourceType& t)
 {
     if (t == BaseResourceType::RESOURCE_IMAGE)
     {

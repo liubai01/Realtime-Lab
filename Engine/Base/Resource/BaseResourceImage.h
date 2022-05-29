@@ -7,8 +7,6 @@
 #include "BaseResource.h"
 #include "../../ThirdParty/ImGUI/imgui.h"
 
-using namespace std;
-
 class BaseResourceImage : public BaseResource
 {
 public:
@@ -18,7 +16,7 @@ public:
 	BaseResourceImage(ID3D12Device* device, BaseAssetNode* assetNode);
 	~BaseResourceImage();
 
-	unique_ptr<DirectX::ScratchImage> mScratchImage;
+	std::unique_ptr<DirectX::ScratchImage> mScratchImage;
 
 	// For Dear ImGui in Editor
 	ImTextureID GetImGuiRuntimeID();

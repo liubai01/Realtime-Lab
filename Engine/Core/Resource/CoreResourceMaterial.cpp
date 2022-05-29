@@ -5,7 +5,7 @@ CoreResourceMaterial::CoreResourceMaterial(ID3D12Device* device, BaseAssetNode* 
 	// for runtime deciding the acutal type of BaseResource base pointer
 	mType = CoreResourceMaterial::ClassResourceType;
 
-	mStagedBuffer = make_unique<BaseStagedBuffer<CoreMaterialConsts>>(device);
+	mStagedBuffer = std::make_unique<BaseStagedBuffer<CoreMaterialConsts>>(device);
 
 	// load meta
 	std::ifstream i(assetNode->mFullPath);

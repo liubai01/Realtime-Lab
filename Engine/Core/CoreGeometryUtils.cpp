@@ -63,8 +63,8 @@ CoreGeometry GetCubeGeometry()
     20, 23, 21, // second triangle
   };
 
-  vector<XMFLOAT3*> norms;
-  vector<XMFLOAT3*> pos;
+  std::vector<XMFLOAT3*> norms;
+  std::vector<XMFLOAT3*> pos;
 
   for (auto& v : geo.mVertices) {
     pos.push_back(&v.pos);
@@ -95,8 +95,8 @@ CoreGeometry GetPlaneGeometry()
         0, 3, 1, // second triangle
     };
 
-    vector<XMFLOAT3*> norms;
-    vector<XMFLOAT3*> pos;
+    std::vector<XMFLOAT3*> norms;
+    std::vector<XMFLOAT3*> pos;
 
     for (auto& v : geo.mVertices) {
         pos.push_back(&v.pos);

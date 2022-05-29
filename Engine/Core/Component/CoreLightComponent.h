@@ -7,7 +7,7 @@ class CoreLightComponent: public BaseComponent
 public:
 	CoreLightComponent();
 	// Invoke to setup Dear ImGui
-	void OnEditorGUI();
+	void OnEditorGUI(BaseAssetManager* assetManager, BaseResourceManager* resourceManager);
 	// TBD: only support directional light here
 	void SetLightDir(float x, float y, float z);
 

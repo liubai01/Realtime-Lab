@@ -11,7 +11,7 @@ enum class BaseResourceType {
 	RESOURCE_UNKNOWN
 };
 
-string BaseResourceType2String(enum class BaseResourceType& t);
+std::string BaseResourceType2String(enum class BaseResourceType& t);
 
 class BaseResource
 {
@@ -23,12 +23,12 @@ public:
 	BaseResource(ID3D12Device* device, BaseAssetNode* assetNode);
 	virtual ~BaseResource() { };
 
-	string mName;
+	std::string mName;
 	// the UUID of this resource
 	// Remark: one asset could have multiple instances of resource
-	string mUUIDResource;
+	std::string mUUIDResource;
 	// the UUID of corresponding asset (used for serialization)
-	string mUUIDAsset;
+	std::string mUUIDAsset;
 	// for runtime type check of objects
 	BaseResourceType mType;
 

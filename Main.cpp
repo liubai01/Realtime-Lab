@@ -14,8 +14,8 @@ public:
 
     void Start() {
         // textured tower
-        shared_ptr<BaseObject> tower = mNowScene->CreateObject("Wood Tower");
-        shared_ptr<CoreMeshComponent> meshComponent;
+        std::shared_ptr<BaseObject> tower = mNowScene->CreateObject("Wood Tower");
+        std::shared_ptr<CoreMeshComponent> meshComponent;
 
         tower->mTransform.SetPos(0.0f, -3.0f, 0.0f);
 
@@ -36,8 +36,8 @@ public:
         tower->AddComponent(meshComponent);
 
         // light GO
-        shared_ptr<BaseObject> light = mNowScene->CreateObject("Directional Light");
-        shared_ptr<CoreLightComponent> lightComponent = mLightManager->MakeLightComponent();
+        std::shared_ptr<BaseObject> light = mNowScene->CreateObject("Directional Light");
+        std::shared_ptr<CoreLightComponent> lightComponent = mLightManager->MakeLightComponent();
         light->AddComponent(lightComponent);
 
         //json j = lightComponent->Serialize();
@@ -75,7 +75,7 @@ public:
     }
 };
 
-BaseProject* GetProject(const string& projectPath)
+BaseProject* GetProject(const std::string& projectPath)
 {
     BaseProject* proj = new BaseProject(projectPath);
 
@@ -100,7 +100,7 @@ BaseProject* GetProject(const string& projectPath)
 
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPTSTR lpCmdLine, _In_ int nShowCmd)
 {
-    string projectPath = "ExampleProject";
+    std::string projectPath = "ExampleProject";
     BaseProject* proj = GetProject(projectPath);
     
     MyApp app = MyApp(hInstance, proj);

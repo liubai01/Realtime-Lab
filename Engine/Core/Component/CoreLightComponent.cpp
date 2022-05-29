@@ -22,9 +22,9 @@ void CoreLightComponent::SetLightDir(float x, float y, float z)
 	mData.LightDir = { x, y, z, 0.0f };
 }
 
-void CoreLightComponent::OnEditorGUI()
+void CoreLightComponent::OnEditorGUI(BaseAssetManager* assetManager, BaseResourceManager* resourceManager)
 {
-	if (ImGui::TreeNodeEx("Light Component", ImGuiTreeNodeFlags_Framed))
+	if (ImGui::TreeNodeEx("Light Component", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		
 		ImGui::Text("Light Color");

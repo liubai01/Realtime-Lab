@@ -6,8 +6,6 @@
 #include <unordered_map>
 #include "string"
 
-using namespace std;
-
 class BaseResourceManager
 {
 public:
@@ -15,7 +13,7 @@ public:
 	virtual ~BaseResourceManager();
 
 	template<class T>
-	T* LoadByURL(const string& url);
+	T* LoadByURL(const std::string& url);
 
 	void Upload(ID3D12GraphicsCommandList* commandList);
 	void RegisterRuntimeHeap(BaseRuntimeHeap* runtimeHeap);
@@ -24,11 +22,11 @@ public:
 	BaseAssetManager* mAssetManager;
 
 	BaseMainHeap* mMainHeap;
-	unordered_map<string, BaseResource*> mAssetUUID2ResourcePtr;
+	std::unordered_map<std::string, BaseResource*> mAssetUUID2ResourcePtr;
 };
 
 template<class T>
-T* BaseResourceManager::LoadByURL(const string & url)
+T* BaseResourceManager::LoadByURL(const std::string & url)
 {
 	T* ret;
 
@@ -45,7 +43,7 @@ T* BaseResourceManager::LoadByURL(const string & url)
 		return nullptr;
 	}
 
-	unordered_map<string, BaseResource*>::iterator f = mAssetUUID2ResourcePtr.find(node->mUUID);
+	std::unordered_map<std::string, BaseResource*>::iterator f = mAssetUUID2ResourcePtr.find(node->mUUID);
 	// check whether this resource has been requestsed (and cached in mUrl2ResourcePtr)
 	if (f != mAssetUUID2ResourcePtr.end())
 	{

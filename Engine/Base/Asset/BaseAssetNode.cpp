@@ -10,8 +10,6 @@ constexpr auto to_underlying(E e) noexcept
 	return static_cast<std::underlying_type_t<E>>(e);
 }
 
-using namespace std;
-
 int dirExists(const std::string& path)
 {
 	struct stat info;
@@ -30,7 +28,7 @@ inline bool fileExists(const std::string& name) {
 }
 
 
-BaseAssetNode::BaseAssetNode(const string& path, BaseAssetNode* parent)
+BaseAssetNode::BaseAssetNode(const std::string& path, BaseAssetNode* parent)
 {
 	mParentAsset = parent;
 	mSubAssets.clear();
@@ -41,9 +39,9 @@ BaseAssetNode::BaseAssetNode(const string& path, BaseAssetNode* parent)
 }
 
 
-string BaseAssetNode::GetRelativePath()
+std::string BaseAssetNode::GetRelativePath()
 {
-	string ret = "";
+	std::string ret = "";
 
 	if (mParentAsset->mType != BaseAssetType::ASSET_ROOT) {
 		ret = mParentAsset->GetRelativePath() + "\\";
@@ -52,9 +50,9 @@ string BaseAssetNode::GetRelativePath()
 	return ret + mID;
 }
 
-BaseAssetNode* BaseAssetNode::SearchByID(const string ID)
+BaseAssetNode* BaseAssetNode::SearchByID(const std::string ID)
 {
-	for (unique_ptr<BaseAssetNode>& node: mSubAssets)
+	for (std::unique_ptr<BaseAssetNode>& node: mSubAssets)
 	{
 		if (node->mID == ID)
 		{
@@ -96,7 +94,7 @@ void BaseAssetNode::Deserialize(const json& j)
 void BaseAssetNode::SetHidden(bool value)
 {
 	mIsHidden = value;
-	string pathMeta = mFullPath + ".asset";
+	std::string pathMeta = mFullPath + ".asset";
 
 	std::ofstream o(pathMeta);
 	o << std::setw(4) << Serialize() << std::endl;
@@ -107,10 +105,10 @@ bool BaseAssetNode::IsHidden()
 	return mIsHidden;
 }
 
-BaseAssetNode* BaseAssetNode::RegisterAsset(const string path)
+BaseAssetNode* BaseAssetNode::RegisterAsset(const std::string path)
 {
-	unique_ptr<BaseAssetNode> ret = nullptr;
-	string ID = path.substr(path.find_last_of("/\\") + 1);
+	std::unique_ptr<BaseAssetNode> ret = nullptr;
+	std::string ID = path.substr(path.find_last_of("/\\") + 1);
 
 	// the file not exists, return null directly
 	if (!fileExists(path))
@@ -118,13 +116,13 @@ BaseAssetNode* BaseAssetNode::RegisterAsset(const string path)
 		return nullptr;
 	}
 
-	ret = make_unique<BaseAssetNode>(path, this);
+	ret = std::make_unique<BaseAssetNode>(path, this);
 	ret->mID = ID;
 
-	string pathMeta = path + ".asset";
+	std::string pathMeta = path + ".asset";
 
 	// load the metadata if we have assigned it before
-	if (filesystem::exists(pathMeta))
+	if (std::filesystem::exists(pathMeta))
 	{
 		// load meta
 		std::ifstream i(pathMeta);
@@ -148,7 +146,7 @@ BaseAssetNode* BaseAssetNode::RegisterAsset(const string path)
 
 		// if program reaches here, it means that it is a file,
 		// we decide its type by its extension postfix
-		string postfix = ID.substr(ID.find_last_of(".") + 1);
+		std::string postfix = ID.substr(ID.find_last_of(".") + 1);
 
 		// wavefront model
 		if (postfix == "obj")

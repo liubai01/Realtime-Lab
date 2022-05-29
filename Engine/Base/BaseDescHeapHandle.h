@@ -5,7 +5,6 @@
 #include <dxgi1_4.h>
 
 using Microsoft::WRL::ComPtr;
-using namespace std;
 
 // refer to: https://alextardif.com/D3D11To12P2.html
 class BaseDescHeapHandle

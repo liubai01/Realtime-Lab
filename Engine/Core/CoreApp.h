@@ -29,59 +29,59 @@ public:
 
     // The draw context used for rendering phong model of objects
     // *Remark*: right now we use the phong model
-    unique_ptr<CoreDrawDiffuseContext> mDrawContext;
+    std::unique_ptr<CoreDrawDiffuseContext> mDrawContext;
 
     // The edgelight draw context draws the mask of object
     // of interest
-    unique_ptr<CoreDrawEdgeContext> mEdgeLightDrawContext;
+    std::unique_ptr<CoreDrawEdgeContext> mEdgeLightDrawContext;
 
     // The blur draw context blends final edge light with 
     // with the objects
-    unique_ptr<CoreDrawBlurContext> mBlurDrawContext;
+    std::unique_ptr<CoreDrawBlurContext> mBlurDrawContext;
 
     // The Upload command list used for uploading geometries
     // from CPU to GPU
-    unique_ptr<BaseDirectCommandList> mUploadCmdList;
+    std::unique_ptr<BaseDirectCommandList> mUploadCmdList;
 
     // The UI draw CommandList used for drawing Dear ImGUI
     // for the editor
-    unique_ptr<BaseDirectCommandList> mUIDrawCmdList;
+    std::unique_ptr<BaseDirectCommandList> mUIDrawCmdList;
 
     // --- Managers ---
 
     // The light manager aggregates the light information from
     // the active light components
-    unique_ptr<CoreLightManager> mLightManager;
+    std::unique_ptr<CoreLightManager> mLightManager;
     
     // The GUI manager is responsible for the editor GUI
     // based on Dear Im-GUI
-    unique_ptr<CoreGUIManager> mGUIManager;
+    std::unique_ptr<CoreGUIManager> mGUIManager;
 
     // The render texture manager is responsible for the
     // render target used as a texture, all render textures
     // should be allocated from here
-    unique_ptr<CoreRenderTextureManager> mRenderTextureManager;
+    std::unique_ptr<CoreRenderTextureManager> mRenderTextureManager;
 
     // All meshes should be loaded from the mesh loader
     // Remark: The BaseResourceMesh loaded from resource manager 
     //         could not be used directly in rendering
-    unique_ptr<CoreMeshLoader> mMeshLoader;
+    std::unique_ptr<CoreMeshLoader> mMeshLoader;
 
     // Resource manager load files as handy handles from 
     // asset manager. 
-    unique_ptr<CoreResourceManager> mResourceManager;
+    std::unique_ptr<CoreResourceManager> mResourceManager;
 
     // --- MISCS ---
 
     // The screen covers the whole screen is used for 
     // traverse each pixels of the screen when applying blurring
-    unique_ptr<CoreMeshComponent> mFullScreenPlane;
+    std::unique_ptr<CoreMeshComponent> mFullScreenPlane;
 
     // The scene render texture hold final rendering objects
-    shared_ptr<BaseRenderTexture> mSceneRenderTexture;
+    std::shared_ptr<BaseRenderTexture> mSceneRenderTexture;
     // The edge render texture stores tempororary mask
     // of the object that user selected (shaded it with a bright edge)
-    shared_ptr<BaseRenderTexture> mEdgeRenderTexture;
+    std::shared_ptr<BaseRenderTexture> mEdgeRenderTexture;
   
     CoreApp(HINSTANCE hInstance, BaseProject* proj);
 

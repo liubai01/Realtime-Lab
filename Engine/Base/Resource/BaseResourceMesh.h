@@ -4,8 +4,6 @@
 #include "../BaseGeometry.h"
 #include <vector>
 
-using namespace std;
-
 struct BaseResourceVertex {
 	XMFLOAT3 pos;
 	XMFLOAT3 normal;
@@ -27,7 +25,7 @@ public:
 	BaseResourceMesh(ID3D12Device* device, BaseAssetNode* assetNode);
 	~BaseResourceMesh();
 	
-	vector<BaseResourceGeometry> mGeos;
+	std::vector<BaseResourceGeometry> mGeos;
 
 	// handle override methods of BaseResource
 	void Upload(ID3D12GraphicsCommandList* commandList) { };

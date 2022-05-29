@@ -19,7 +19,6 @@ using namespace DirectX;
 using namespace DirectX::PackedVector;
 
 using Microsoft::WRL::ComPtr;
-using namespace std;
 
 struct BaseCameraConstant {
   XMFLOAT4X4 ViewProj = Identity4x4();
@@ -35,7 +34,7 @@ public:
 	void SetPos(float x, float y, float z);
 	void SetSize(float width, float height);
 
-	void SetRenderTexture(shared_ptr<BaseRenderTexture> renderTexture);
+	void SetRenderTexture(std::shared_ptr<BaseRenderTexture> renderTexture);
 	void SetDepthWrite(bool depthOn);
 
 	void BeginScene(ID3D12GraphicsCommandList* commandList);
@@ -67,6 +66,6 @@ private:
 	bool mDepthOn;
 
 	// render texture
-	shared_ptr<BaseRenderTexture> mRenderTexture;
+	std::shared_ptr<BaseRenderTexture> mRenderTexture;
 };
 

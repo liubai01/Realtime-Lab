@@ -12,7 +12,6 @@
 
 using namespace DirectX;
 using Microsoft::WRL::ComPtr;
-using namespace std;
 
 
 template <class T>
@@ -22,6 +21,6 @@ public:
   // Name for debugging (set the name of resource heap, etc.)
   std::string mName = "Geometry";
 
-  vector<T> mVertices = {};
-  vector<DWORD> mIndices = {};
+  std::vector<T> mVertices = {};
+  std::vector<DWORD> mIndices = {};
 };

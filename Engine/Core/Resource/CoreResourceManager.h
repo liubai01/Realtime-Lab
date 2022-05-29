@@ -8,7 +8,7 @@ class CoreResourceManager: public BaseResourceManager
 public:
 	CoreResourceManager(ID3D12Device* device, BaseAssetManager* assetManager, BaseMainHeap* mainHeap);
 
-	CoreResourceMaterial* CreateMaterial(const string& url);
+	CoreResourceMaterial* CreateMaterial(const std::string& url);
 	void SaveMaterial(CoreResourceMaterial* mat);
 };
 

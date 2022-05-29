@@ -67,7 +67,7 @@ void BaseMesh::UploadVertex(BaseGeometry<T>& geo, ID3D12Device* device, ID3D12Gr
   );
 
   // we can give resource heaps a name so when we debug with the graphics debugger we know what resource we are looking at
-  string name = dout::string_format("%s %s", geo.mName.c_str(), "Vertex Buffer Resource Heap");
+  std::string name = dout::string_format("%s %s", geo.mName.c_str(), "Vertex Buffer Resource Heap");
   std::wstring stemp = std::wstring(name.begin(), name.end());
   mVertexBuffer->SetName(stemp.c_str());
 
@@ -131,8 +131,8 @@ void BaseMesh::UploadIndex(BaseGeometry<T>& geo, ID3D12Device* device, ID3D12Gra
     IID_PPV_ARGS(mIndexBuffer.GetAddressOf()));
 
   // we can give resource heaps a name so when we debug with the graphics debugger we know what resource we are looking at
-  string name = dout::string_format("%s %s", geo.mName.c_str(), " Index Buffer Resource Heap");
-  wstring stemp = std::wstring(name.begin(), name.end());
+  std::string name = dout::string_format("%s %s", geo.mName.c_str(), " Index Buffer Resource Heap");
+  std::wstring stemp = std::wstring(name.begin(), name.end());
   mIndexBuffer->SetName(stemp.c_str());
 
   // create upload heap to upload index buffer

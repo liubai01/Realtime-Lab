@@ -23,20 +23,20 @@ public:
 	// identify the source of this mesh (e.g: asset, primitive, procedural, etc.)
 	CoreMeshComponentType mMeshType;
 	// the UUID of associated asset / id for the primitive (sphere, plane) / ...
-	string mID;
+	std::string mID;
 
-	vector<shared_ptr<CoreGeometry>> mGeo;
-	vector<CoreResourceMaterial*> mMat;
-	vector<unique_ptr<BaseMesh>> mMesh;
+	std::vector<std::shared_ptr<CoreGeometry>> mGeo;
+	std::vector<CoreResourceMaterial*> mMat;
+	std::vector<std::unique_ptr<BaseMesh>> mMesh;
 
 	bool mUploaded;
 
-	CoreMeshComponent(BaseAssetManager* assetManager);
+	CoreMeshComponent();
 	// invoke in the editor to construct Dear ImGUI
-	void OnEditorGUI();
+	void OnEditorGUI(BaseAssetManager* assetManager, BaseResourceManager* resourceManager);
 	
 	void ClearGeometry();
-	void AddGeometry(shared_ptr<CoreGeometry> geo, CoreResourceMaterial* mat=nullptr);
+	void AddGeometry(std::shared_ptr<CoreGeometry> geo, CoreResourceMaterial* mat=nullptr);
 
 	void Upload(ID3D12Device* device, ID3D12GraphicsCommandList* commandList);
 	void Render(ID3D12GraphicsCommandList* commandList, int matRegIdx=-1);
@@ -44,8 +44,5 @@ public:
 	// Serailization
 	json Serialize();
 	void Deserialize(const json& j);
-
-private:
-	BaseAssetManager* mAssetManager;
 };
 

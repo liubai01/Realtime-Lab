@@ -12,7 +12,7 @@ public:
 	static const BaseResourceType ClassResourceType = BaseResourceType::RESOURCE_MATERIAL;
 	static const BaseAssetType ClassAssetType = BaseAssetType::ASSET_MATERIAL;
 
-	unique_ptr<BaseStagedBuffer<CoreMaterialConsts>> mStagedBuffer;
+	std::unique_ptr<BaseStagedBuffer<CoreMaterialConsts>> mStagedBuffer;
 
 	BaseResourceImage* mDiffuseColorTexture;
 	BaseResourceImage* mNormalMapTexture;
@@ -29,7 +29,7 @@ public:
 	json Serialize();
 	void Deserialize(const json& j);
 
-	static void CreateEmpty(const string& path)
+	static void CreateEmpty(const std::string& path)
 	{
 		json j = json{ 
 			{"Kd", {0.8f, 0.8f, 0.8f, 1.0f}},
