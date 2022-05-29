@@ -44,7 +44,7 @@ void CoreInspectorWidget::Update()
 
 	}
 	else {
-		ImGui::TextWrapped("Inspector shows details of selected object.");
+		//ImGui::TextWrapped("Inspector shows details of selected object.");
 	}
 
 

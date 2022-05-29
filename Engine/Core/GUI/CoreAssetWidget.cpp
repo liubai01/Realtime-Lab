@@ -17,7 +17,7 @@ void CoreAssetWidget::Update()
 		ImVec2 vMax = ImGui::GetWindowContentRegionMax();
 
 		static float w = 200.0f;
-		static float h = vMax.y - vMin.y;
+		static float h = vMax.y - vMin.y - 10.0f;
 
 
 		ImGui::BeginChild("child1", ImVec2(w, h), true);
@@ -42,6 +42,13 @@ void CoreAssetWidget::Update()
 
 void CoreAssetWidget::UpdateAssetContentWindow()
 {
+	ImVec2 vMin = ImGui::GetWindowContentRegionMin();
+	ImVec2 vMax = ImGui::GetWindowContentRegionMax();
+	float posX = 0.0f;
+
+	static float iconSize = 120;
+	static float nameTabHeight = 20;
+
 	if (mNowSelectedAssetNodeDir)
 	{
 		for (std::unique_ptr<BaseAssetNode>& assetNode : mNowSelectedAssetNodeDir->mSubAssets)
@@ -50,10 +57,7 @@ void CoreAssetWidget::UpdateAssetContentWindow()
 			{
 				continue;
 			}
-
 			std::string displayName;
-			static float iconSize = 120;
-			static float nameTabHeight = 20;
 
 			// show part of the name if there is no enough space
 			static size_t showCharNum = 10;
@@ -66,7 +70,7 @@ void CoreAssetWidget::UpdateAssetContentWindow()
 			ImGui::BeginGroup();
 			if (assetNode->GetAssetType() == BaseAssetType::ASSET_IMAGE)
 			{
-				BaseResourceImage* img = mResourceManager->LoadByURL<BaseResourceImage>(assetNode->GetRelativePath());
+				BaseResourceImage* img = mResourceManager->LoadByURL<BaseResourceImage>(assetNode->GetURL());
 				ImGui::Image(img->GetImGuiRuntimeID(), ImVec2(iconSize, iconSize));
 
 				if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
@@ -89,6 +93,7 @@ void CoreAssetWidget::UpdateAssetContentWindow()
 					}
 				}
 
+				// manually set a padding of 20.0 pixel (TBD: remove this magic number in the future)
 				ImGui::SetCursorPos(ImVec2(pos.x + 20.0f, pos.y + 20.0f));
 				BaseResourceImage* img = mResourceManager->LoadByURL<BaseResourceImage>("EditorAsset\\icon\\folder.png");
 				ImGui::Image(img->GetImGuiRuntimeID(), ImVec2(iconSize - 40.0f, iconSize - 40.0f));
@@ -96,6 +101,7 @@ void CoreAssetWidget::UpdateAssetContentWindow()
 				ImGui::SetCursorPos(ImVec2(pos.x, pos.y + iconSize));
 
 			} else {
+				// icon fallback
 				ImGui::Button(assetNode->mID.c_str(), ImVec2(iconSize, iconSize));
 				if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
 				{
@@ -108,13 +114,17 @@ void CoreAssetWidget::UpdateAssetContentWindow()
 			}
 
 
-
 			ImGui::Button(displayName.c_str(), ImVec2(iconSize, nameTabHeight));
-
 			ImGui::EndGroup();
 
-			ImGui::SameLine();
-
+			// change to new line if icon reaches the max size
+			posX += iconSize;
+			if (posX + iconSize < vMax.x - vMin.x)
+			{
+				ImGui::SameLine();
+			} else {
+				posX = 0.0f;
+			}
 
 		}
 	}

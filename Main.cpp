@@ -84,6 +84,7 @@ BaseProject* GetProject(const std::string& projectPath)
     node = proj->mAssetManager->RegisterAsset("Wood_Tower_Col.jpg", "ExampleProject\\Asset\\Wood_Tower_Col.jpg");
     node = proj->mAssetManager->RegisterAsset("Wood_Tower_Nor.jpg", "ExampleProject\\Asset\\Wood_Tower_Nor.jpg");
     node = proj->mAssetManager->RegisterAsset("matereials\\Tower.mat", "ExampleProject\\Asset\\matereials\\Tower.mat");
+    node = proj->mAssetManager->RegisterAsset("matereials\\PlainWhite.mat", "ExampleProject\\Asset\\matereials\\PlainWhite.mat");
 
     // Editor resources
     node = proj->mAssetManager->RegisterAsset("EditorAsset", "ExampleProject\\Asset\\EditorAsset");

@@ -32,7 +32,7 @@ public:
 
 	BaseAssetNode* SearchByID(const std::string ID);
 	BaseAssetNode* RegisterAsset(const std::string path);
-	std::string GetRelativePath();
+	std::string GetURL();
 
 	std::vector<std::unique_ptr<BaseAssetNode>> mSubAssets;
 

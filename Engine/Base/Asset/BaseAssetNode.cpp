@@ -39,12 +39,12 @@ BaseAssetNode::BaseAssetNode(const std::string& path, BaseAssetNode* parent)
 }
 
 
-std::string BaseAssetNode::GetRelativePath()
+std::string BaseAssetNode::GetURL()
 {
 	std::string ret = "";
 
 	if (mParentAsset->mType != BaseAssetType::ASSET_ROOT) {
-		ret = mParentAsset->GetRelativePath() + "\\";
+		ret = mParentAsset->GetURL() + "\\";
 	}
 
 	return ret + mID;

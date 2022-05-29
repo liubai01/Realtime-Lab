@@ -36,8 +36,12 @@ json CoreResourceMaterial::Serialize()
 		},
 		{"Ns", mStagedBuffer->mBuffer.mData.Ns},
 		{"isBaseColorTextured", static_cast<int>(mStagedBuffer->mBuffer.mData.isBaseColorTextured)},
+
+		{"BaseColorTextureUUID", mDiffuseColorTexture ? mDiffuseColorTexture->mUUIDAsset : "<empty>"},
 		{"isNormalTextured", static_cast<int>(mStagedBuffer->mBuffer.mData.isNormalTextured)},
-		{"NormalStrength", mStagedBuffer->mBuffer.mData.NormalStrength}
+
+		{"NormalStrength", mStagedBuffer->mBuffer.mData.NormalStrength},
+		{"NormalTextureUUID", mNormalMapTexture ? mNormalMapTexture->mUUIDAsset : "<empty>"}
 	};
 
 	return j;

@@ -13,7 +13,7 @@ BaseAssetManager::BaseAssetManager(const std::string assetRootDirPath)
 
 std::string BaseAssetManager::GetAssetFullPath(BaseAssetNode* node)
 {
-    std::string relPath = node->GetRelativePath();
+    std::string relPath = node->GetURL();
     return std::filesystem::absolute(mRootPath + "\\" + relPath).string();
 }
 

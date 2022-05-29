@@ -153,8 +153,12 @@ void CoreMeshComponent::OnEditorGUI(BaseAssetManager* assetManager, BaseResource
                             {
                                 BaseAssetNode* node = nullptr;
                                 memcpy(&node, payload->Data, sizeof(BaseAssetNode*));
-
-                                // TBD: change the material
+                                
+                                if (node->GetAssetType() == BaseAssetType::ASSET_MATERIAL)
+                                {
+                                    mMat[i] = resourceManager->LoadByURL<CoreResourceMaterial>(node->GetURL());
+                                }
+                                
                             }
 
                             ImGui::EndDragDropTarget();
