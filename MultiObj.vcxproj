@@ -177,8 +177,6 @@
     <ClCompile Include="Engine\Core\CoreGeometry.cpp" />
     <ClCompile Include="Engine\Core\CoreGeometryUtils.cpp" />
     <ClCompile Include="Engine\Core\CoreLightManager.cpp" />
-    <ClCompile Include="Engine\Core\CoreMaterial.cpp" />
-    <ClCompile Include="Engine\Core\CoreMaterialManager.cpp" />
     <ClCompile Include="Engine\Core\CoreMeshLoader.cpp" />
     <ClCompile Include="Engine\Core\CoreRenderTextureManager.cpp" />
     <ClCompile Include="Engine\Core\DrawContext\CoreDrawBlurContext.cpp" />
@@ -202,9 +200,9 @@
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Engine\Base\AssetManager\BaseAssetManager.h" />
-    <ClInclude Include="Engine\Base\AssetManager\BaseAssetMetadata.h" />
-    <ClInclude Include="Engine\Base\AssetManager\BaseAssetNode.h" />
+    <ClInclude Include="Engine\Base\Asset\BaseAssetManager.h" />
+    <ClInclude Include="Engine\Base\Asset\BaseAssetMetadata.h" />
+    <ClInclude Include="Engine\Base\Asset\BaseAssetNode.h" />
     <ClInclude Include="Engine\Base\BaseApp.h" />
     <ClInclude Include="Engine\Base\BaseCamera.h" />
     <ClInclude Include="Engine\Base\BaseDepthRenderTexture.h" />
@@ -238,8 +236,6 @@
     <ClInclude Include="Engine\Core\CoreGeometry.h" />
     <ClInclude Include="Engine\Core\CoreGeometryUtils.h" />
     <ClInclude Include="Engine\Core\CoreLightManager.h" />
-    <ClInclude Include="Engine\Core\CoreMaterial.h" />
-    <ClInclude Include="Engine\Core\CoreMaterialManager.h" />
     <ClInclude Include="Engine\Core\CoreMeshLoader.h" />
     <ClInclude Include="Engine\Core\CoreRenderTextureManager.h" />
     <ClInclude Include="Engine\Core\CoreStructs.h" />

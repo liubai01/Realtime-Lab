@@ -237,15 +237,6 @@
     <ClCompile Include="Engine\Core\CoreLightManager.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Core\CoreMaterial.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Core\CoreMaterialManager.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\Core\CoreMeshLoader.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\ThirdParty\ImGUI\imgui_draw.cpp">
       <Filter>Source Files\ThirdParty\ImGUI</Filter>
     </ClCompile>
@@ -270,19 +261,13 @@
     <ClCompile Include="Engine\DebugOut.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\Core\CoreMeshLoader.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Base\AssetManager\BaseAssetManager.h">
-      <Filter>Header Files\Base\Asset</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Base\AssetManager\BaseAssetMetadata.h">
-      <Filter>Header Files\Base\Asset</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Base\AssetManager\BaseAssetNode.h">
-      <Filter>Header Files\Base\Asset</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Base\Component\BaseComponent.h">
       <Filter>Header Files\Base\Component</Filter>
@@ -413,15 +398,6 @@
     <ClInclude Include="Engine\Core\CoreLightManager.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Core\CoreMaterial.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Core\CoreMaterialManager.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\Core\CoreMeshLoader.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\Core\CoreRenderTextureManager.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
@@ -466,6 +442,18 @@
     </ClInclude>
     <ClInclude Include="Engine\MathUtils.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Base\Asset\BaseAssetNode.h">
+      <Filter>Header Files\Base\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Base\Asset\BaseAssetManager.h">
+      <Filter>Header Files\Base\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Base\Asset\BaseAssetMetadata.h">
+      <Filter>Header Files\Base\Asset</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Core\CoreMeshLoader.h">
+      <Filter>Header Files\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

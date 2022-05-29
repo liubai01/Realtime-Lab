@@ -50,9 +50,11 @@ BaseAssetNode* BaseAssetManager::RegisterAsset(const string url, const string fi
                     return nullptr;
                 }
                 nowAssetNode = nowAssetNode->RegisterAsset(nowFullPath);
+                mUUID2AssetNode[nowAssetNode->mUUID] = nowAssetNode;
             }
             else if (filesystem::is_directory(nowFullPath)) {
                 nowAssetNode = nowAssetNode->RegisterAsset(nowFullPath);
+                mUUID2AssetNode[nowAssetNode->mUUID] = nowAssetNode;
             }
         }
         else {
@@ -92,6 +94,7 @@ BaseAssetNode* BaseAssetManager::RegisterAsset(const string url, const string fi
 
     // register the file
     nowAssetNode = nowAssetNode->RegisterAsset(nowFullPath);
+    mUUID2AssetNode[nowAssetNode->mUUID] = nowAssetNode;
 
     return nowAssetNode;
 }
@@ -138,4 +141,16 @@ BaseAssetNode* BaseAssetManager::LoadAsset(const string url)
     }
 
     return nowAssetNode;
+}
+
+BaseAssetNode* BaseAssetManager::LoadAssetByUUID(const string uuid)
+{
+    auto f = mUUID2AssetNode.find(uuid);
+
+    if (f != mUUID2AssetNode.end())
+    {
+        return f->second;
+    }
+
+    return nullptr;
 }

@@ -9,8 +9,6 @@ CoreApp::CoreApp(HINSTANCE hInstance, BaseProject* proj) : BaseApp(hInstance, pr
 {
     mUploadCmdList = make_unique<BaseDirectCommandList>(mDevice.Get());
     mUIDrawCmdList = make_unique<BaseDirectCommandList>(mDevice.Get());
-
-    mMaterialManager = make_unique<CoreMaterialManager>(mDevice.Get(), mMainHeap);
     mLightManager = make_unique<CoreLightManager>(mDevice.Get());
 
     mLightManager->RegisterMainHandle(mMainHeap);
@@ -25,8 +23,11 @@ CoreApp::CoreApp(HINSTANCE hInstance, BaseProject* proj) : BaseApp(hInstance, pr
     mEdgeRenderTexture = mRenderTextureManager->AllocateRenderTexture();
     mEdgeRenderTexture->SetClearColor({0.0f, 0.0f, 0.0f, 0.0f});
 
+    // TBD: the generation of primitives should be moved in mesh loader
     shared_ptr<CoreGeometry> planeGeo = make_shared<CoreGeometry>(GetPlaneGeometry());
-    mFullScreenPlane = make_unique<CoreMeshComponent>();
+    mFullScreenPlane = make_unique<CoreMeshComponent>(mProject->mAssetManager);
+    mFullScreenPlane->mMeshType = CoreMeshComponentType::PRIMITIVE_COMPONENT;
+    mFullScreenPlane->mID = "<plane>";
     mFullScreenPlane->AddGeometry(planeGeo);
 
     mMainCamera->SetRenderTexture(mSceneRenderTexture);
@@ -40,7 +41,7 @@ CoreApp::CoreApp(HINSTANCE hInstance, BaseProject* proj) : BaseApp(hInstance, pr
     // Edge Light Blur Draw Context
     mBlurDrawContext = make_unique<CoreDrawBlurContext>(mDevice.Get());
 
-    mMeshLoader = make_unique<CoreMeshLoader>(&*mMaterialManager);
+    mMeshLoader = make_unique<CoreMeshLoader>(mProject->mAssetManager);
 }
 
 void CoreApp::Start() 
@@ -63,7 +64,6 @@ void CoreApp::Render()
   mLightManager->Update();
 
   // Register Runtime Heap
-  mMaterialManager->RegisterRuntimeHandle(mRuntimeHeap);
   mLightManager->RegisterRuntimeHandle(mRuntimeHeap);
   mGOManager->DispatchTransformUpload(mRuntimeHeap);
   mMainCamera->RegisterRuntimeHandle(mRuntimeHeap);
@@ -86,7 +86,7 @@ void CoreApp::Render()
 void CoreApp::BeforeUpdate()
 {
     mGUIManager->Update();
-    //ImGui::ShowDemoWindow();
+    ImGui::ShowDemoWindow();
 }
 
 void CoreApp::UploadGeometry()
@@ -254,17 +254,24 @@ void CoreApp::RenderObjects()
                     auto& mat = com->mMat[i];
                     auto& geo = com->mGeo[i];
 
-                    commandList->SetGraphicsRootDescriptorTable(2, mat->GetRuntimeHandle().GetGPUHandle());
-
-                    if (mat->mBuffer.mData.isBaseColorTextured)
+                    if (mat)
                     {
-                        commandList->SetGraphicsRootDescriptorTable(4, mat->mDiffuseColorTexture->mRuntimeHandle.GetGPUHandle());
+                        commandList->SetGraphicsRootDescriptorTable(2, mat->mRuntimeHandle.GetGPUHandle());
+
+                        if (mat->mStagedBuffer->mBuffer.mData.isBaseColorTextured)
+                        {
+                            commandList->SetGraphicsRootDescriptorTable(4, mat->mDiffuseColorTexture->mRuntimeHandle.GetGPUHandle());
+                        }
+                        
+                        if (mat->mStagedBuffer->mBuffer.mData.isNormalTextured)
+                        {
+                            commandList->SetGraphicsRootDescriptorTable(5, mat->mNormalMapTexture->mRuntimeHandle.GetGPUHandle());
+                        }
+                    } else {
+                        CoreResourceMaterial* defaultMat = mResourceManager->LoadByURL<CoreResourceMaterial>("EditorAsset\\Default.mat");
+                        commandList->SetGraphicsRootDescriptorTable(2, defaultMat->mRuntimeHandle.GetGPUHandle());
                     }
                     
-                    if (mat->mBuffer.mData.isNormalTextured)
-                    {
-                        commandList->SetGraphicsRootDescriptorTable(5, mat->mNormalMapTexture->mRuntimeHandle.GetGPUHandle());
-                    }
 
                     D3D12_INDEX_BUFFER_VIEW ibView = mesh->mIndexBufferView;
                     D3D12_VERTEX_BUFFER_VIEW vbView = mesh->mVertexBufferView;

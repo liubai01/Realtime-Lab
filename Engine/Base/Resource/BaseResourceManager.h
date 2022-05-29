@@ -63,7 +63,7 @@ T* BaseResourceManager::LoadByURL(const string & url)
 		mDevice,
 		node
 	);
-
+	
 	mAssetUUID2ResourcePtr[node->mUUID] = ret;
 
 	// register on the main heap

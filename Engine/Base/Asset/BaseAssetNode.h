@@ -13,6 +13,7 @@ enum class BaseAssetType {
 	ASSET_OBJ,
 	ASSET_FOLDER,
 	ASSET_MATERIAL,
+	ASSET_FONT,
 	ASSET_UNKNOWN
 };
 
@@ -25,8 +26,11 @@ public:
 	string mID; // the name
 	string mFullPath;
 	
+	
 	BaseAssetType GetAssetType();
 	void SetAssetType(BaseAssetType astType);
+	void SetHidden(bool value);
+	bool IsHidden();
 
 	BaseAssetNode* SearchByID(const string ID);
 	BaseAssetNode* RegisterAsset(const string path);
@@ -40,5 +44,6 @@ public:
 private:
 	BaseAssetType mType;
 	BaseAssetNode* mParentAsset;
+	bool mIsHidden;
 };
 

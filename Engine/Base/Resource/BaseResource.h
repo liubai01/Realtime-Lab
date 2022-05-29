@@ -40,6 +40,8 @@ public:
 	virtual void RegisterMainHandle(BaseMainHeap* heap) = 0;
 	virtual void RegisterRuntimeHandle(BaseRuntimeHeap* heap) = 0;
 
+	virtual void ReleaseMainHandle(BaseMainHeap* heap);
+
 	BaseDescHeapHandle mMainHandle;
 	BaseDescHeapHandle mRuntimeHandle;
 

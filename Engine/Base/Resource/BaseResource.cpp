@@ -38,3 +38,12 @@ string BaseResourceType2String(enum class BaseResourceType& t)
 
     return "<ResourceType::UNKNOWN>";
 }
+
+
+void BaseResource::ReleaseMainHandle(BaseMainHeap* heap)
+{
+    if (mIsRuntimeResource)
+    {
+        heap->FreeHeapHandle(mMainHandle);
+    }
+}

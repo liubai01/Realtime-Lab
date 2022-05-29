@@ -46,6 +46,11 @@ void CoreAssetWidget::UpdateAssetContentWindow()
 	{
 		for (unique_ptr<BaseAssetNode>& assetNode : mNowSelectedAssetNodeDir->mSubAssets)
 		{
+			if (assetNode->IsHidden()) 
+			{
+				continue;
+			}
+
 			string displayName;
 			static float iconSize = 120;
 			static float nameTabHeight = 20;
@@ -73,8 +78,24 @@ void CoreAssetWidget::UpdateAssetContentWindow()
 					ImGui::Text(assetNode->mID.c_str());
 					ImGui::EndDragDropSource();
 				}
-			}
-			else {
+			} else if (assetNode->GetAssetType() == BaseAssetType::ASSET_FOLDER) {
+				ImVec2 pos = ImGui::GetCursorPos();
+				if (ImGui::Selectable(assetNode->mID.c_str(), false, ImGuiSelectableFlags_AllowDoubleClick, ImVec2(iconSize, iconSize)))
+				{
+					ImGuiIO& io = ImGui::GetIO();
+					if (io.MouseDoubleClicked[0])
+					{
+						mNowSelectedAssetNodeDir = assetNode.get();
+					}
+				}
+
+				ImGui::SetCursorPos(ImVec2(pos.x + 20.0f, pos.y + 20.0f));
+				BaseResourceImage* img = mResourceManager->LoadByURL<BaseResourceImage>("EditorAsset\\icon\\folder.png");
+				ImGui::Image(img->GetImGuiRuntimeID(), ImVec2(iconSize - 40.0f, iconSize - 40.0f));
+
+				ImGui::SetCursorPos(ImVec2(pos.x, pos.y + iconSize));
+
+			} else {
 				ImGui::Button(assetNode->mID.c_str(), ImVec2(iconSize, iconSize));
 				if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
 				{
@@ -105,7 +126,7 @@ void CoreAssetWidget::DFSConstructExploererNode(BaseAssetNode* nowNode)
 	int cnt = 0;
 	for (unique_ptr<BaseAssetNode>& assetNode : nowNode->mSubAssets)
 	{
-		if (assetNode->GetAssetType() == BaseAssetType::ASSET_FOLDER)
+		if (assetNode->GetAssetType() == BaseAssetType::ASSET_FOLDER && !assetNode->IsHidden())
 		{
 			++cnt;
 		}
@@ -131,7 +152,7 @@ void CoreAssetWidget::DFSConstructExploererNode(BaseAssetNode* nowNode)
 		{
 			for (unique_ptr<BaseAssetNode>& assetNode :nowNode->mSubAssets)
 			{
-				if (assetNode->GetAssetType() == BaseAssetType::ASSET_FOLDER)
+				if (assetNode->GetAssetType() == BaseAssetType::ASSET_FOLDER && !assetNode->IsHidden())
 				{
 					DFSConstructExploererNode(assetNode.get());
 				}

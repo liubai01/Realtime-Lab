@@ -24,12 +24,14 @@ public:
         BaseResourceImage* colorTexture = mResourceManager->LoadByURL<BaseResourceImage>("Wood_Tower_Col.jpg");
         BaseResourceImage* normalTexture = mResourceManager->LoadByURL<BaseResourceImage>("Wood_Tower_Nor.jpg");
 
+        CoreResourceMaterial* towerMat = mResourceManager->LoadByURL<CoreResourceMaterial>("matereials\\Tower.mat");
+        meshComponent->mMat[0] = towerMat;
         meshComponent->mMat[0]->SetDiffuseColorTextured(colorTexture);
         meshComponent->mMat[0]->SetNormalTextured(normalTexture);
         meshComponent->mMat[0]->SetNormalStrength(0.2f);
 
-        //json j = meshComponent->Serialize();
-        //dout::printf("%s", j.dump().c_str());
+        json j = meshComponent->Serialize();
+        dout::printf("Mesh Component %s\n", j.dump().c_str());
 
         tower->AddComponent(meshComponent);
 
@@ -42,8 +44,6 @@ public:
         //lightComponent->Deserialize(j);
 
         mMainCamera->SetPos(10.0f, 10.0f, -10.0f);
-
-        //mResourceManager->CreateMaterial("Example.mat");
     }
 
     void Update()
@@ -83,7 +83,17 @@ BaseProject* GetProject(const string& projectPath)
     BaseAssetNode* node = proj->mAssetManager->RegisterAsset("models\\WoodTower.obj", "ExampleProject\\Asset\\models\\WoodTower.obj");
     node = proj->mAssetManager->RegisterAsset("Wood_Tower_Col.jpg", "ExampleProject\\Asset\\Wood_Tower_Col.jpg");
     node = proj->mAssetManager->RegisterAsset("Wood_Tower_Nor.jpg", "ExampleProject\\Asset\\Wood_Tower_Nor.jpg");
-    node = proj->mAssetManager->RegisterAsset("Example.mat", "ExampleProject\\Asset\\Example.mat");
+    node = proj->mAssetManager->RegisterAsset("matereials\\Tower.mat", "ExampleProject\\Asset\\matereials\\Tower.mat");
+
+    // Editor resources
+    node = proj->mAssetManager->RegisterAsset("EditorAsset", "ExampleProject\\Asset\\EditorAsset");
+    node->SetHidden(true); // forbid users to modify resources under editor asset
+    // The editor font
+    node = proj->mAssetManager->RegisterAsset("EditorAsset\\Cousine-Regular.ttf", "ExampleProject\\Asset\\EditorAsset\\Cousine-Regular.ttf");
+    // The default material
+    node = proj->mAssetManager->RegisterAsset("EditorAsset\\Default.mat", "ExampleProject\\Asset\\EditorAsset\\Default.mat");
+    // Editor icons
+    node = proj->mAssetManager->RegisterAsset("EditorAsset\\icon\\folder.png", "ExampleProject\\Asset\\EditorAsset\\icon\\folder.png");
 
     return proj;
 }

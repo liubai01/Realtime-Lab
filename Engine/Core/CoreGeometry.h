@@ -10,19 +10,9 @@ struct CoreVertex {
   XMFLOAT3 bitangent;
 };
 
-enum class CoreGeometryType {
-    GEO_UNKNOWN,
-    GEO_ASSET,
-    GEO_PRIMITIVE
-};
-
-
 class CoreGeometry : public BaseGeometry<CoreVertex>
 {
 public:
-    CoreGeometryType mGeoType;
-    string mID;
-
     CoreGeometry();
 
     void ComputeNormal();

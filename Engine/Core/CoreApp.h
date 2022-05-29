@@ -6,7 +6,6 @@
 #include "../Base/BaseGeometry.h"
 #include "../Base/BaseUploadHeap.h"
 #include "../Base/BaseDirectCommandList.h"
-#include "CoreMaterialManager.h"
 #include "CoreLightManager.h"
 #include "CoreRenderTextureManager.h"
 #include "Resource/CoreResourceManager.h"
@@ -49,9 +48,6 @@ public:
     unique_ptr<BaseDirectCommandList> mUIDrawCmdList;
 
     // --- Managers ---
-
-    // TBD: include material manager into the resource manager
-    unique_ptr<CoreMaterialManager> mMaterialManager;
 
     // The light manager aggregates the light information from
     // the active light components

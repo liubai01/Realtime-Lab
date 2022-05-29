@@ -37,6 +37,7 @@ BaseAssetNode::BaseAssetNode(const string& path, BaseAssetNode* parent)
 	mType = BaseAssetType::ASSET_UNKNOWN;
 	mUUID = uuid::generate_uuid();
 	mFullPath = path;
+	mIsHidden = false;
 }
 
 
@@ -78,7 +79,8 @@ json BaseAssetNode::Serialize()
 {
 	json ret = json{ 
 		{"AssetType", to_underlying(mType)}, 
-		{"UUID", mUUID}
+		{"UUID", mUUID},
+		{"IsHidden", static_cast<int>(mIsHidden)}
 	};
 
 	return ret;
@@ -88,6 +90,21 @@ void BaseAssetNode::Deserialize(const json& j)
 {
 	j.at("AssetType").get_to(mType);
 	j.at("UUID").get_to(mUUID);
+	mIsHidden = j.at("IsHidden").get<int>() == 1;
+}
+
+void BaseAssetNode::SetHidden(bool value)
+{
+	mIsHidden = value;
+	string pathMeta = mFullPath + ".asset";
+
+	std::ofstream o(pathMeta);
+	o << std::setw(4) << Serialize() << std::endl;
+}
+
+bool BaseAssetNode::IsHidden()
+{
+	return mIsHidden;
 }
 
 BaseAssetNode* BaseAssetNode::RegisterAsset(const string path)
@@ -120,7 +137,12 @@ BaseAssetNode* BaseAssetNode::RegisterAsset(const string path)
 		// if the path points to a directory, register it
 		if (dirExists(path)) {
 			ret->mType = BaseAssetType::ASSET_FOLDER;
+
+			std::ofstream o(pathMeta);
+			o << std::setw(4) << ret->Serialize() << std::endl;
+
 			mSubAssets.push_back(move(ret));
+
 			return mSubAssets.back().get();
 		}
 
@@ -142,6 +164,10 @@ BaseAssetNode* BaseAssetNode::RegisterAsset(const string path)
 		else if (postfix == "mat")
 		{
 			ret->mType = BaseAssetType::ASSET_MATERIAL;
+		}
+		else if (postfix == ".ttf")
+		{
+			ret->mType = BaseAssetType::ASSET_FONT;
 		}
 		// unknown
 		else {

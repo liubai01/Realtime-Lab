@@ -39,10 +39,7 @@ BaseResourceManager::~BaseResourceManager()
 		// resource image gets the runtime handle
 		if (resource)
 		{
-			if (resource->mIsRuntimeResource)
-			{
-				mMainHeap->FreeHeapHandle(resource->mMainHandle);
-			}
+			resource->ReleaseMainHandle(mMainHeap);
 			delete resource;
 			item.second = nullptr;
 		}

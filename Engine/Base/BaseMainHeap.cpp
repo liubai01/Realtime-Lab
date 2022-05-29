@@ -26,7 +26,7 @@ BaseMainHeap::~BaseMainHeap()
 {
   if (mActiveHandleCount != 0)
   {
-    dout::printf("[BaseMainHeap] Descriptor heap is free when there is still handle inside.");
+    dout::printf("[BaseMainHeap] Descriptor heap is free when there is still handle inside.\n");
   }
 }
 
@@ -46,7 +46,7 @@ BaseDescHeapHandle BaseMainHeap::GetNewHeapHandle()
   }
   else
   {
-    dout::printf("[BaseMainHeap] Ran out of dynamic descriptor heap handles, need to increase heap size.");
+    dout::printf("[BaseMainHeap] Ran out of dynamic descriptor heap handles, need to increase heap size.\n");
   }
 
   BaseDescHeapHandle newHandle;
@@ -65,7 +65,7 @@ void BaseMainHeap::FreeHeapHandle(BaseDescHeapHandle handle)
 
   if (mActiveHandleCount == 0)
   {
-    dout::printf("[BaseMainHeap] Freeing heap handles when there should be none left");
+    dout::printf("[BaseMainHeap] Freeing heap handles when there should be none left.\n");
   }
   mActiveHandleCount--;
 }

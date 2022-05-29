@@ -26,8 +26,7 @@ public:
 
 	BaseResourceMesh(ID3D12Device* device, BaseAssetNode* assetNode);
 	~BaseResourceMesh();
-
-	string mAssetUUID;
+	
 	vector<BaseResourceGeometry> mGeos;
 
 	// handle override methods of BaseResource

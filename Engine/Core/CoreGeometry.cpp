@@ -8,8 +8,6 @@
 
 CoreGeometry::CoreGeometry()
 {
-    mGeoType = CoreGeometryType::GEO_UNKNOWN;
-    mID = "<undefined>";
 }
 
 void CoreGeometry::ComputeNormal()

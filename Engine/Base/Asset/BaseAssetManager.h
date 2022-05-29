@@ -11,11 +11,17 @@ class BaseAssetManager
 
 public:
 	BaseAssetManager(const string assetRootDirPath);
+	// TBD: rewrite those api's by const& string, and const&& string)
 	BaseAssetNode* RegisterAsset(const string url, const string filepath);
 	BaseAssetNode* LoadAsset(const string url);
+	BaseAssetNode* LoadAssetByUUID(const string uuid);
+
 	string GetAssetFullPath(BaseAssetNode* node);
 
 	unique_ptr<BaseAssetNode> mRootAsset;
 	string mRootPath;
+
+private:
+	unordered_map<string, BaseAssetNode*> mUUID2AssetNode;
 };
 

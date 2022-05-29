@@ -20,6 +20,12 @@ public:
 	CoreResourceMaterial(ID3D12Device* device, BaseAssetNode* assetNode);
 	~CoreResourceMaterial();
 
+	void SetDiffuseColorTextured(BaseResourceImage* diffuseColorTexture);
+	void SetNormalTextured(BaseResourceImage* normalMapTexture);
+	void SetNormalStrength(float val);
+
+	void ReleaseMainHandle(BaseMainHeap* heap);
+
 	json Serialize();
 	void Deserialize(const json& j);
 

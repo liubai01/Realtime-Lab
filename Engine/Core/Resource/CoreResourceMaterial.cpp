@@ -11,6 +11,8 @@ CoreResourceMaterial::CoreResourceMaterial(ID3D12Device* device, BaseAssetNode* 
 	std::ifstream i(assetNode->mFullPath);
 	json j;
 	i >> j;
+
+	mIsRuntimeResource = true;
 	
 	Deserialize(j);
 }
@@ -86,3 +88,27 @@ void CoreResourceMaterial::RegisterRuntimeHandle(BaseRuntimeHeap* heap)
 	mStagedBuffer->RegisterRuntimeHandle(heap);
 	mRuntimeHandle = mStagedBuffer->GetRuntimeHandle();
 };
+
+void CoreResourceMaterial::SetDiffuseColorTextured(BaseResourceImage* diffuseColorTexture)
+{
+	mStagedBuffer->mBuffer.mData.isBaseColorTextured = true;
+	mDiffuseColorTexture = diffuseColorTexture;
+}
+
+void CoreResourceMaterial::SetNormalTextured(BaseResourceImage* normalMapTexture)
+{
+	mStagedBuffer->mBuffer.mData.isNormalTextured = true;
+	mNormalMapTexture = normalMapTexture;
+}
+
+void CoreResourceMaterial::SetNormalStrength(float val)
+{
+	mStagedBuffer->mBuffer.mData.NormalStrength = val;
+}
+
+void CoreResourceMaterial::ReleaseMainHandle(BaseMainHeap* heap)
+{
+	// Remark: the handle of the BaseStagedBuffer would be released
+	//         automatically when it is deleted
+	//         we do not manually release here.
+}

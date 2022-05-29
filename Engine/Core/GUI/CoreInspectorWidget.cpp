@@ -62,9 +62,11 @@ void CoreInspectorWidget::UpdateTransformGUI(BaseObject* obj)
 		ImGui::Text("X ");
 		ImGui::SameLine();
 		ImGui::DragFloat("px", &obj->mTransform.mPosition.x, 0.01f, obj->mTransform.mPosition.x - 10.0f, obj->mTransform.mPosition.x + 10.0f, "%.02f");
+
 		ImGui::Text("Y ");
 		ImGui::SameLine();
 		ImGui::DragFloat("py", &obj->mTransform.mPosition.y, 0.01f, obj->mTransform.mPosition.y - 10.0f, obj->mTransform.mPosition.y + 10.0f, "%.02f");
+
 		ImGui::Text("Z ");
 		ImGui::SameLine();
 		ImGui::DragFloat("pz", &obj->mTransform.mPosition.z, 0.01f, obj->mTransform.mPosition.z - 10.0f, obj->mTransform.mPosition.z + 10.0f, "%.02f");
