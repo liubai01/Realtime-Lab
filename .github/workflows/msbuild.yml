@@ -26,14 +26,27 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Add MSBuild to PATH
+      if: startsWith(github.ref, 'refs/tags/')
       uses: microsoft/setup-msbuild@v1.0.2
 
     - name: Restore NuGet packages
+      if: startsWith(github.ref, 'refs/tags/')
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run: nuget restore ${{env.SOLUTION_FILE_PATH}}
 
     - name: Build
+      if: startsWith(github.ref, 'refs/tags/')
       working-directory: ${{env.GITHUB_WORKSPACE}}
       # Add additional options to the MSBuild command line here (like platform or verbosity level).
       # See https://docs.microsoft.com/visualstudio/msbuild/msbuild-command-line-reference
       run: msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}} ${{env.SOLUTION_FILE_PATH}}
+    - name: Package
+      if: startsWith(github.ref, 'refs/tags/')
+      run: 7z a ${GITHUB_REF#refs/tags/}_x64.zip x64
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/')
+      with:
+        body: ${{ github.event.head_commit.message }}
+        files: |
+          ${GITHUB_REF#refs/tags/}_x64.zip
