@@ -42,6 +42,7 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         body: ${{ github.event.head_commit.message }}
-        token: ${{ github.token }}
         files: |
           win10_debug_x64.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
