@@ -14,8 +14,6 @@ env:
   # https://docs.github.com/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
   BUILD_CONFIGURATION: Debug
 
-permissions: read-all|write-all
-
 jobs:
   build:
     runs-on: windows-latest
