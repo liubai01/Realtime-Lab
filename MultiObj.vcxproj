@@ -117,11 +117,15 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PostBuildEvent>
+      <Command>XCOPY "$(ProjectDir)ExampleProject" "$(TargetDir)\ExampleProject\" /E /Y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -140,69 +144,140 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BaseApp.cpp" />
-    <ClCompile Include="BaseDrawContext.cpp" />
-    <ClCompile Include="BaseImage.cpp" />
-    <ClCompile Include="BaseMainHeap.cpp" />
-    <ClCompile Include="BaseRenderingObj.cpp" />
-    <ClCompile Include="BaseUploadHeap.cpp" />
-    <ClCompile Include="Base\BaseCamera.cpp" />
-    <ClCompile Include="DebugOut.cpp" />
-    <ClCompile Include="BaseGeometry.cpp" />
+    <ClCompile Include="Engine\Base\Asset\BaseAssetManager.cpp" />
+    <ClCompile Include="Engine\Base\Asset\BaseAssetMetadata.cpp" />
+    <ClCompile Include="Engine\Base\Asset\BaseAssetNode.cpp" />
+    <ClCompile Include="Engine\Base\BaseApp.cpp" />
+    <ClCompile Include="Engine\Base\BaseCamera.cpp" />
+    <ClCompile Include="Engine\Base\BaseDepthRenderTexture.cpp" />
+    <ClCompile Include="Engine\Base\BaseDescHeapHandle.cpp" />
+    <ClCompile Include="Engine\Base\BaseDirectCommandList.cpp" />
+    <ClCompile Include="Engine\Base\BaseDrawContext.cpp" />
+    <ClCompile Include="Engine\Base\BaseGameObjectManager.cpp" />
+    <ClCompile Include="Engine\Base\BaseGeometry.cpp" />
+    <ClCompile Include="Engine\Base\BaseGUIWidget.cpp" />
+    <ClCompile Include="Engine\Base\BaseInterfaceSerializable.cpp" />
+    <ClCompile Include="Engine\Base\BaseMainHeap.cpp" />
+    <ClCompile Include="Engine\Base\BaseObject.cpp" />
+    <ClCompile Include="Engine\Base\BaseProject.cpp" />
+    <ClCompile Include="Engine\Base\BaseRenderTexture.cpp" />
+    <ClCompile Include="Engine\Base\BaseRuntimeHeap.cpp" />
+    <ClCompile Include="Engine\Base\BaseScene.cpp" />
+    <ClCompile Include="Engine\Base\BaseShaderManager.cpp" />
+    <ClCompile Include="Engine\Base\BaseStagedBuffer.cpp" />
+    <ClCompile Include="Engine\Base\BaseTransform.cpp" />
+    <ClCompile Include="Engine\Base\BaseUploadHeap.cpp" />
+    <ClCompile Include="Engine\Base\BaseUUIDGenerator.cpp" />
+    <ClCompile Include="Engine\Base\Component\BaseComponent.cpp" />
+    <ClCompile Include="Engine\Base\Component\BaseMesh.cpp" />
+    <ClCompile Include="Engine\Base\Resource\BaseResource.cpp" />
+    <ClCompile Include="Engine\Base\Resource\BaseResourceImage.cpp" />
+    <ClCompile Include="Engine\Base\Resource\BaseResourceManager.cpp" />
+    <ClCompile Include="Engine\Base\Resource\BaseResourceMesh.cpp" />
+    <ClCompile Include="Engine\Core\Component\CoreLightComponent.cpp" />
+    <ClCompile Include="Engine\Core\Component\CoreMeshComponent.cpp" />
+    <ClCompile Include="Engine\Core\CoreApp.cpp" />
+    <ClCompile Include="Engine\Core\CoreGeometry.cpp" />
+    <ClCompile Include="Engine\Core\CoreGeometryUtils.cpp" />
+    <ClCompile Include="Engine\Core\CoreLightManager.cpp" />
+    <ClCompile Include="Engine\Core\CoreMeshLoader.cpp" />
+    <ClCompile Include="Engine\Core\CoreRenderTextureManager.cpp" />
+    <ClCompile Include="Engine\Core\DrawContext\CoreDrawBlurContext.cpp" />
+    <ClCompile Include="Engine\Core\DrawContext\CoreDrawDiffuseContext.cpp" />
+    <ClCompile Include="Engine\Core\DrawContext\CoreDrawEdgeContext.cpp" />
+    <ClCompile Include="Engine\Core\GUI\CoreAssetWidget.cpp" />
+    <ClCompile Include="Engine\Core\GUI\CoreGUIManager.cpp" />
+    <ClCompile Include="Engine\Core\GUI\CoreHierarchyWidget.cpp" />
+    <ClCompile Include="Engine\Core\GUI\CoreInspectorWidget.cpp" />
+    <ClCompile Include="Engine\Core\GUI\CoreSceneWidget.cpp" />
+    <ClCompile Include="Engine\Core\Resource\CoreResourceManager.cpp" />
+    <ClCompile Include="Engine\Core\Resource\CoreResourceMaterial.cpp" />
+    <ClCompile Include="Engine\DebugOut.cpp" />
+    <ClCompile Include="Engine\ThirdParty\ImGUI\imgui.cpp" />
+    <ClCompile Include="Engine\ThirdParty\ImGUI\imgui_demo.cpp" />
+    <ClCompile Include="Engine\ThirdParty\ImGUI\imgui_draw.cpp" />
+    <ClCompile Include="Engine\ThirdParty\ImGUI\imgui_impl_dx12.cpp" />
+    <ClCompile Include="Engine\ThirdParty\ImGUI\imgui_impl_win32.cpp" />
+    <ClCompile Include="Engine\ThirdParty\ImGUI\imgui_tables.cpp" />
+    <ClCompile Include="Engine\ThirdParty\ImGUI\imgui_widgets.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="MultiObj.cpp" />
-    <ClCompile Include="ShaderManager.cpp" />
-    <ClCompile Include="ThirdParty\ImGUI\imgui.cpp" />
-    <ClCompile Include="ThirdParty\ImGUI\imgui_draw.cpp" />
-    <ClCompile Include="ThirdParty\ImGUI\imgui_impl_dx12.cpp" />
-    <ClCompile Include="ThirdParty\ImGUI\imgui_impl_win32.cpp" />
-    <ClCompile Include="ThirdParty\ImGUI\imgui_tables.cpp" />
-    <ClCompile Include="ThirdParty\ImGUI\imgui_widgets.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BaseApp.h" />
-    <ClInclude Include="BaseDrawContext.h" />
-    <ClInclude Include="BaseImage.h" />
-    <ClInclude Include="BaseMainHeap.h" />
-    <ClInclude Include="BaseRenderingObj.h" />
-    <ClInclude Include="BaseUploadHeap.h" />
-    <ClInclude Include="Base\BaseCamera.h" />
-    <ClInclude Include="d3dx12.h" />
-    <ClInclude Include="DebugOut.h" />
-    <ClInclude Include="BaseGeometry.h" />
-    <ClInclude Include="MathUtils.h" />
-    <ClInclude Include="MultiObj.h" />
+    <ClInclude Include="Engine\Base\Asset\BaseAssetManager.h" />
+    <ClInclude Include="Engine\Base\Asset\BaseAssetMetadata.h" />
+    <ClInclude Include="Engine\Base\Asset\BaseAssetNode.h" />
+    <ClInclude Include="Engine\Base\BaseApp.h" />
+    <ClInclude Include="Engine\Base\BaseCamera.h" />
+    <ClInclude Include="Engine\Base\BaseDepthRenderTexture.h" />
+    <ClInclude Include="Engine\Base\BaseDescHeapHandle.h" />
+    <ClInclude Include="Engine\Base\BaseDirectCommandList.h" />
+    <ClInclude Include="Engine\Base\BaseDrawContext.h" />
+    <ClInclude Include="Engine\Base\BaseGameObjectManager.h" />
+    <ClInclude Include="Engine\Base\BaseGeometry.h" />
+    <ClInclude Include="Engine\Base\BaseGUIWidget.h" />
+    <ClInclude Include="Engine\Base\BaseInterfaceSerializable.h" />
+    <ClInclude Include="Engine\Base\BaseMainHeap.h" />
+    <ClInclude Include="Engine\Base\BaseObject.h" />
+    <ClInclude Include="Engine\Base\BaseProject.h" />
+    <ClInclude Include="Engine\Base\BaseRenderTexture.h" />
+    <ClInclude Include="Engine\Base\BaseRuntimeHeap.h" />
+    <ClInclude Include="Engine\Base\BaseScene.h" />
+    <ClInclude Include="Engine\Base\BaseShaderManager.h" />
+    <ClInclude Include="Engine\Base\BaseStagedBuffer.h" />
+    <ClInclude Include="Engine\Base\BaseTransform.h" />
+    <ClInclude Include="Engine\Base\BaseUploadHeap.h" />
+    <ClInclude Include="Engine\Base\BaseUUIDGenerator.h" />
+    <ClInclude Include="Engine\Base\Component\BaseComponent.h" />
+    <ClInclude Include="Engine\Base\Component\BaseMesh.h" />
+    <ClInclude Include="Engine\Base\Resource\BaseResource.h" />
+    <ClInclude Include="Engine\Base\Resource\BaseResourceImage.h" />
+    <ClInclude Include="Engine\Base\Resource\BaseResourceManager.h" />
+    <ClInclude Include="Engine\Base\Resource\BaseResourceMesh.h" />
+    <ClInclude Include="Engine\Core\Component\CoreLightComponent.h" />
+    <ClInclude Include="Engine\Core\Component\CoreMeshComponent.h" />
+    <ClInclude Include="Engine\Core\CoreApp.h" />
+    <ClInclude Include="Engine\Core\CoreGeometry.h" />
+    <ClInclude Include="Engine\Core\CoreGeometryUtils.h" />
+    <ClInclude Include="Engine\Core\CoreLightManager.h" />
+    <ClInclude Include="Engine\Core\CoreMeshLoader.h" />
+    <ClInclude Include="Engine\Core\CoreRenderTextureManager.h" />
+    <ClInclude Include="Engine\Core\CoreStructs.h" />
+    <ClInclude Include="Engine\Core\DrawContext\CoreDrawBlurContext.h" />
+    <ClInclude Include="Engine\Core\DrawContext\CoreDrawDiffuseContext.h" />
+    <ClInclude Include="Engine\Core\DrawContext\CoreDrawEdgeContext.h" />
+    <ClInclude Include="Engine\Core\GUI\CoreAssetWidget.h" />
+    <ClInclude Include="Engine\Core\GUI\CoreGUIManager.h" />
+    <ClInclude Include="Engine\Core\GUI\CoreHierarchyWidget.h" />
+    <ClInclude Include="Engine\Core\GUI\CoreInspectorWidget.h" />
+    <ClInclude Include="Engine\Core\GUI\CoreSceneWidget.h" />
+    <ClInclude Include="Engine\Core\Resource\CoreResourceManager.h" />
+    <ClInclude Include="Engine\Core\Resource\CoreResourceMaterial.h" />
+    <ClInclude Include="Engine\DebugOut.h" />
+    <ClInclude Include="Engine\MathUtils.h" />
+    <ClInclude Include="Engine\ThirdParty\d3dx12.h" />
+    <ClInclude Include="Engine\ThirdParty\ImGUI\imconfig.h" />
+    <ClInclude Include="Engine\ThirdParty\ImGUI\imgui.h" />
+    <ClInclude Include="Engine\ThirdParty\ImGUI\imgui_impl_dx12.h" />
+    <ClInclude Include="Engine\ThirdParty\ImGUI\imgui_impl_win32.h" />
+    <ClInclude Include="Engine\ThirdParty\ImGUI\imgui_internal.h" />
+    <ClInclude Include="Engine\ThirdParty\ImGUI\imstb_rectpack.h" />
+    <ClInclude Include="Engine\ThirdParty\ImGUI\imstb_textedit.h" />
+    <ClInclude Include="Engine\ThirdParty\ImGUI\imstb_truetype.h" />
+    <ClInclude Include="Engine\ThirdParty\json.h" />
+    <ClInclude Include="Engine\ThirdParty\tiny_obj_loader.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="ShaderManager.h" />
-    <ClInclude Include="ThirdParty\ImGUI\imconfig.h" />
-    <ClInclude Include="ThirdParty\ImGUI\imgui.h" />
-    <ClInclude Include="ThirdParty\ImGUI\imgui_impl_dx12.h" />
-    <ClInclude Include="ThirdParty\ImGUI\imgui_impl_win32.h" />
-    <ClInclude Include="ThirdParty\ImGUI\imgui_internal.h" />
-    <ClInclude Include="ThirdParty\ImGUI\imstb_rectpack.h" />
-    <ClInclude Include="ThirdParty\ImGUI\imstb_textedit.h" />
-    <ClInclude Include="ThirdParty\ImGUI\imstb_truetype.h" />
-    <ClInclude Include="ThirdParty\tiny_obj_loader.h" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="PixelShader.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="VertexShader.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </FxCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="Asset\grass.jpg" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="packages\directxtex_desktop_win10.2022.5.10.1\build\native\directxtex_desktop_win10.targets" Condition="Exists('packages\directxtex_desktop_win10.2022.5.10.1\build\native\directxtex_desktop_win10.targets')" />
+  </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\directxtex_desktop_win10.2022.5.10.1\build\native\directxtex_desktop_win10.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\directxtex_desktop_win10.2022.5.10.1\build\native\directxtex_desktop_win10.targets'))" />
+  </Target>
 </Project>
