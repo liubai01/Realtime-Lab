@@ -19,6 +19,7 @@ permissions:
 
 jobs:
   build:
+    permissions: read-all | write-all
     runs-on: windows-latest
 
     steps:
@@ -36,27 +37,11 @@ jobs:
       # Add additional options to the MSBuild command line here (like platform or verbosity level).
       # See https://docs.microsoft.com/visualstudio/msbuild/msbuild-command-line-reference
       run: msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}} ${{env.SOLUTION_FILE_PATH}}
-    - name: Zipx64
+    - name: Package
       run: 7z a win10_debug_x64.zip x64
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@latest
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Release
+      uses: softprops/action-gh-release@v1
       with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        body: |
-          Automated Release by GitHub Action CI
-        draft: false
-        prerelease: true
-    - name: Upload Release Zip (x64, debug)
-      id: upload-release-asset-x64
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./win10_debug_x64.zip
-        asset_name: win10_debug_x64.zip
-        asset_content_type: application/zip
+        body: ${{ github.event.head_commit.message }}
+        files: |
+          win10_debug_x64.zip
