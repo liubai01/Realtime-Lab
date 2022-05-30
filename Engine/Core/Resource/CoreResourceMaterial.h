@@ -14,8 +14,11 @@ public:
 
 	std::unique_ptr<BaseStagedBuffer<CoreMaterialConsts>> mStagedBuffer;
 
-	BaseResourceImage* mDiffuseColorTexture;
-	BaseResourceImage* mNormalMapTexture;
+	//BaseResourceImage* mDiffuseColorTexture;
+	//BaseResourceImage* mNormalMapTexture;
+
+	std::string mDiffuseColorTextureUUID;
+	std::string mNormalMapTextureUUID;
 
 	CoreResourceMaterial(ID3D12Device* device, BaseAssetNode* assetNode);
 	~CoreResourceMaterial();

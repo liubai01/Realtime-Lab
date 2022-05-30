@@ -1,4 +1,5 @@
 {
+    "BaseColorTextureUUID": "42f712ad-aaf0-4abf-8090-49202393050d",
     "Kd": [
         0.800000011920929,
         0.800000011920929,
@@ -11,8 +12,9 @@
         0.5,
         1.0
     ],
-    "NormalStrength": 1.0,
+    "NormalStrength": 0.20000000298023224,
+    "NormalTextureUUID": "8e16c6e7-6e44-4072-a100-a4fc38dd6b62",
     "Ns": 324.0,
-    "isBaseColorTextured": 0,
-    "isNormalTextured": 0
+    "isBaseColorTextured": 1,
+    "isNormalTextured": 1
 }

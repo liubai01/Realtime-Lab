@@ -26,13 +26,12 @@ public:
 
         CoreResourceMaterial* towerMat = mResourceManager->LoadByURL<CoreResourceMaterial>("matereials\\Tower.mat");
         meshComponent->mMat[0] = towerMat;
-        meshComponent->mMat[0]->SetDiffuseColorTextured(colorTexture);
-        meshComponent->mMat[0]->SetNormalTextured(normalTexture);
-        meshComponent->mMat[0]->SetNormalStrength(0.2f);
+        //meshComponent->mMat[0]->SetDiffuseColorTextured(colorTexture);
+        //meshComponent->mMat[0]->SetNormalTextured(normalTexture);
+        //meshComponent->mMat[0]->SetNormalStrength(0.2f);
 
-        json j = meshComponent->Serialize();
-        dout::printf("Mesh Component %s\n", j.dump().c_str());
-
+        //json j = meshComponent->Serialize();
+        //dout::printf("Mesh Component %s\n", j.dump().c_str());
         tower->AddComponent(meshComponent);
 
         // light GO
@@ -95,6 +94,7 @@ BaseProject* GetProject(const std::string& projectPath)
     node = proj->mAssetManager->RegisterAsset("EditorAsset\\Default.mat", "ExampleProject\\Asset\\EditorAsset\\Default.mat");
     // Editor icons
     node = proj->mAssetManager->RegisterAsset("EditorAsset\\icon\\folder.png", "ExampleProject\\Asset\\EditorAsset\\icon\\folder.png");
+    node = proj->mAssetManager->RegisterAsset("EditorAsset\\icon\\material.png", "ExampleProject\\Asset\\EditorAsset\\icon\\material.png");
 
     return proj;
 }

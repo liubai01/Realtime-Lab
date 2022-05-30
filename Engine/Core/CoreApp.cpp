@@ -260,12 +260,18 @@ void CoreApp::RenderObjects()
 
                         if (mat->mStagedBuffer->mBuffer.mData.isBaseColorTextured)
                         {
-                            commandList->SetGraphicsRootDescriptorTable(4, mat->mDiffuseColorTexture->mRuntimeHandle.GetGPUHandle());
+                            BaseAssetNode* node = mProject->mAssetManager->LoadAssetByUUID(mat->mDiffuseColorTextureUUID);
+                            BaseResourceImage* img = mResourceManager->LoadByURL<BaseResourceImage>(node->GetURL());
+
+                            commandList->SetGraphicsRootDescriptorTable(4, img->mRuntimeHandle.GetGPUHandle());
                         }
                         
                         if (mat->mStagedBuffer->mBuffer.mData.isNormalTextured)
                         {
-                            commandList->SetGraphicsRootDescriptorTable(5, mat->mNormalMapTexture->mRuntimeHandle.GetGPUHandle());
+                            BaseAssetNode* node = mProject->mAssetManager->LoadAssetByUUID(mat->mNormalMapTextureUUID);
+                            BaseResourceImage* img = mResourceManager->LoadByURL<BaseResourceImage>(node->GetURL());
+
+                            commandList->SetGraphicsRootDescriptorTable(5, img->mRuntimeHandle.GetGPUHandle());
                         }
                     } else {
                         CoreResourceMaterial* defaultMat = mResourceManager->LoadByURL<CoreResourceMaterial>("EditorAsset\\Default.mat");

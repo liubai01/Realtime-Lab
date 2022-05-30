@@ -99,7 +99,37 @@ void CoreAssetWidget::UpdateAssetContentWindow()
 				ImGui::Image(img->GetImGuiRuntimeID(), ImVec2(iconSize - 40.0f, iconSize - 40.0f));
 
 				ImGui::SetCursorPos(ImVec2(pos.x, pos.y + iconSize));
+			}
+			else if (assetNode->GetAssetType() == BaseAssetType::ASSET_MATERIAL) {
+				ImVec2 pos = ImGui::GetCursorPos();
+				if (ImGui::Selectable(assetNode->mID.c_str(), false, ImGuiSelectableFlags_AllowDoubleClick, ImVec2(iconSize, iconSize)))
+				{
+					ImGuiIO& io = ImGui::GetIO();
+					if (io.MouseDoubleClicked[0])
+					{
+						// TBD
+					}
+				}
 
+				if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+				{
+					BaseAssetNode* ptr = assetNode.get();
+					ImGui::SetDragDropPayload("ASSET_CELL", &ptr, sizeof(BaseAssetNode*));
+
+					// manually set a padding of 20.0 pixel (TBD: remove this magic number in the future)
+					BaseResourceImage* img = mResourceManager->LoadByURL<BaseResourceImage>("EditorAsset\\icon\\material.png");
+					ImGui::Image(img->GetImGuiRuntimeID(), ImVec2(iconSize, iconSize));
+
+					ImGui::Text(assetNode->mID.c_str());
+					ImGui::EndDragDropSource();
+				}
+
+				// manually set a padding of 20.0 pixel (TBD: remove this magic number in the future)
+				ImGui::SetCursorPos(ImVec2(pos.x + 20.0f, pos.y + 20.0f));
+				BaseResourceImage* img = mResourceManager->LoadByURL<BaseResourceImage>("EditorAsset\\icon\\material.png");
+				ImGui::Image(img->GetImGuiRuntimeID(), ImVec2(iconSize - 40.0f, iconSize - 40.0f));
+
+				ImGui::SetCursorPos(ImVec2(pos.x, pos.y + iconSize));
 			} else {
 				// icon fallback
 				ImGui::Button(assetNode->mID.c_str(), ImVec2(iconSize, iconSize));

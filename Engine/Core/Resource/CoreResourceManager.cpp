@@ -3,8 +3,12 @@
 
 CoreResourceManager::CoreResourceManager(ID3D12Device* device, BaseAssetManager* assetManager, BaseMainHeap* mainHeap): BaseResourceManager(device, assetManager, mainHeap)
 {
+	// Remark: push editor resources to GPU
 	// load default material
 	LoadByURL<CoreResourceMaterial>("EditorAsset\\Default.mat");
+
+	LoadByURL<BaseResourceImage>("EditorAsset\\icon\\material.png");
+	LoadByURL<BaseResourceImage>("EditorAsset\\icon\\folder.png");
 }
 
 CoreResourceMaterial* CoreResourceManager::CreateMaterial(const std::string& url)

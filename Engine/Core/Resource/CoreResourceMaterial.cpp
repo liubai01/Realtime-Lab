@@ -1,5 +1,6 @@
 #include "CoreResourceMaterial.h"
 
+
 CoreResourceMaterial::CoreResourceMaterial(ID3D12Device* device, BaseAssetNode* assetNode) : BaseResource(device, assetNode)
 {
 	// for runtime deciding the acutal type of BaseResource base pointer
@@ -13,6 +14,9 @@ CoreResourceMaterial::CoreResourceMaterial(ID3D12Device* device, BaseAssetNode* 
 	i >> j;
 
 	mIsRuntimeResource = true;
+
+	mDiffuseColorTextureUUID = "<empty>";
+	mNormalMapTextureUUID = "<empty>";
 	
 	Deserialize(j);
 }
@@ -37,11 +41,11 @@ json CoreResourceMaterial::Serialize()
 		{"Ns", mStagedBuffer->mBuffer.mData.Ns},
 		{"isBaseColorTextured", static_cast<int>(mStagedBuffer->mBuffer.mData.isBaseColorTextured)},
 
-		{"BaseColorTextureUUID", mDiffuseColorTexture ? mDiffuseColorTexture->mUUIDAsset : "<empty>"},
+		{"BaseColorTextureUUID", mDiffuseColorTextureUUID},
 		{"isNormalTextured", static_cast<int>(mStagedBuffer->mBuffer.mData.isNormalTextured)},
 
 		{"NormalStrength", mStagedBuffer->mBuffer.mData.NormalStrength},
-		{"NormalTextureUUID", mNormalMapTexture ? mNormalMapTexture->mUUIDAsset : "<empty>"}
+		{"NormalTextureUUID", mNormalMapTextureUUID}
 	};
 
 	return j;
@@ -66,7 +70,11 @@ void CoreResourceMaterial::Deserialize(const json& j)
 	j.at("Ns").get_to(mStagedBuffer->mBuffer.mData.Ns);
 
 	mStagedBuffer->mBuffer.mData.isBaseColorTextured = j.at("isBaseColorTextured").get<int>() == 1;
+	mDiffuseColorTextureUUID = j.at("BaseColorTextureUUID").get<std::string>();
+
 	mStagedBuffer->mBuffer.mData.isNormalTextured = j.at("isNormalTextured").get<int>() == 1;
+	mNormalMapTextureUUID = j.at("NormalTextureUUID").get<std::string>();
+
 	j.at("NormalStrength").get_to(mStagedBuffer->mBuffer.mData.NormalStrength);
 }
 
@@ -96,13 +104,13 @@ void CoreResourceMaterial::RegisterRuntimeHandle(BaseRuntimeHeap* heap)
 void CoreResourceMaterial::SetDiffuseColorTextured(BaseResourceImage* diffuseColorTexture)
 {
 	mStagedBuffer->mBuffer.mData.isBaseColorTextured = true;
-	mDiffuseColorTexture = diffuseColorTexture;
+	mDiffuseColorTextureUUID = diffuseColorTexture->mUUIDAsset;
 }
 
 void CoreResourceMaterial::SetNormalTextured(BaseResourceImage* normalMapTexture)
 {
 	mStagedBuffer->mBuffer.mData.isNormalTextured = true;
-	mNormalMapTexture = normalMapTexture;
+	mNormalMapTextureUUID = normalMapTexture->mUUIDAsset;
 }
 
 void CoreResourceMaterial::SetNormalStrength(float val)
