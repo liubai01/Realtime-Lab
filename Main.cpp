@@ -13,7 +13,7 @@ public:
     
 
     void Start() {
-        // textured tower
+        // textured tower 
         std::shared_ptr<BaseObject> tower = mNowScene->CreateObject("Wood Tower");
         std::shared_ptr<CoreMeshComponent> meshComponent;
 
