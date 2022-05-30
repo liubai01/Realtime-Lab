@@ -4,7 +4,7 @@
 class CoreDrawEdgeContext : public BaseDrawContext
 {
 public:
-	CoreDrawEdgeContext(ID3D12Device* device);
+	CoreDrawEdgeContext(ID3D12Device* device, BaseAssetManager* assetManager);
 
 	void InitPSO();
 };

@@ -2,14 +2,25 @@
 #include "../DebugOut.h"
 #include <D3DCompiler.h>
 
-#pragma region Shader
-
-void BaseShaderManager::AddVertexShader(std::string name, std::string entry)
+BaseShaderManager::BaseShaderManager(BaseAssetManager* assetManager)
 {
-    std::unique_ptr<BaseShader> vertexShader(new BaseShader());
+    mAssetManager = assetManager;
+}
+
+void BaseShaderManager::AddVertexShader(std::string url, std::string entry)
+{
+    std::unique_ptr<BaseShader> vertexShader = std::make_unique<BaseShader>();
     ComPtr<ID3DBlob> errorBuff;
 
-    std::wstring stemp = std::wstring(name.begin(), name.end());
+    BaseAssetNode* node = mAssetManager->LoadAsset(url);
+    // shader file not found
+    if (!node)
+    {
+        dout::printf("[BaseShaderManager] Shader %s not found!", url.c_str());
+        return;
+    }
+
+    std::wstring stemp = std::wstring(node->mFullPath.begin(), node->mFullPath.end());
     HRESULT hr = D3DCompileFromFile(stemp.c_str(),
         nullptr,
         nullptr,
@@ -21,46 +32,54 @@ void BaseShaderManager::AddVertexShader(std::string name, std::string entry)
         errorBuff.GetAddressOf()
     );
 
-  if (FAILED(hr))
-  {
-    OutputDebugStringA((char*)errorBuff->GetBufferPointer());
-    return;
-  }
+    if (FAILED(hr))
+    {
+        OutputDebugStringA((char*)errorBuff->GetBufferPointer());
+        return;
+    }
 
-  vertexShader->byteCode.BytecodeLength = vertexShader->shaderCPU->GetBufferSize();
-  vertexShader->byteCode.pShaderBytecode = vertexShader->shaderCPU->GetBufferPointer();
+    vertexShader->byteCode.BytecodeLength = vertexShader->shaderCPU->GetBufferSize();
+    vertexShader->byteCode.pShaderBytecode = vertexShader->shaderCPU->GetBufferPointer();
 
-  mName2Shader["VS"] = move(vertexShader);
+    mName2Shader["VS"] = move(vertexShader);
 }
 
-void BaseShaderManager::AddPixelShader(std::string name, std::string entry)
+void BaseShaderManager::AddPixelShader(std::string url, std::string entry)
 {
-    std::unique_ptr<BaseShader> pixelShader(new BaseShader());
-  ComPtr<ID3DBlob> errorBuff;
+    std::unique_ptr<BaseShader> pixelShader = std::make_unique<BaseShader>();
+    ComPtr<ID3DBlob> errorBuff;
 
-  std::wstring stemp = std::wstring(name.begin(), name.end());
-  HRESULT hr = D3DCompileFromFile(stemp.c_str(),
-    nullptr,
-    nullptr,
-    entry.c_str(),
-    "ps_5_0",
-    D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
-    0,
-    pixelShader->shaderCPU.GetAddressOf(),
-    &errorBuff
-  );
+    BaseAssetNode* node = mAssetManager->LoadAsset(url);
+    // shader file not found
+    if (!node)
+    {
+        dout::printf("[BaseShaderManager] Shader %s not found!", url.c_str());
+        return;
+    }
 
-  if (FAILED(hr))
-  {
-    OutputDebugStringA((char*)errorBuff->GetBufferPointer());
-    return;
-  }
+    std::wstring stemp = std::wstring(node->mFullPath.begin(), node->mFullPath.end());
+    HRESULT hr = D3DCompileFromFile(stemp.c_str(),
+        nullptr,
+        nullptr,
+        entry.c_str(),
+        "ps_5_0",
+        D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
+        0,
+        pixelShader->shaderCPU.GetAddressOf(),
+        &errorBuff
+    );
 
-  D3D12_SHADER_BYTECODE pixelShaderBytecode = {};
-  pixelShader->byteCode.BytecodeLength = pixelShader->shaderCPU->GetBufferSize();
-  pixelShader->byteCode.pShaderBytecode = pixelShader->shaderCPU->GetBufferPointer();
+    if (FAILED(hr))
+    {
+        OutputDebugStringA((char*)errorBuff->GetBufferPointer());
+        return;
+    }
 
-  mName2Shader["PS"] = move(pixelShader);
+    D3D12_SHADER_BYTECODE pixelShaderBytecode = {};
+    pixelShader->byteCode.BytecodeLength = pixelShader->shaderCPU->GetBufferSize();
+    pixelShader->byteCode.pShaderBytecode = pixelShader->shaderCPU->GetBufferPointer();
+
+    mName2Shader["PS"] = move(pixelShader);
 }
 
 D3D12_SHADER_BYTECODE BaseShaderManager::VertexShaderByteCode()
@@ -88,5 +107,3 @@ D3D12_SHADER_BYTECODE BaseShaderManager::PixelShaderByteCode()
   dout::printf("Pixel shader not found! Please Use BaseApp::PixelShaderByteCode to find it. \n");
   return { nullptr, 0 };
 }
-
-#pragma endregion

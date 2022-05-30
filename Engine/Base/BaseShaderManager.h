@@ -6,6 +6,7 @@
 #include <string>
 #include <memory>
 #include <unordered_map>
+#include "Asset/BaseAssetManager.h"
 
 using Microsoft::WRL::ComPtr;
 
@@ -19,13 +20,16 @@ public:
 class BaseShaderManager
 {
 public:
-  void AddVertexShader(std::string name, std::string entry = "main");
-  void AddPixelShader(std::string name, std::string entry = "main");
+	BaseShaderManager(BaseAssetManager* assetManager);
 
-  D3D12_SHADER_BYTECODE VertexShaderByteCode();
-  D3D12_SHADER_BYTECODE PixelShaderByteCode();
+	void AddVertexShader(std::string url, std::string entry = "main");
+	void AddPixelShader(std::string url, std::string entry = "main");
+
+	D3D12_SHADER_BYTECODE VertexShaderByteCode();
+	D3D12_SHADER_BYTECODE PixelShaderByteCode();
 
 private:
+	BaseAssetManager* mAssetManager;
 	std::unordered_map<std::string, std::unique_ptr<BaseShader>> mName2Shader;
 };
 

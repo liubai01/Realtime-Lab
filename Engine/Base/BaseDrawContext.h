@@ -9,6 +9,7 @@
 #include <DirectXMath.h>
 #include <DirectXPackedVector.h>
 #include "BaseShaderManager.h"
+#include "Asset/BaseAssetManager.h"
 #include "../DebugOut.h"
 #include "../MathUtils.h"
 #include "BaseDirectCommandList.h"
@@ -26,9 +27,9 @@ public:
 	std::vector<std::vector<D3D12_DESCRIPTOR_RANGE>> mDescTableRanges;
 
 	std::vector<D3D12_INPUT_ELEMENT_DESC> mInputLayout;
-	BaseShaderManager mShader;
+	std::unique_ptr<BaseShaderManager> mShader;
   
-	BaseDrawContext(ID3D12Device* device);
+	BaseDrawContext(ID3D12Device* device, BaseAssetManager* assetManager);
 
 	void Init();
 	void ResetCommandList();

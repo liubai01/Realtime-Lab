@@ -7,6 +7,7 @@
 
 CoreApp::CoreApp(HINSTANCE hInstance, BaseProject* proj) : BaseApp(hInstance, proj)
 {
+    // ..
     mUploadCmdList = std::make_unique<BaseDirectCommandList>(mDevice.Get());
     mUIDrawCmdList = std::make_unique<BaseDirectCommandList>(mDevice.Get());
     mLightManager = std::make_unique<CoreLightManager>(mDevice.Get());
@@ -32,14 +33,16 @@ CoreApp::CoreApp(HINSTANCE hInstance, BaseProject* proj) : BaseApp(hInstance, pr
 
     mMainCamera->SetRenderTexture(mSceneRenderTexture);
 
+    // --- Draw Contexts ---
+
     // Diffuse Draw Context
-    mDrawContext = std::make_unique<CoreDrawDiffuseContext>(mDevice.Get());
+    mDrawContext = std::make_unique<CoreDrawDiffuseContext>(mDevice.Get(), mProject->mAssetManager);
 
     // Edge Light Draw Context
-    mEdgeLightDrawContext = std::make_unique<CoreDrawEdgeContext>(mDevice.Get());
+    mEdgeLightDrawContext = std::make_unique<CoreDrawEdgeContext>(mDevice.Get(), mProject->mAssetManager);
 
     // Edge Light Blur Draw Context
-    mBlurDrawContext = std::make_unique<CoreDrawBlurContext>(mDevice.Get());
+    mBlurDrawContext = std::make_unique<CoreDrawBlurContext>(mDevice.Get(), mProject->mAssetManager);
 
     mMeshLoader = std::make_unique<CoreMeshLoader>();
 }

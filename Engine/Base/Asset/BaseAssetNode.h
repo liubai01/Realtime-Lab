@@ -12,6 +12,7 @@ enum class BaseAssetType {
 	ASSET_FOLDER,
 	ASSET_MATERIAL,
 	ASSET_FONT,
+	ASSET_SHADER,
 	ASSET_UNKNOWN
 };
 

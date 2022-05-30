@@ -163,7 +163,13 @@ BaseAssetNode* BaseAssetNode::RegisterAsset(const std::string path)
 		{
 			ret->mType = BaseAssetType::ASSET_MATERIAL;
 		}
-		else if (postfix == ".ttf")
+		// shader
+		else if (postfix == "hlsl")
+		{
+			ret->mType = BaseAssetType::ASSET_SHADER;
+		}
+		// font
+		else if (postfix == "ttf")
 		{
 			ret->mType = BaseAssetType::ASSET_FONT;
 		}

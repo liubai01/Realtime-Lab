@@ -1,12 +1,12 @@
 #include "CoreDrawDiffuseContext.h"
 #include "../CoreGeometry.h"
 
-CoreDrawDiffuseContext::CoreDrawDiffuseContext(ID3D12Device* device) : BaseDrawContext(device)
+CoreDrawDiffuseContext::CoreDrawDiffuseContext(ID3D12Device* device, BaseAssetManager* assetManager) : BaseDrawContext(device, assetManager)
 {
     mInputLayout = CoreGeometry::GetInputLayout();
 
-    mShader.AddVertexShader("Engine\\Core\\Shader\\DiffuseVertexShader.hlsl");
-    mShader.AddPixelShader("Engine\\Core\\Shader\\DiffusePixelShader.hlsl");
+    mShader->AddVertexShader("EditorAsset\\shader\\DiffuseVertexShader.hlsl");
+    mShader->AddPixelShader("EditorAsset\\shader\\DiffusePixelShader.hlsl");
 
     // 0, b0: transform buffer
     // 1, b1: camera buffer
@@ -42,8 +42,8 @@ void CoreDrawDiffuseContext::InitPSO()
     D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};   // a structure to define a pso
     psoDesc.InputLayout = mInputLayoutDesc;            // the structure describing our input layout
     psoDesc.pRootSignature = mRootSig.Get();           // the root signature that describes the input data this pso needs
-    psoDesc.VS = mShader.VertexShaderByteCode();               // structure describing where to find the vertex shader bytecode and how large it is
-    psoDesc.PS = mShader.PixelShaderByteCode();                // same as VS but for pixel shader
+    psoDesc.VS = mShader->VertexShaderByteCode();               // structure describing where to find the vertex shader bytecode and how large it is
+    psoDesc.PS = mShader->PixelShaderByteCode();                // same as VS but for pixel shader
     psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE; // type of topology we are drawing
     psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;        // format of the render target
     psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;

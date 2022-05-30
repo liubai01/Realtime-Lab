@@ -4,7 +4,7 @@
 class CoreDrawDiffuseContext: public BaseDrawContext
 {
 public:
-	CoreDrawDiffuseContext(ID3D12Device* device);
+	CoreDrawDiffuseContext(ID3D12Device* device, BaseAssetManager* assetManager);
 
 	void InitPSO();
 };

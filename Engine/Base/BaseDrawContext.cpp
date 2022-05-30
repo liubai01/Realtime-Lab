@@ -1,10 +1,11 @@
-#include "BaseDrawContext.h"
+﻿#include "BaseDrawContext.h"
 
-BaseDrawContext::BaseDrawContext(ID3D12Device* device) : BaseDirectCommandList(device)
+BaseDrawContext::BaseDrawContext(ID3D12Device* device, BaseAssetManager* assetManager) : BaseDirectCommandList(device)
 {
   mHasInited = false;
   mDevice = device;
   mInputLayoutDesc = {};
+  mShader = std::make_unique<BaseShaderManager>(assetManager);
 
   mCBVRegCnt = 0;
   mSRVRegCnt = 0;
@@ -100,8 +101,8 @@ void BaseDrawContext::InitPSO()
   D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};   // a structure to define a pso
   psoDesc.InputLayout = mInputLayoutDesc;            // the structure describing our input layout
   psoDesc.pRootSignature = mRootSig.Get();           // the root signature that describes the input data this pso needs
-  psoDesc.VS = mShader.VertexShaderByteCode();               // structure describing where to find the vertex shader bytecode and how large it is
-  psoDesc.PS = mShader.PixelShaderByteCode();                // same as VS but for pixel shader
+  psoDesc.VS = mShader->VertexShaderByteCode();               // structure describing where to find the vertex shader bytecode and how large it is
+  psoDesc.PS = mShader->PixelShaderByteCode();                // same as VS but for pixel shader
   psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE; // type of topology we are drawing
   psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;        // format of the render target
   psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;

@@ -1,12 +1,12 @@
 #include "CoreDrawBlurContext.h"
 #include "../CoreGeometry.h"
 
-CoreDrawBlurContext::CoreDrawBlurContext(ID3D12Device* device) : BaseDrawContext(device)
+CoreDrawBlurContext::CoreDrawBlurContext(ID3D12Device* device, BaseAssetManager* assetManager) : BaseDrawContext(device, assetManager)
 {
     mInputLayout = CoreGeometry::GetInputLayout();
 
-    mShader.AddVertexShader("Engine\\Core\\Shader\\EdgeLightBlurVertexShader.hlsl");
-    mShader.AddPixelShader("Engine\\Core\\Shader\\EdgeLightBlurPixelShader.hlsl");
+    mShader->AddVertexShader("EditorAsset\\shader\\EdgeLightBlurVertexShader.hlsl");
+    mShader->AddPixelShader("EditorAsset\\shader\\EdgeLightBlurPixelShader.hlsl");
 
     AppendSRVDescTable(); // previous texture
     AppendCBVDescTable(); // camera constant (window size)
@@ -45,8 +45,8 @@ void CoreDrawBlurContext::InitPSO()
     D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};   // a structure to define a pso
     psoDesc.InputLayout = mInputLayoutDesc;            // the structure describing our input layout
     psoDesc.pRootSignature = mRootSig.Get();           // the root signature that describes the input data this pso needs
-    psoDesc.VS = mShader.VertexShaderByteCode();               // structure describing where to find the vertex shader bytecode and how large it is
-    psoDesc.PS = mShader.PixelShaderByteCode();                // same as VS but for pixel shader
+    psoDesc.VS = mShader->VertexShaderByteCode();               // structure describing where to find the vertex shader bytecode and how large it is
+    psoDesc.PS = mShader->PixelShaderByteCode();                // same as VS but for pixel shader
     psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE; // type of topology we are drawing
     psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;        // format of the render target
     //psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;

@@ -95,6 +95,13 @@ BaseProject* GetProject(const std::string& projectPath)
     // Editor icons
     node = proj->mAssetManager->RegisterAsset("EditorAsset\\icon\\folder.png", "ExampleProject\\Asset\\EditorAsset\\icon\\folder.png");
     node = proj->mAssetManager->RegisterAsset("EditorAsset\\icon\\material.png", "ExampleProject\\Asset\\EditorAsset\\icon\\material.png");
+    // Shaders
+    node = proj->mAssetManager->RegisterAsset("EditorAsset\\shader\\DiffusePixelShader.hlsl", "ExampleProject\\Asset\\EditorAsset\\shader\\DiffusePixelShader.hlsl");
+    node = proj->mAssetManager->RegisterAsset("EditorAsset\\shader\\DiffuseVertexShader.hlsl", "ExampleProject\\Asset\\EditorAsset\\shader\\DiffuseVertexShader.hlsl");
+    node = proj->mAssetManager->RegisterAsset("EditorAsset\\shader\\EdgeLightBlurPixelShader.hlsl", "ExampleProject\\Asset\\EditorAsset\\shader\\EdgeLightBlurPixelShader.hlsl");
+    node = proj->mAssetManager->RegisterAsset("EditorAsset\\shader\\EdgeLightBlurVertexShader.hlsl", "ExampleProject\\Asset\\EditorAsset\\shader\\EdgeLightBlurVertexShader.hlsl");
+    node = proj->mAssetManager->RegisterAsset("EditorAsset\\shader\\EdgeLightPixelShader.hlsl", "ExampleProject\\Asset\\EditorAsset\\shader\\EdgeLightPixelShader.hlsl");
+    node = proj->mAssetManager->RegisterAsset("EditorAsset\\shader\\EdgeLightVertexShader.hlsl", "ExampleProject\\Asset\\EditorAsset\\shader\\EdgeLightVertexShader.hlsl");
 
     return proj;
 }
