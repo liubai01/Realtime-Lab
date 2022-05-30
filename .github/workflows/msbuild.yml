@@ -19,7 +19,7 @@ permissions:
 
 jobs:
   build:
-    permissions: read-all | write-all
+    permissions: read-all|write-all
     runs-on: windows-latest
 
     steps:
