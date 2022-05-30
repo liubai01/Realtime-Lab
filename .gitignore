@@ -364,3 +364,6 @@ FodyWeavers.xsd
 
 # the imgui.ini cache file
 imgui.ini
+
+# make sure include everything in example project
+!ExampleProject/**
