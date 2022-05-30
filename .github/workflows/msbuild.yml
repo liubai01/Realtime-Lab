@@ -37,10 +37,10 @@ jobs:
       # See https://docs.microsoft.com/visualstudio/msbuild/msbuild-command-line-reference
       run: msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}} ${{env.SOLUTION_FILE_PATH}}
     - name: Package
-      run: 7z a ${GITHUB_REF#refs/tags/}_x64.zip x64
+      run: 7z a win10_debug_x64.zip x64
     - name: Release
       uses: softprops/action-gh-release@v1
       with:
         body: ${{ github.event.head_commit.message }}
         files: |
-          ${GITHUB_REF#refs/tags/}_x64.zip
+          win10_debug_x64.zip
