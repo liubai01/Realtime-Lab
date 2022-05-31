@@ -4,7 +4,7 @@
 
 This is an open-source toy renderer based on DirectX12 in an early development stage. The project plan could be seen [here](https://github.com/liubai01/Realtime-Lab/projects/1).
 
-![](docs/figs/banner.png)
+![](docs/figs/banner_4x.png)
 
 **Latest version**: Alpha v0.0.1
 
