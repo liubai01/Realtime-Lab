@@ -11,6 +11,32 @@ BaseAssetManager::BaseAssetManager(const std::string assetRootDirPath)
     mRootAsset->SetAssetType(BaseAssetType::ASSET_ROOT);
 }
 
+void BaseAssetManager::ScanAssetRecursive(BaseAssetNode* node, std::filesystem::path path)
+{
+    for (const auto& entry: std::filesystem::directory_iterator(path))
+    {
+        std::filesystem::path pathEntry(entry);
+
+        if (pathEntry.extension() == ".asset") {
+            std::string pathEntryOfAsset = pathEntry.string();
+            pathEntryOfAsset = pathEntryOfAsset.substr(0, pathEntryOfAsset.size() - 6); // remove .asset
+            BaseAssetNode* subNode = node->RegisterAsset(pathEntryOfAsset);
+            mUUID2AssetNode[subNode->mUUID] = subNode;
+
+            // Recursively register asset if it is a folder
+            if (subNode->GetAssetType() == BaseAssetType::ASSET_FOLDER)
+            {
+                ScanAssetRecursive(subNode, pathEntryOfAsset);
+            }
+        }
+    }
+}
+
+void BaseAssetManager::ScanAssetFromRoot()
+{
+    ScanAssetRecursive(mRootAsset.get(), mRootPath);
+}
+
 std::string BaseAssetManager::GetAssetFullPath(BaseAssetNode* node)
 {
     std::string relPath = node->GetURL();

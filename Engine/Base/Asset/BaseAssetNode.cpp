@@ -110,6 +110,9 @@ bool BaseAssetNode::IsHidden()
 	return mIsHidden;
 }
 
+// Remark: When invoke this function to register asset,
+//         make sure that its ID has been added into assetManager.
+//         It is basically an internal API for the AssetManager, not for users.
 BaseAssetNode* BaseAssetNode::RegisterAsset(const std::string path)
 {
 	std::unique_ptr<BaseAssetNode> ret = nullptr;

@@ -9,6 +9,9 @@ class BaseAssetManager
 
 public:
 	BaseAssetManager(const std::string assetRootDirPath);
+
+	void ScanAssetFromRoot();
+
 	// TBD: rewrite those api's by const& string, and const&& string)
 	BaseAssetNode* RegisterAsset(const std::string url, const std::string filepath);
 	BaseAssetNode* LoadAsset(const std::string url);
@@ -21,5 +24,6 @@ public:
 
 private:
 	std::unordered_map<std::string, BaseAssetNode*> mUUID2AssetNode;
+	void ScanAssetRecursive(BaseAssetNode* node, std::filesystem::path path);
 };
 

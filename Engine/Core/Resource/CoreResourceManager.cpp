@@ -7,8 +7,12 @@ CoreResourceManager::CoreResourceManager(ID3D12Device* device, BaseAssetManager*
 	// load default material
 	LoadByURL<CoreResourceMaterial>("EditorAsset\\Default.mat");
 
-	LoadByURL<BaseResourceImage>("EditorAsset\\icon\\material.png");
-	LoadByURL<BaseResourceImage>("EditorAsset\\icon\\folder.png");
+	// load all icons
+	BaseAssetNode* iconDir = mAssetManager->LoadAsset("EditorAsset\\icon");
+	for (std::unique_ptr<BaseAssetNode>& iconNode : iconDir->mSubAssets)
+	{
+		LoadByURL<BaseResourceImage>(iconNode->GetURL());
+	}
 }
 
 CoreResourceMaterial* CoreResourceManager::CreateMaterial(const std::string& url)
