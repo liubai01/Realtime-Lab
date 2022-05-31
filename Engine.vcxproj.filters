@@ -91,6 +91,12 @@
     <Filter Include="Source Files\Base\Asset">
       <UniqueIdentifier>{914cabc9-d558-4e79-ade4-1c4d59a5cf70}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Util">
+      <UniqueIdentifier>{b3d7c56f-0004-4d65-9db2-13b128024d60}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Base\Util">
+      <UniqueIdentifier>{43749cfa-7bc9-4024-8db7-990e1a793469}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -263,6 +269,9 @@
     </ClCompile>
     <ClCompile Include="Engine\Core\CoreMeshLoader.cpp">
       <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Base\Util\FileOpenUtils.cpp">
+      <Filter>Source Files\Base\Util</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -454,6 +463,9 @@
     </ClInclude>
     <ClInclude Include="Engine\Core\CoreMeshLoader.h">
       <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Base\Util\FileOpenUtils.h">
+      <Filter>Header Files\Util</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

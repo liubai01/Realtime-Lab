@@ -119,8 +119,10 @@ BaseProject* GetProject(const std::string& projectPath)
     return proj;
 }
 
+
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPTSTR lpCmdLine, _In_ int nShowCmd)
 {
+
     std::string projectPath = "ExampleProject";
     BaseProject* proj = GetProject(projectPath);
 

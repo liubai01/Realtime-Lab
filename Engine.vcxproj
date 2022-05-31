@@ -174,6 +174,7 @@
     <ClCompile Include="Engine\Base\Resource\BaseResourceImage.cpp" />
     <ClCompile Include="Engine\Base\Resource\BaseResourceManager.cpp" />
     <ClCompile Include="Engine\Base\Resource\BaseResourceMesh.cpp" />
+    <ClCompile Include="Engine\Base\Util\FileOpenUtils.cpp" />
     <ClCompile Include="Engine\Core\Component\CoreLightComponent.cpp" />
     <ClCompile Include="Engine\Core\Component\CoreMeshComponent.cpp" />
     <ClCompile Include="Engine\Core\CoreApp.cpp" />
@@ -233,6 +234,7 @@
     <ClInclude Include="Engine\Base\Resource\BaseResourceImage.h" />
     <ClInclude Include="Engine\Base\Resource\BaseResourceManager.h" />
     <ClInclude Include="Engine\Base\Resource\BaseResourceMesh.h" />
+    <ClInclude Include="Engine\Base\Util\FileOpenUtils.h" />
     <ClInclude Include="Engine\Core\Component\CoreLightComponent.h" />
     <ClInclude Include="Engine\Core\Component\CoreMeshComponent.h" />
     <ClInclude Include="Engine\Core\CoreApp.h" />
