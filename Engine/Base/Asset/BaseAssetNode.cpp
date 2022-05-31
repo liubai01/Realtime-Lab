@@ -43,6 +43,11 @@ std::string BaseAssetNode::GetURL()
 {
 	std::string ret = "";
 
+	if (!mParentAsset)
+	{
+		return ret;
+	}
+
 	if (mParentAsset->mType != BaseAssetType::ASSET_ROOT) {
 		ret = mParentAsset->GetURL() + "\\";
 	}

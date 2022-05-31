@@ -18,7 +18,6 @@ private:
 
 	BaseAssetManager* mAssetManager;
 	BaseResourceManager* mResourceManager;
-
 	BaseAssetNode* mNowSelectedAssetNodeDir;
 };
 

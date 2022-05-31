@@ -1,11 +1,57 @@
 #include "CoreAssetWidget.h"
-
+#include "../../Base/Util/FileOpenUtils.h"
 
 CoreAssetWidget::CoreAssetWidget(BaseAssetManager* assetManager, BaseResourceManager* resourceManager)
 {
 	mAssetManager = assetManager;
 	mResourceManager = resourceManager;
 	mNowSelectedAssetNodeDir = mAssetManager->mRootAsset.get();
+}
+
+template<typename T>
+void ifLeftClickCurrentWindow(T&& lambda) {
+	ImGuiIO& io = ImGui::GetIO();
+	int count = IM_ARRAYSIZE(io.MouseDown);
+
+	ImVec2 vMin = ImGui::GetWindowContentRegionMin();
+	ImVec2 vMax = ImGui::GetWindowContentRegionMax();
+
+	vMin.x += ImGui::GetWindowPos().x;
+	vMin.y += ImGui::GetWindowPos().y;
+	vMax.x += ImGui::GetWindowPos().x;
+	vMax.y += ImGui::GetWindowPos().y;
+
+	// if left click in hierarchy menu, reset mNowSelectObjectPtr by default
+	if (ImGui::IsMouseClicked(0))
+	{
+		if (io.MousePos.x > vMin.x && io.MousePos.x < vMax.x && io.MousePos.y > vMin.y && io.MousePos.y < vMax.y)
+		{
+			lambda();
+		}
+	}
+}
+
+template<typename T>
+void ifRightClickCurrentWindow(T&& lambda) {
+	ImGuiIO& io = ImGui::GetIO();
+	int count = IM_ARRAYSIZE(io.MouseDown);
+
+	ImVec2 vMin = ImGui::GetWindowContentRegionMin();
+	ImVec2 vMax = ImGui::GetWindowContentRegionMax();
+
+	vMin.x += ImGui::GetWindowPos().x;
+	vMin.y += ImGui::GetWindowPos().y;
+	vMax.x += ImGui::GetWindowPos().x;
+	vMax.y += ImGui::GetWindowPos().y;
+
+	// if left click in hierarchy menu, reset mNowSelectObjectPtr by default
+	if (ImGui::IsMouseClicked(1))
+	{
+		if (io.MousePos.x > vMin.x && io.MousePos.x < vMax.x && io.MousePos.y > vMin.y && io.MousePos.y < vMax.y)
+		{
+			lambda();
+		}
+	}
 }
 
 void CoreAssetWidget::Update()
@@ -71,7 +117,15 @@ void CoreAssetWidget::UpdateAssetContentWindow()
 			if (assetNode->GetAssetType() == BaseAssetType::ASSET_IMAGE)
 			{
 				BaseResourceImage* img = mResourceManager->LoadByURL<BaseResourceImage>(assetNode->GetURL());
-				ImGui::Image(img->GetImGuiRuntimeID(), ImVec2(iconSize, iconSize));
+				ImTextureID imgID = img->GetImGuiRuntimeID();
+
+				if (imgID)
+				{
+					ImGui::Image(imgID, ImVec2(iconSize, iconSize));
+				} else {
+					ImGui::Selectable("Loading...", false, ImGuiSelectableFlags_None,ImVec2(iconSize, iconSize));
+				}
+				
 
 				if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
 				{
@@ -158,6 +212,39 @@ void CoreAssetWidget::UpdateAssetContentWindow()
 
 		}
 	}
+
+	ifRightClickCurrentWindow(
+		[&]() {
+			ImGui::OpenPopup("RightClickAssetContent");
+		}
+	);
+
+	if (ImGui::BeginPopup("RightClickAssetContent"))
+	{
+		if (ImGui::Button("Load Asset"))
+		{
+			std::string filePath = ShowFileWindow();
+			std::string fileName = filePath.substr(filePath.find_last_of("/\\") + 1);
+			std::string toPath = mNowSelectedAssetNodeDir->GetURL();
+
+			if (toPath.length() > 0)
+			{
+				toPath += "\\" + fileName;
+			}
+			else {
+				// the base URL is root
+				toPath = fileName;
+			}
+
+			mAssetManager->RegisterAsset(
+				toPath, 
+				filePath
+			);
+
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
 }
 
 void CoreAssetWidget::DFSConstructExploererNode(BaseAssetNode* nowNode)
@@ -220,25 +307,11 @@ void CoreAssetWidget::DFSConstructExploererNode(BaseAssetNode* nowNode)
 
 void CoreAssetWidget::UpdateAssetExplorerWindow()
 {
-	ImGuiIO& io = ImGui::GetIO();
-	int count = IM_ARRAYSIZE(io.MouseDown);
-
-	ImVec2 vMin = ImGui::GetWindowContentRegionMin();
-	ImVec2 vMax = ImGui::GetWindowContentRegionMax();
-
-	vMin.x += ImGui::GetWindowPos().x;
-	vMin.y += ImGui::GetWindowPos().y;
-	vMax.x += ImGui::GetWindowPos().x;
-	vMax.y += ImGui::GetWindowPos().y;
-
-	// if left click in hierarchy menu, reset mNowSelectObjectPtr by default
-	if (ImGui::IsMouseClicked(0))
-	{
-		if (io.MousePos.x > vMin.x && io.MousePos.x < vMax.x && io.MousePos.y > vMin.y && io.MousePos.y < vMax.y)
-		{
+	ifLeftClickCurrentWindow(
+		[&] () {
 			mNowSelectedAssetNodeDir = nullptr;
 		}
-	}
+	);
 
 	DFSConstructExploererNode(mAssetManager->mRootAsset.get());
 }

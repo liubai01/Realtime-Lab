@@ -13,7 +13,7 @@ std::string ShowFileWindow()
     ZeroMemory(&ofn, sizeof(ofn));
     ofn.lStructSize = sizeof(ofn);
     ofn.hwndOwner = NULL;  // If you have a window to center over, put its HANDLE here
-    ofn.lpstrFilter = L"Text Files\0*.txt\0Any File\0*.*\0";
+    ofn.lpstrFilter = L"Any File\0*.*\0";
     ofn.lpstrFile = filename;
     ofn.nMaxFile = MAX_PATH;
     ofn.lpstrTitle = L"File selected";
