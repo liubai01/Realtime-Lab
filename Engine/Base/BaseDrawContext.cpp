@@ -39,11 +39,11 @@ void BaseDrawContext::InitRootSig()
     sampler.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 
     rootSigDesc.Init(
-    mRootParams.size(),
-    mRootParams.data(),
-    1,
-    &sampler,
-    D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT
+        static_cast<UINT>(mRootParams.size()),
+        mRootParams.data(),
+        1,
+        &sampler,
+        D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT
     );
 
     ComPtr<ID3DBlob> signature;
@@ -77,7 +77,7 @@ void BaseDrawContext::InitInputLayout()
   mInputLayoutDesc = {};
 
   // we can get the number of elements in an array by "sizeof(array) / sizeof(arrayElementType)"
-  mInputLayoutDesc.NumElements = mInputLayout.size();
+  mInputLayoutDesc.NumElements = static_cast<UINT>(mInputLayout.size());
   mInputLayoutDesc.pInputElementDescs = mInputLayout.data();
 }
 

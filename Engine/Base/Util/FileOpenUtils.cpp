@@ -6,7 +6,7 @@
 
 std::string ShowFileWindow()
 {
-    WCHAR filename[MAX_PATH];
+    WCHAR filename[MAX_PATH] = L"";
 
     OPENFILENAME ofn;
     ZeroMemory(&filename, sizeof(filename));

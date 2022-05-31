@@ -7572,6 +7572,7 @@ namespace nlohmann
                 }
 
                 // multi-line comments skip input until */ is read
+                [[fallthrough]];
                 case '*':
                 {
                     while (true)
@@ -7607,6 +7608,7 @@ namespace nlohmann
                 }
 
                 // unexpected character after reading '/'
+                [[fallthrough]];
                 default:
                 {
                     error_message = "invalid comment; expecting '/' or '*' after '/'";
