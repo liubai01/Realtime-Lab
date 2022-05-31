@@ -8,7 +8,6 @@ CoreLightComponent::CoreLightComponent()
 	mComponentType = ComponentType::COMPONENT_LIGHT;
 
 	// Default light setup
-	mData.Ims = { 0.5f, 0.5f, 0.5f, 1.0f };
 	mData.Ia = { 0.0f, 0.0f, 0.0f, 1.0f };
 	mData.Id = { 1.0f, 1.0f, 1.0f, 1.0f };
 	mData.LightDir = { 0.577f, 0.577f, 0.577f, 0.0f };

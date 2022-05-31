@@ -31,7 +31,6 @@ cbuffer matPerObject: register(b2)
 
 cbuffer lightData: register(b3)
 {
-	float4 ims;
 	float4 ia;
 	float4 id;
 	float4 gLightDir;
@@ -70,7 +69,7 @@ float4 main(VertexOut pin) : SV_TARGET
 	// Specular
 	float4 V = normalize(gEyePos - pin.PosW);
 	float4 H = (V + gLightDir) / length(V + gLightDir);
-	ret += pow(max(dot(N, H), 0), Ns) * Ks * ims;
+	ret += pow(max(dot(N, H), 0), Ns) * Ks;
 
 	// Gamma encoding
 	ret = pow(ret, 0.45);

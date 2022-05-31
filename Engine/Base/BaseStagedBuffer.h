@@ -43,19 +43,19 @@ void BaseStagedBuffer<T>::RegisterMainHandle(BaseMainHeap* heap)
 template <class T>
 void BaseStagedBuffer<T>::RegisterRuntimeHandle(BaseRuntimeHeap* heap)
 {
-  if (!mBuffer.GetHandle())
-  {
-    dout::printf("[BaseStagedBuffer] Could not register runtime heap handle before on main heap.");
-  }
+    if (!mBuffer.GetHandle())
+    {
+        dout::printf("[BaseStagedBuffer] Could not register runtime heap handle before on main heap.");
+    }
 
-  mRuntimeHandle = heap->GetHeapHandleBlock(1);
-  mDevice->CopyDescriptorsSimple(
-    1,
-    mRuntimeHandle.GetCPUHandle(),
-    mBuffer.GetHandle()->GetCPUHandle(),
-    D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV
-  );
-  mRuntimeRegistered = true;
+    mRuntimeHandle = heap->GetHeapHandleBlock(1);
+    mDevice->CopyDescriptorsSimple(
+        1,
+        mRuntimeHandle.GetCPUHandle(),
+        mBuffer.GetHandle()->GetCPUHandle(),
+        D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV
+    );
+    mRuntimeRegistered = true;
 }
 
 template <class T>

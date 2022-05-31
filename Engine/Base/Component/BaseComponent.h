@@ -9,10 +9,13 @@ typedef enum class ComponentType
   COMPONENT_LIGHT
 } ComponentType;
 
+class BaseObject;
+
 class BaseComponent: public BaseInterfaceSerializable
 {
 public:
   ComponentType mComponentType;
+  BaseObject* mObj;
 
   virtual void Update() {}
 

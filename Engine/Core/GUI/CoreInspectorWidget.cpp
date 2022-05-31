@@ -3,9 +3,9 @@
 
 #define PI 3.145926535897f
 
-CoreInspectorWidget::CoreInspectorWidget(BaseObject** nowSelectObjectPtr, BaseResourceManager* resourceManager, BaseAssetManager* assetManager)
+CoreInspectorWidget::CoreInspectorWidget(BaseObject** nowActiveObjectPtr, BaseResourceManager* resourceManager, BaseAssetManager* assetManager)
 {
-	mNowSelectObjectPtr = nowSelectObjectPtr;
+	mNowActiveObjectPtr = nowActiveObjectPtr;
 	mResourceManager = resourceManager;
 	mAssetManager = assetManager;
 }
@@ -20,24 +20,25 @@ void CoreInspectorWidget::Update()
 
 	ImGui::Begin("Inspector");
 
-	BaseObject* obj = *mNowSelectObjectPtr;
-	if (obj)
+	BaseObject* activeObj = *mNowActiveObjectPtr;
+
+	if (activeObj)
 	{
 		char name[128]{ 0 };
-		strcpy_s(name, obj->mName.c_str());
+		strcpy_s(name, activeObj->mName.c_str());
 
 		if (ImGui::InputText("Name", name, IM_ARRAYSIZE(name), ImGuiInputTextFlags_EnterReturnsTrue))
 		{
 			if (strlen(name) > 0)
 			{
-				obj->mName = std::string(name);
+				activeObj->mName = std::string(name);
 			}
 		}
 
-		UpdateTransformGUI(obj);
+		UpdateTransformGUI(activeObj);
 
 
-		for (std::shared_ptr<BaseComponent>& com : obj->mComponents)
+		for (std::shared_ptr<BaseComponent>& com : activeObj->mComponents)
 		{
 			com->OnEditorGUI(mAssetManager, mResourceManager);
 		}
@@ -88,9 +89,9 @@ void CoreInspectorWidget::UpdateTransformGUI(BaseObject* obj)
 
 		ImGui::Text("Rotation (Eular)");
 
-		float rx = obj->mTransform.mRotation.x / PI * 360;
-		float ry = obj->mTransform.mRotation.y / PI * 360;
-		float rz = obj->mTransform.mRotation.z / PI * 360;
+		float rx = obj->mTransform.mRotation.x / PI * 180;
+		float ry = obj->mTransform.mRotation.y / PI * 180;
+		float rz = obj->mTransform.mRotation.z / PI * 180;
 
 		ImGui::Text("X ");
 		ImGui::SameLine();
@@ -104,7 +105,7 @@ void CoreInspectorWidget::UpdateTransformGUI(BaseObject* obj)
 		ImGui::SameLine();
 		ImGui::DragFloat("rz", &rz, 0.5f, rz - 360, rz + 360, "%.02f deg.");
 
-		obj->mTransform.SetRot(rx * PI / 360, ry * PI / 360, rz * PI / 360);
+		obj->mTransform.SetRot(rx * PI / 180, ry * PI / 180, rz * PI / 180);
 
 
 		ImGui::Text("");

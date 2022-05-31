@@ -11,10 +11,12 @@ CoreGUIManager::CoreGUIManager(BaseApp* app, CoreResourceManager* resourceManage
     mWidgets.push_back(std::make_unique<CoreAssetWidget>(mApp->mProject->mAssetManager, resourceManager));
     mWidgets.push_back(std::make_unique<CoreHierarchyWidget>(mApp->mGOManager, &mNowSelectedObject));
     mWidgets.push_back(std::make_unique<CoreSceneWidget>(mApp->mMainCamera));
-    mWidgets.push_back(std::make_unique<CoreInspectorWidget>(&mNowSelectedObject, resourceManager, app->mProject->mAssetManager));
+    mWidgets.push_back(std::make_unique<CoreInspectorWidget>(&mNowActiveObject, resourceManager, app->mProject->mAssetManager));
     
     mFirstLoop = true;
     mNowSelectedObject = nullptr;
+    mNowActiveObject = nullptr;
+    mNowActiveObjectUUID = "";
 
     mResourceManager = resourceManager;
 
@@ -63,6 +65,13 @@ void CoreGUIManager::Render(ID3D12GraphicsCommandList* commandList)
 
 void CoreGUIManager::Update()
 {
+    // check aliveness of mActiveObj when deletion support
+    if (mNowActiveObject && !mApp->mGOManager->GetObject(mNowActiveObjectUUID))
+    {
+        mNowActiveObject = nullptr;
+        mNowActiveObjectUUID = "";
+    }
+
     if (ImGui::BeginMainMenuBar())
     {
         if (ImGui::BeginMenu("About"))
@@ -107,5 +116,10 @@ void CoreGUIManager::Update()
     
     ImGui::End(); // end of docker space
 
+    if (mNowSelectedObject)
+    {
+        mNowActiveObject = mNowSelectedObject;
+        mNowActiveObjectUUID = mNowActiveObject->GetUUID();
+    }
 
 }

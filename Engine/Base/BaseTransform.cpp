@@ -8,6 +8,9 @@ BaseTransform::BaseTransform(ID3D12Device* device) : BaseStagedBuffer(device)
 
 void BaseTransform::Upload()
 {
+    // Remark: the upload order is guaranteed from the root (DFS)
+    //         therefore, the parent mWorld and mRS has been updated through
+    //         the path to the root.
     XMStoreFloat4x4(&mBuffer.mData.World, XMMatrixTranspose(GetWorldMatrix()));
     XMStoreFloat4x4(&mBuffer.mData.RSInvT, XMMatrixTranspose(GetRSInvT()));
 }

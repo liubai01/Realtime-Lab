@@ -7,7 +7,6 @@
 
 CoreApp::CoreApp(HINSTANCE hInstance, BaseProject* proj) : BaseApp(hInstance, proj)
 {
-    // ..
     mUploadCmdList = std::make_unique<BaseDirectCommandList>(mDevice.Get());
     mUIDrawCmdList = std::make_unique<BaseDirectCommandList>(mDevice.Get());
     mLightManager = std::make_unique<CoreLightManager>(mDevice.Get());
@@ -60,30 +59,38 @@ void CoreApp::Update()
 
 void CoreApp::Render()
 {
-  // Set resource to runtime heap
-  mRuntimeHeap->Reset();
+    // --- Resources CPU(host) -> GPU(device) ---
+    // Set resource to runtime heap
+    mRuntimeHeap->Reset();
 
-  // Flush data from light component to light manager
-  mLightManager->Update();
+    // Flush data from light component to light manager
+    mLightManager->Update();
 
-  // Register Runtime Heap
-  mLightManager->RegisterRuntimeHandle(mRuntimeHeap);
-  mGOManager->DispatchTransformUpload(mRuntimeHeap);
-  mMainCamera->RegisterRuntimeHandle(mRuntimeHeap);
-  mResourceManager->RegisterRuntimeHeap(mRuntimeHeap);
+    // Register Runtime Heap
+    mLightManager->RegisterRuntimeHandle(mRuntimeHeap);
 
-  // Upload newly-arrived geoemtry from CPU to GPU
-  UploadGeometry();
-  // Render object of interest's mask in to a texture for edge light
-  RenderEdgeLightPre();
-  // Render objects
-  RenderObjects();
-  // Render edge light with a blur of mask in `RenderEdgeLightPre`
-  RenderBlurred();
-  // Render the dear imGUI
-  RenderUI();
+    // Upload transform to GPU for each game object
+    mGOManager->DispatchTransformUpload(mRuntimeHeap);
+
+    // Upload information of main camera (TBD: move to GO manager)
+    mMainCamera->RegisterRuntimeHandle(mRuntimeHeap);
+
+    // Upload resources into GPU
+    mResourceManager->RegisterRuntimeHeap(mRuntimeHeap);
+
+    // --- GPU commands ---
+    // Upload newly-arrived geoemtry from CPU to GPU
+    UploadGeometry();
+    // Render object of interest's mask in to a texture for edge light
+    RenderEdgeLightPre();
+    // Render objects
+    RenderObjects();
+    // Render edge light with a blur of mask in `RenderEdgeLightPre`
+    RenderBlurred();
+    // Render the dear imGUI
+    RenderUI();
   
-  Swap();
+    Swap();
 }
 
 void CoreApp::BeforeUpdate()
@@ -129,8 +136,6 @@ void CoreApp::UploadGeometry()
 
 void CoreApp::RenderBlurred()
 {
-    //mEdgeBlurredRenderTexture->SetWindow(mMainCamera->mScissorRect);
-
     mBlurDrawContext->ResetCommandList();
     ID3D12GraphicsCommandList* commandList = mBlurDrawContext->mCommandList.Get();
 

@@ -1,5 +1,6 @@
 #include "BaseResourceImage.h"
 #include "../../DebugOut.h"
+#include "DirectXTex.h"
 
 BaseResourceImage::BaseResourceImage(ID3D12Device* device, BaseAssetNode* assetNode) : BaseResource(device, assetNode)
 {
@@ -11,6 +12,14 @@ BaseResourceImage::BaseResourceImage(ID3D12Device* device, BaseAssetNode* assetN
     std::wstring widepath = std::wstring(assetNode->mFullPath.begin(), assetNode->mFullPath.end());
 
     mScratchImage = std::make_unique<DirectX::ScratchImage>();
+
+    bool iswic2 = false;
+    auto pWIC = DirectX::GetWICFactory(iswic2);
+    if (!pWIC)
+    {
+        dout::printf("[BaseResourceImage] Opps!\n");
+    }
+
     HRESULT hr = LoadFromWICFile(widepath.c_str(), DirectX::WIC_FLAGS_NONE, nullptr, *mScratchImage);
     ThrowIfFailed(hr);
 

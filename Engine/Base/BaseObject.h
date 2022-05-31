@@ -20,6 +20,8 @@ public:
   BaseObject(const std::string& name, const std::string& uuid, ID3D12Device* device, std::unordered_set<BaseObject*>* rootObjects) : mName(name), mTransform(device) {
 	  this->mUuid = uuid;
 	  this->mRootObjects = rootObjects;
+	  mChildObjects.clear();
+	  mParentObject = nullptr;
   }
 
   BaseObject* GetParent();

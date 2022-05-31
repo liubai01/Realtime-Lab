@@ -6,12 +6,13 @@ class CoreInspectorWidget :
     public BaseGUIWidget
 {
 public:
-	CoreInspectorWidget(BaseObject** nowSelectObjectPtr, BaseResourceManager* resourceManager, BaseAssetManager* assetManager);
+	CoreInspectorWidget(BaseObject** nowActiveObjectPtr, BaseResourceManager* resourceManager, BaseAssetManager* assetManager);
 
 	void Start(ImGuiID& dockspace_id);
 	void Update();
 private:
-	BaseObject** mNowSelectObjectPtr;
+	BaseObject** mNowActiveObjectPtr;
+
 	BaseResourceManager* mResourceManager;
 	BaseAssetManager* mAssetManager;
 

@@ -59,6 +59,8 @@ BaseApp::BaseApp(HINSTANCE hInstance, BaseProject* proj)
         debugController->EnableDebugLayer();
     }
 #endif
+
+
     mTimer = clock();
 
     // Initialize the objects required for dumping in Shader, Geometry, etc.
@@ -67,7 +69,6 @@ BaseApp::BaseApp(HINSTANCE hInstance, BaseProject* proj)
     InitCommandQueue();
     InitFence();
     InitSwapChain();
-
     InitRTV();
 
     mMainHeap = new BaseMainHeap(mDevice.Get());
@@ -100,7 +101,9 @@ BaseApp::~BaseApp()
     delete mMainHeap;
     delete mRuntimeHeap;
     CloseHandle(mFenceEvent);
+    DestroyWindow(mHwnd);
 
+    mApp = nullptr;
 }
 
 void BaseApp::Run()
@@ -294,226 +297,226 @@ void BaseApp::InitImGUI()
 
 void BaseApp::Flush(ID3D12GraphicsCommandList* commandList)
 {
-  // Done recording commands.
-  HRESULT hr = commandList->Close();
-  ThrowIfFailed(hr);
+    // Done recording commands.
+    HRESULT hr = commandList->Close();
+    ThrowIfFailed(hr);
 
-  // Add the command list to the queue for execution.
-  ID3D12CommandList* cmdsLists[] = { commandList };
-  mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
+    // Add the command list to the queue for execution.
+    ID3D12CommandList* cmdsLists[] = { commandList };
+    mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
 
-  ++mExpectedFenceValue[mFrameIdx];
-  hr = mCommandQueue->Signal(mFence[mFrameIdx].Get(), mExpectedFenceValue[mFrameIdx]);
+    ++mExpectedFenceValue[mFrameIdx];
+    hr = mCommandQueue->Signal(mFence[mFrameIdx].Get(), mExpectedFenceValue[mFrameIdx]);
 
-  if (FAILED(hr))
-  {
-    mIsRunning = false;
-    return;
-  }
-
-  UINT64 nowFenceValue = mFence[mFrameIdx]->GetCompletedValue();
-  if (nowFenceValue < mExpectedFenceValue[mFrameIdx])
-  {
-    hr = mFence[mFrameIdx]->SetEventOnCompletion(mExpectedFenceValue[mFrameIdx], mFenceEvent);
     if (FAILED(hr))
     {
-      mIsRunning = false;
-      return;
+        mIsRunning = false;
+        return;
     }
 
-    WaitForSingleObject(mFenceEvent, INFINITE);
-  }
+    UINT64 nowFenceValue = mFence[mFrameIdx]->GetCompletedValue();
+    if (nowFenceValue < mExpectedFenceValue[mFrameIdx])
+    {
+        hr = mFence[mFrameIdx]->SetEventOnCompletion(mExpectedFenceValue[mFrameIdx], mFenceEvent);
+        if (FAILED(hr))
+        {
+            mIsRunning = false;
+            return;
+        }
+
+        WaitForSingleObject(mFenceEvent, INFINITE);
+    }
 
 }
 
 void BaseApp::Enqueue(ID3D12GraphicsCommandList* commandList)
 {
-  // Done recording commands.
-  HRESULT hr = commandList->Close();
-  ThrowIfFailed(hr);
+    // Done recording commands.
+    HRESULT hr = commandList->Close();
+    ThrowIfFailed(hr);
 
-  // Add the command list to the queue for execution.
-  ID3D12CommandList* cmdsLists[] = { commandList };
-  mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
+    // Add the command list to the queue for execution.
+    ID3D12CommandList* cmdsLists[] = { commandList };
+    mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
 
-  if (FAILED(hr))
-  {
-    mIsRunning = false;
-    return;
-  }
+    if (FAILED(hr))
+    {
+        mIsRunning = false;
+        return;
+    }
 }
 
 void BaseApp::Swap() {
-  // present the current backbuffer
-  HRESULT hr = mSwapChain->Present(0, 0);
-  if (FAILED(hr))
-  {
-    mIsRunning = false;
-    return;
-  }
+    // present the current backbuffer
+    HRESULT hr = mSwapChain->Present(0, 0);
+    if (FAILED(hr))
+    {
+        mIsRunning = false;
+        return;
+    }
 
-  // frameIndex points to next backBuffer to be flipped to front-end
-  mFrameIdx = mSwapChain.Get()->GetCurrentBackBufferIndex();
+    // frameIndex points to next backBuffer to be flipped to front-end
+    mFrameIdx = mSwapChain.Get()->GetCurrentBackBufferIndex();
 }
 
 void BaseApp::InitRTV()
 {
-  // Render target views
-  D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
-  rtvHeapDesc.NumDescriptors = mFrameCnt;
-  rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-  rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-  HRESULT hr = mDevice->CreateDescriptorHeap(
-    &rtvHeapDesc,
-    IID_PPV_ARGS(mRtvDescriptorHeap.GetAddressOf())
-  );
-
-  int rtvDescriptorSize = mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-  CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(mRtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
-
-  for (int i = 0; i < mFrameCnt; ++i)
-  {
-    mRenderTargets.emplace_back();
-    hr = mSwapChain->GetBuffer(
-      i, IID_PPV_ARGS(mRenderTargets[i].GetAddressOf())
+    // Render target views
+    D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
+    rtvHeapDesc.NumDescriptors = mFrameCnt;
+    rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+    rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+    HRESULT hr = mDevice->CreateDescriptorHeap(
+        &rtvHeapDesc,
+        IID_PPV_ARGS(mRtvDescriptorHeap.GetAddressOf())
     );
 
-    mDevice->CreateRenderTargetView(mRenderTargets[i].Get(), nullptr, rtvHandle);
-    rtvHandle.Offset(1, rtvDescriptorSize);
-  }
+    int rtvDescriptorSize = mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+    CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(mRtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
+
+    for (int i = 0; i < mFrameCnt; ++i)
+    {
+        mRenderTargets.emplace_back();
+        hr = mSwapChain->GetBuffer(
+            i, IID_PPV_ARGS(mRenderTargets[i].GetAddressOf())
+        );
+
+        mDevice->CreateRenderTargetView(mRenderTargets[i].Get(), nullptr, rtvHandle);
+        rtvHandle.Offset(1, rtvDescriptorSize);
+    }
 }
 
 D3D12_CPU_DESCRIPTOR_HANDLE BaseApp::CurrentBackBufferView()const
 {
-  int rtvDescriptorSize = mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-  return CD3DX12_CPU_DESCRIPTOR_HANDLE(
-    mRtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart(),
-    mFrameIdx,
-    rtvDescriptorSize
-  );
+    int rtvDescriptorSize = mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+    return CD3DX12_CPU_DESCRIPTOR_HANDLE(
+        mRtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart(),
+        mFrameIdx,
+        rtvDescriptorSize
+    );
 }
 
 void BaseApp::InitCommandQueue()
 {
-  // Initialize three things: CommandQueue, CommandList, CommandAllocator
+    // Initialize three things: CommandQueue, CommandList, CommandAllocator
 
-  // mCommandQueue = CreateCommandQueue(DIRECT)
-  D3D12_COMMAND_QUEUE_DESC cqDesc = {};
-  cqDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
-  cqDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+    // mCommandQueue = CreateCommandQueue(DIRECT)
+    D3D12_COMMAND_QUEUE_DESC cqDesc = {};
+    cqDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
+    cqDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
 
-  HRESULT hr = mDevice->CreateCommandQueue(&cqDesc, IID_PPV_ARGS(mCommandQueue.GetAddressOf()));
-  if (FAILED(hr))
-  {
-    dout::printf("Command Queue Creation Failed!");
-  }
+    HRESULT hr = mDevice->CreateCommandQueue(&cqDesc, IID_PPV_ARGS(mCommandQueue.GetAddressOf()));
+    if (FAILED(hr))
+    {
+        dout::printf("Command Queue Creation Failed!");
+    }
 }
 
 void BaseApp::InitWindow(HINSTANCE hInstance)
 {
-  // Define and register the window class (a variable)
-  WNDCLASS wc;
-  wc.style = CS_HREDRAW | CS_VREDRAW;
-  wc.lpfnWndProc = WndProc;
-  wc.hInstance = hInstance;
-  wc.cbClsExtra = 0;
-  wc.cbWndExtra = 0;
-  wc.hIcon = LoadIcon(0, IDI_APPLICATION);
-  wc.hCursor = LoadCursor(0, IDC_ARROW);
-  wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 2);
-  wc.lpszMenuName = 0;
-  wc.lpszClassName = L"MainWnd";
+    // Define and register the window class (a variable)
+    WNDCLASS wc;
+    wc.style = CS_HREDRAW | CS_VREDRAW;
+    wc.lpfnWndProc = WndProc;
+    wc.hInstance = hInstance;
+    wc.cbClsExtra = 0;
+    wc.cbWndExtra = 0;
+    wc.hIcon = LoadIcon(0, IDI_APPLICATION);
+    wc.hCursor = LoadCursor(0, IDC_ARROW);
+    wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 2);
+    wc.lpszMenuName = 0;
+    wc.lpszClassName = L"MainWnd";
 
-  RegisterClass(&wc);
+    RegisterClass(&wc);
 
-  // Handle to the window
-  mHwnd = CreateWindowEx(
-    NULL,
-    L"MainWnd", // long pointer class name
-    L"Realtime Lab", // long pointer window name
-    WS_OVERLAPPEDWINDOW, // dw style
-    CW_USEDEFAULT, CW_USEDEFAULT, // x y
-    mWidth, mHeight, // width height
-    NULL, // window parent
-    NULL, // menu
-    hInstance, // hInstance
-    NULL // lpParam
-  );
+    // Handle to the window
+    mHwnd = CreateWindowEx(
+        NULL,
+        L"MainWnd", // long pointer class name
+        L"Realtime Lab", // long pointer window name
+        WS_OVERLAPPEDWINDOW, // dw style
+        CW_USEDEFAULT, CW_USEDEFAULT, // x y
+        mWidth, mHeight, // width height
+        NULL, // window parent
+        NULL, // menu
+        hInstance, // hInstance
+        NULL // lpParam
+    );
 
-  // Client Rectangle is not exactly the same as mWidth and mHeight you specify
-  // Windows 10 windows may vary a litte bit pixels
-  // It should be aligned with GetClientRect
-  RECT rect = { 0, 0, 0, 0 };
-  GetClientRect(mHwnd, &rect);
-  mHeight = rect.bottom;
-  mWidth = rect.right;
+    // Client Rectangle is not exactly the same as mWidth and mHeight you specify
+    // Windows 10 windows may vary a litte bit pixels
+    // It should be aligned with GetClientRect
+    RECT rect = { 0, 0, 0, 0 };
+    GetClientRect(mHwnd, &rect);
+    mHeight = rect.bottom;
+    mWidth = rect.right;
 
-  ShowWindow(mHwnd, SW_SHOW);
-  UpdateWindow(mHwnd);
+    ShowWindow(mHwnd, SW_SHOW);
+    UpdateWindow(mHwnd);
 }
 
 void BaseApp::InitDevice()
 {
-  HRESULT hr = D3D12CreateDevice(
-    nullptr,
-    D3D_FEATURE_LEVEL_11_0,
-    IID_PPV_ARGS(mDevice.GetAddressOf())
-  );
+    HRESULT hr = D3D12CreateDevice(
+        nullptr,
+        D3D_FEATURE_LEVEL_11_0,
+        IID_PPV_ARGS(mDevice.GetAddressOf())
+    );
 
-  if (FAILED(hr))
-  {
-    dout::printf("Device Created Failed!");
-  }
+    if (FAILED(hr))
+    {
+        dout::printf("Device Created Failed!");
+    }
 }
 
 void BaseApp::InitFence()
 {
-  mFenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+    mFenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 
-  // Create fence for sync. between device(GPU) and host(CPU)
-  for (int i = 0; i < mFrameCnt; ++i)
-  {
+    // Create fence for sync. between device(GPU) and host(CPU)
+    for (int i = 0; i < mFrameCnt; ++i)
+    {
     mFence.push_back(Microsoft::WRL::ComPtr<ID3D12Fence>());
 
     HRESULT hr = mDevice->CreateFence(
-      0,  // initial value
-      D3D12_FENCE_FLAG_NONE,
-      IID_PPV_ARGS(mFence[i].GetAddressOf())
+        0,  // initial value
+        D3D12_FENCE_FLAG_NONE,
+        IID_PPV_ARGS(mFence[i].GetAddressOf())
     );
-    mExpectedFenceValue.push_back(0);
-  }
+        mExpectedFenceValue.push_back(0);
+    }
 }
 
 void BaseApp::InitSwapChain()
 {
-  // DXGI Factory
-  HRESULT hr = CreateDXGIFactory1(
-    IID_PPV_ARGS(mDxgiFactory.GetAddressOf())
-  );
+    // DXGI Factory
+    HRESULT hr = CreateDXGIFactory1(
+        IID_PPV_ARGS(mDxgiFactory.GetAddressOf())
+    );
 
-  // Swap Chain
-  DXGI_MODE_DESC backBufferDesc = {};
-  backBufferDesc.Width = mWidth;
-  backBufferDesc.Height = mHeight;
-  backBufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    // Swap Chain
+    DXGI_MODE_DESC backBufferDesc = {};
+    backBufferDesc.Width = mWidth;
+    backBufferDesc.Height = mHeight;
+    backBufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 
-  DXGI_SAMPLE_DESC sampleDesc = {};
-  sampleDesc.Count = 1;
+    DXGI_SAMPLE_DESC sampleDesc = {};
+    sampleDesc.Count = 1;
 
-  DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
-  swapChainDesc.BufferCount = mFrameCnt;
-  swapChainDesc.BufferDesc = backBufferDesc;
-  swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-  swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
-  swapChainDesc.OutputWindow = mHwnd;
-  swapChainDesc.SampleDesc = sampleDesc;
-  swapChainDesc.Windowed = true;
+    DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
+    swapChainDesc.BufferCount = mFrameCnt;
+    swapChainDesc.BufferDesc = backBufferDesc;
+    swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+    swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+    swapChainDesc.OutputWindow = mHwnd;
+    swapChainDesc.SampleDesc = sampleDesc;
+    swapChainDesc.Windowed = true;
 
-  ComPtr<IDXGISwapChain> tmpSwapChain;
-  mDxgiFactory->CreateSwapChain(
-    mCommandQueue.Get(),
-    &swapChainDesc,
-    reinterpret_cast<IDXGISwapChain**>(mSwapChain.GetAddressOf())
-  );
-  tmpSwapChain = nullptr; // To avoid the resources bound to swapChain be released
+    ComPtr<IDXGISwapChain> tmpSwapChain;
+    mDxgiFactory->CreateSwapChain(
+        mCommandQueue.Get(),
+        &swapChainDesc,
+        reinterpret_cast<IDXGISwapChain**>(mSwapChain.GetAddressOf())
+    );
+    tmpSwapChain = nullptr; // To avoid the resources bound to swapChain be released
 }

@@ -3,9 +3,8 @@
 
 void BaseObject::AddComponent(std::shared_ptr<BaseComponent> component)
 {
-  mComponents.push_back(component);
-  mChildObjects.clear();
-  mParentObject = nullptr;
+	component->mObj = this;
+	mComponents.push_back(component);
 }
 
 std::string BaseObject::GetUUID()

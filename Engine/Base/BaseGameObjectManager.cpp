@@ -34,7 +34,7 @@ std::shared_ptr<BaseObject>BaseGameObjectManager::GetObject(const std::string& u
         return f->second;
     }
 
-    dout::printf("[BaseGameObjectManager] Object %s not found!", uuid.c_str());
+    //dout::printf("[BaseGameObjectManager] Object %s not found!\n", uuid.c_str());
 
     return nullptr;
 }

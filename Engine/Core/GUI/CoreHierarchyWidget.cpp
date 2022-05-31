@@ -19,17 +19,20 @@ void DFSTreeNode(BaseObject* obj, BaseObject** nowSelectObjectPtr)
 		{
 			flag = flag | ImGuiTreeNodeFlags_Selected;
 		}
-		auto treeNode = ImGui::TreeNodeEx(obj->mName.c_str(), flag, "");
+		auto treeNode = ImGui::TreeNodeEx((obj->mName + "treenode").c_str(), flag, "");
 		ImGui::SameLine();
-		if (ImGui::SmallButton(obj->mName.c_str()))
+		bool button = ImGui::SmallButton(obj->mName.c_str());
+
+		if (button)
 		{
 			*nowSelectObjectPtr = obj;
 		}
+
 		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
 		{
 			ImGui::SetDragDropPayload("GAMEOBJECT", obj, sizeof(BaseObject*));
 
-			ImGui::Text(obj->mName.c_str());
+			ImGui::Text(("<GameObject> " + obj->mName).c_str());
 			ImGui::EndDragDropSource();
 		}
 
@@ -56,6 +59,7 @@ void DFSTreeNode(BaseObject* obj, BaseObject** nowSelectObjectPtr)
 		{
 			*nowSelectObjectPtr = obj;
 		}
+
 		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
 		{
 			ImGui::SetDragDropPayload("GAMEOBJECT", obj, sizeof(BaseObject*));
@@ -83,7 +87,7 @@ void CoreHierarchyWidget::Update()
 	vMax.y += ImGui::GetWindowPos().y;
 
 	// if left click in hierarchy menu, reset mNowSelectObjectPtr by default
-	if (ImGui::IsMouseClicked(0))
+	if (ImGui::IsMouseReleased(0))
 	{
 		if (io.MousePos.x > vMin.x && io.MousePos.x < vMax.x && io.MousePos.y > vMin.y && io.MousePos.y < vMax.y)
 		{
