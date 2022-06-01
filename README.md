@@ -12,6 +12,12 @@ Current project implements a simple editor that could transform models and shade
 
 ![](docs/figs/alphav001_screenshot.jpg)
 
+### Quick-start
+
+1. Install Visual studio 2019.
+2. Clone this repository(either through visual studio or git) and open `RealtimeLab.sln`.
+3. Build it in `x64/Debug` configuration and platform (more configs would be supported).
+
 ## Acknowledgements
 
 - The UI icons source from [iconfont.cn](https://www.iconfont.cn/) with non-commercial license.
