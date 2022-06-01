@@ -27,7 +27,9 @@ std::string ShowFileWindow()
     {
         // All this stuff below is to tell you exactly how you messed up above. 
         // Once you've got that fixed, you can often (not always!) reduce it to a 'user cancelled' assumption.
-        // CommDlgExtendedError();
+         CommDlgExtendedError();
+         // TBD: in a error catch way
+         return "<failed>";
     }
 
     std::wstring ret(filename);

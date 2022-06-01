@@ -227,19 +227,22 @@ void CoreAssetWidget::UpdateAssetContentWindow()
 			std::string fileName = filePath.substr(filePath.find_last_of("/\\") + 1);
 			std::string toPath = mNowSelectedAssetNodeDir->GetURL();
 
-			if (toPath.length() > 0)
+			if (filePath != "<failed>")
 			{
-				toPath += "\\" + fileName;
-			}
-			else {
-				// the base URL is root
-				toPath = fileName;
-			}
+				if (toPath.length() > 0)
+				{
+					toPath += "\\" + fileName;
+				}
+				else {
+					// the base URL is root
+					toPath = fileName;
+				}
 
-			mAssetManager->RegisterAsset(
-				toPath, 
-				filePath
-			);
+				mAssetManager->RegisterAsset(
+					toPath,
+					filePath
+				);
+			}
 
 			ImGui::CloseCurrentPopup();
 		}
