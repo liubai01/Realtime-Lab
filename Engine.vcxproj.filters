@@ -273,6 +273,9 @@
     <ClCompile Include="Engine\Base\Util\FileOpenUtils.cpp">
       <Filter>Source Files\Base\Util</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\Core\GUI\CoreMaterialWidget.cpp">
+      <Filter>Source Files\Core\GUI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -466,6 +469,9 @@
     </ClInclude>
     <ClInclude Include="Engine\Base\Util\FileOpenUtils.h">
       <Filter>Header Files\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Core\GUI\CoreMaterialWidget.h">
+      <Filter>Header Files\Core\GUI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

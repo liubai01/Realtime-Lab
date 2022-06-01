@@ -67,7 +67,7 @@ float4 main(VertexOut pin) : SV_TARGET
 		diffuseCoeff = pow(diffuseCoeff, 2.2);
 	}
 
-	float4 N = float4(pin.Norm, 0.0f);
+	float4 N = float4(normalize(pin.Norm), 0.0f);
 	if (isNormalTextured)
 	{
 		float4 np = normalMapTexture.Sample(s0, pin.Coord) * 2.0f - 1.0f;

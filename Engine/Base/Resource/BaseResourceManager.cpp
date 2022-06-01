@@ -5,6 +5,7 @@ BaseResourceManager::BaseResourceManager(ID3D12Device* device, BaseAssetManager*
 	mAssetManager = assetManager;
 	mDevice = device;
 	mAssetUUID2ResourcePtr.clear();
+	mResourceUUID2ResourcePtr.clear();
 
 	mMainHeap = mainHeap;
 }

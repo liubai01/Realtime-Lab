@@ -2,16 +2,21 @@
 #include "CoreSceneWidget.h"
 #include "CoreInspectorWidget.h"
 #include "CoreAssetWidget.h"
+#include "CoreMaterialWidget.h"
 #include "../../ThirdParty/ImGUI/imgui_internal.h"
 #include "../../ThirdParty/ImGUI/imgui_impl_dx12.h"
 
 CoreGUIManager::CoreGUIManager(BaseApp* app, CoreResourceManager* resourceManager)
 {
     mApp = app;
-    mWidgets.push_back(std::make_unique<CoreAssetWidget>(mApp->mProject->mAssetManager, resourceManager));
+
+    std::unique_ptr<CoreMaterialWidget> matWidget = std::make_unique<CoreMaterialWidget>(resourceManager, app->mProject->mAssetManager);
+
+    mWidgets.push_back(std::make_unique<CoreAssetWidget>(mApp->mProject->mAssetManager, resourceManager, matWidget.get()));
     mWidgets.push_back(std::make_unique<CoreHierarchyWidget>(mApp->mGOManager, &mNowSelectedObject));
     mWidgets.push_back(std::make_unique<CoreSceneWidget>(mApp->mMainCamera));
     mWidgets.push_back(std::make_unique<CoreInspectorWidget>(&mLastActiveObject, resourceManager, app->mProject->mAssetManager));
+    mWidgets.push_back(std::move(matWidget));
     
     mFirstLoop = true;
 
@@ -94,6 +99,7 @@ void CoreGUIManager::Update()
 
         ImGui::EndMainMenuBar();
     }
+
 
     ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
     window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;

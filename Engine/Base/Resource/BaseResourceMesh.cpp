@@ -16,13 +16,13 @@ BaseResourceMesh::BaseResourceMesh(ID3D12Device* device, BaseAssetNode* assetNod
 
     if (!reader.ParseFromFile(assetNode->mFullPath, reader_config)) {
         if (!reader.Error().empty()) {
-            dout::printf("[BaseResourceMesh]: %s", reader.Error().c_str());
+            dout::printf("[BaseResourceMesh]: %s\n", reader.Error().c_str());
         }
         exit(1);
     }
 
     if (!reader.Warning().empty()) {
-        dout::printf("[BaseResourceMesh]: ", reader.Warning().c_str());
+        dout::printf("[BaseResourceMesh]: %s\n", reader.Warning().c_str());
     }
 
     auto& attrib = reader.GetAttrib();

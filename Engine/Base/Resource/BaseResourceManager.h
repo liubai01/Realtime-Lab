@@ -15,6 +15,9 @@ public:
 	template<class T>
 	T* LoadByURL(const std::string& url);
 
+	template<class T>
+	T* LoadByUUID(const std::string& uuid);
+
 	void Upload(ID3D12GraphicsCommandList* commandList);
 	void RegisterRuntimeHeap(BaseRuntimeHeap* runtimeHeap);
 
@@ -23,6 +26,7 @@ public:
 
 	BaseMainHeap* mMainHeap;
 	std::unordered_map<std::string, BaseResource*> mAssetUUID2ResourcePtr;
+	std::unordered_map<std::string, BaseResource*> mResourceUUID2ResourcePtr;
 };
 
 template<class T>
@@ -52,7 +56,7 @@ T* BaseResourceManager::LoadByURL(const std::string & url)
 		{
 			return dynamic_cast<T*>(f->second);
 		}
-		// url points to a resources that is not an image
+		// url points to a resources that is not expected resource type
 		return nullptr;
 	}
 
@@ -63,6 +67,7 @@ T* BaseResourceManager::LoadByURL(const std::string & url)
 	);
 	
 	mAssetUUID2ResourcePtr[node->mUUID] = ret;
+	mResourceUUID2ResourcePtr[ret->mUUIDResource] = ret;
 
 	// register on the main heap
 	if (ret->mIsRuntimeResource)
@@ -70,4 +75,24 @@ T* BaseResourceManager::LoadByURL(const std::string & url)
 		ret->RegisterMainHandle(mMainHeap);
 	}
 	return ret;
+}
+
+template<class T>
+T* BaseResourceManager::LoadByUUID(const std::string& uuid)
+{
+	std::unordered_map<std::string, BaseResource*>::iterator f = mResourceUUID2ResourcePtr.find(uuid);
+	// check whether this resource has been requestsed (and cached in mUrl2ResourcePtr)
+	if (f != mResourceUUID2ResourcePtr.end())
+	{
+		// check whether url points to a resources is an image
+		if (f->second->mType == T::ClassResourceType)
+		{
+			return dynamic_cast<T*>(f->second);
+		}
+		// url points to a resources that is not expected resource type
+		return nullptr;
+	}
+
+	// not found
+	return nullptr;
 }

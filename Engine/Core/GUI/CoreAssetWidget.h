@@ -4,10 +4,12 @@
 #include "../../Base/Asset/BaseAssetManager.h"
 #include "../../Base/Resource/BaseResourceManager.h"
 
+#include "CoreMaterialWidget.h"
+
 class CoreAssetWidget : public BaseGUIWidget
 {
 public:
-	CoreAssetWidget(BaseAssetManager* assetManager, BaseResourceManager* resourceManager);
+	CoreAssetWidget(BaseAssetManager* assetManager, BaseResourceManager* resourceManager, CoreMaterialWidget* materialWidget);
 	void Update();
 	void Start(ImGuiID& dockspace_id);
 
@@ -19,5 +21,6 @@ private:
 	BaseAssetManager* mAssetManager;
 	BaseResourceManager* mResourceManager;
 	BaseAssetNode* mNowSelectedAssetNodeDir;
+	CoreMaterialWidget* mMaterialWidget;
 };
 

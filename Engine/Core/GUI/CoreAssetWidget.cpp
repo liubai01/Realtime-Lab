@@ -1,7 +1,8 @@
 #include "CoreAssetWidget.h"
 #include "../../Base/Util/FileOpenUtils.h"
+#include "../Resource/CoreResourceMaterial.h"
 
-CoreAssetWidget::CoreAssetWidget(BaseAssetManager* assetManager, BaseResourceManager* resourceManager)
+CoreAssetWidget::CoreAssetWidget(BaseAssetManager* assetManager, BaseResourceManager* resourceManager, CoreMaterialWidget* materialWidget)
 {
 	mIsShow = true;
 	mDisplayName = "Asset Explorer";
@@ -9,6 +10,7 @@ CoreAssetWidget::CoreAssetWidget(BaseAssetManager* assetManager, BaseResourceMan
 	mAssetManager = assetManager;
 	mResourceManager = resourceManager;
 	mNowSelectedAssetNodeDir = mAssetManager->mRootAsset.get();
+	mMaterialWidget = materialWidget;
 }
 
 template<typename T>
@@ -164,7 +166,11 @@ void CoreAssetWidget::UpdateAssetContentWindow()
 					ImGuiIO& io = ImGui::GetIO();
 					if (io.MouseDoubleClicked[0])
 					{
-						// TBD
+						CoreResourceMaterial* mat = mResourceManager->LoadByURL<CoreResourceMaterial>(assetNode->GetURL());
+
+						mMaterialWidget->AssignMat(mat);
+						mMaterialWidget->mIsShow = true;
+						mMaterialWidget->mSetFocusThisFrame = true;
 					}
 				}
 

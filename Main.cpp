@@ -77,8 +77,7 @@ public:
         light->mTransform.SetPos(2.0f, 6.0f, -6.0f);
         lightdirarrow->mTransform.SetRot(0.0f, DirectX::XM_PI / 2.0f, 0.0f);
         lightdirarrow->mTransform.SetScale(0.1f, 0.1f, 0.1f);
-
-        mResourceManager->CreateMaterial("Default.mat");
+    
 
         mMainCamera->SetPos(10.0f, 10.0f, -10.0f);
     }
