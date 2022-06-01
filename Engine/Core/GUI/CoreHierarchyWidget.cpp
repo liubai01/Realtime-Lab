@@ -3,6 +3,8 @@
 
 CoreHierarchyWidget::CoreHierarchyWidget(BaseGameObjectManager* GOManager, BaseObject** nowSelectObjectPtr)
 {
+	mIsShow = true;
+	mDisplayName = "Hierarchy";
 	mGOManager = GOManager;
 	mNowSelectObjectPtr = nowSelectObjectPtr;
 }
@@ -73,7 +75,7 @@ void DFSTreeNode(BaseObject* obj, BaseObject** nowSelectObjectPtr)
 
 void CoreHierarchyWidget::Update()
 {
-	ImGui::Begin("Hierarchy");
+	ImGui::Begin(mDisplayName.c_str());
 
 	ImGuiIO& io = ImGui::GetIO();
 	int count = IM_ARRAYSIZE(io.MouseDown);
@@ -105,5 +107,5 @@ void CoreHierarchyWidget::Update()
 void CoreHierarchyWidget::Start(ImGuiID& dockspace_id)
 {
 	ImGuiID dock_left_id = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, 0.2f, nullptr, &dockspace_id);
-	ImGui::DockBuilderDockWindow("Hierarchy", dock_left_id);
+	ImGui::DockBuilderDockWindow(mDisplayName.c_str(), dock_left_id);
 }

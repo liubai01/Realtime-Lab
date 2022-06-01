@@ -5,6 +5,8 @@
 
 CoreInspectorWidget::CoreInspectorWidget(BaseObject** nowActiveObjectPtr, BaseResourceManager* resourceManager, BaseAssetManager* assetManager)
 {
+	mIsShow = true;
+	mDisplayName = "Inspector";
 	mNowActiveObjectPtr = nowActiveObjectPtr;
 	mResourceManager = resourceManager;
 	mAssetManager = assetManager;
@@ -13,12 +15,12 @@ CoreInspectorWidget::CoreInspectorWidget(BaseObject** nowActiveObjectPtr, BaseRe
 void CoreInspectorWidget::Start(ImGuiID& dockspace_id)
 {
 	ImGuiID dock_right_id = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Right, 0.25f, nullptr, &dockspace_id);
-	ImGui::DockBuilderDockWindow("Inspector", dock_right_id);
+	ImGui::DockBuilderDockWindow(mDisplayName.c_str(), dock_right_id);
 }
 void CoreInspectorWidget::Update()
 {
 
-	ImGui::Begin("Inspector");
+	ImGui::Begin(mDisplayName.c_str());
 
 	BaseObject* activeObj = *mNowActiveObjectPtr;
 

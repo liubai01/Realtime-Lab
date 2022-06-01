@@ -3,6 +3,9 @@
 
 CoreAssetWidget::CoreAssetWidget(BaseAssetManager* assetManager, BaseResourceManager* resourceManager)
 {
+	mIsShow = true;
+	mDisplayName = "Asset Explorer";
+
 	mAssetManager = assetManager;
 	mResourceManager = resourceManager;
 	mNowSelectedAssetNodeDir = mAssetManager->mRootAsset.get();
@@ -58,7 +61,7 @@ void CoreAssetWidget::Update()
 {
 	// Explorer window
 	ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 0);
-	ImGui::Begin("Asset");
+	ImGui::Begin(mDisplayName.c_str());
 		ImVec2 vMin = ImGui::GetWindowContentRegionMin();
 		ImVec2 vMax = ImGui::GetWindowContentRegionMax();
 
@@ -323,5 +326,5 @@ void CoreAssetWidget::Start(ImGuiID& dockspace_id)
 {
 	ImGuiID dock_down_id = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Down, 0.25f, nullptr, &dockspace_id);
 
-	ImGui::DockBuilderDockWindow("Asset", dock_down_id);
+	ImGui::DockBuilderDockWindow(mDisplayName.c_str(), dock_down_id);
 }

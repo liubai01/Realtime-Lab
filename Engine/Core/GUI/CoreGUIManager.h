@@ -19,8 +19,8 @@ public:
 
 	std::vector<std::unique_ptr<BaseGUIWidget>> mWidgets;
 	BaseObject* mNowSelectedObject;
-	BaseObject* mNowActiveObject;
-	std::string mNowActiveObjectUUID;
+	BaseObject* mLastActiveObject;
+	std::string mLastActiveObjectUUID;
 
 private:
 	bool mFirstLoop;

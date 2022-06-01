@@ -11,12 +11,13 @@ CoreGUIManager::CoreGUIManager(BaseApp* app, CoreResourceManager* resourceManage
     mWidgets.push_back(std::make_unique<CoreAssetWidget>(mApp->mProject->mAssetManager, resourceManager));
     mWidgets.push_back(std::make_unique<CoreHierarchyWidget>(mApp->mGOManager, &mNowSelectedObject));
     mWidgets.push_back(std::make_unique<CoreSceneWidget>(mApp->mMainCamera));
-    mWidgets.push_back(std::make_unique<CoreInspectorWidget>(&mNowActiveObject, resourceManager, app->mProject->mAssetManager));
+    mWidgets.push_back(std::make_unique<CoreInspectorWidget>(&mLastActiveObject, resourceManager, app->mProject->mAssetManager));
     
     mFirstLoop = true;
+
     mNowSelectedObject = nullptr;
-    mNowActiveObject = nullptr;
-    mNowActiveObjectUUID = "";
+    mLastActiveObject = nullptr;
+    mLastActiveObjectUUID = "";
 
     mResourceManager = resourceManager;
 
@@ -66,10 +67,10 @@ void CoreGUIManager::Render(ID3D12GraphicsCommandList* commandList)
 void CoreGUIManager::Update()
 {
     // check aliveness of mActiveObj when deletion support
-    if (mNowActiveObject && !mApp->mGOManager->GetObject(mNowActiveObjectUUID))
+    if (mLastActiveObject && !mApp->mGOManager->GetObject(mLastActiveObjectUUID))
     {
-        mNowActiveObject = nullptr;
-        mNowActiveObjectUUID = "";
+        mLastActiveObject = nullptr;
+        mLastActiveObjectUUID = "";
     }
 
     if (ImGui::BeginMainMenuBar())
@@ -79,6 +80,18 @@ void CoreGUIManager::Update()
             if (ImGui::MenuItem("@liubai01")) {}
             ImGui::EndMenu();
         }
+
+        if (ImGui::BeginMenu("Widgets"))
+        {
+            for (std::unique_ptr<BaseGUIWidget>& widget : mWidgets)
+            {
+                if (ImGui::MenuItem(widget->mDisplayName.c_str(), "", &widget->mIsShow)) 
+                {
+                }
+            }
+            ImGui::EndMenu();
+        }
+
         ImGui::EndMainMenuBar();
     }
 
@@ -111,15 +124,18 @@ void CoreGUIManager::Update()
 
         for (std::unique_ptr<BaseGUIWidget>& widget : mWidgets)
         {
-            widget->Update();
+            if (widget->mIsShow)
+            {
+                widget->Update();
+            }
         }
     
     ImGui::End(); // end of docker space
 
     if (mNowSelectedObject)
     {
-        mNowActiveObject = mNowSelectedObject;
-        mNowActiveObjectUUID = mNowActiveObject->GetUUID();
+        mLastActiveObject = mNowSelectedObject;
+        mLastActiveObjectUUID = mLastActiveObject->GetUUID();
     }
 
 }

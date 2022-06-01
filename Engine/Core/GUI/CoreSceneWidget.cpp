@@ -3,12 +3,14 @@
 
 CoreSceneWidget::CoreSceneWidget(BaseCamera* camera)
 {
+    mIsShow = true;
+    mDisplayName = "Scene";
 	mCamera = camera;
 }
 
 void CoreSceneWidget::Update()
 {
-    ImGui::Begin("Scene");
+    ImGui::Begin(mDisplayName.c_str());
 
     ImVec2 vMin = ImGui::GetWindowContentRegionMin();
     ImVec2 vMax = ImGui::GetWindowContentRegionMax();
@@ -27,5 +29,5 @@ void CoreSceneWidget::Update()
 
 void CoreSceneWidget::Start(ImGuiID& dockspace_id)
 {
-    ImGui::DockBuilderDockWindow("Scene", dockspace_id);
+    ImGui::DockBuilderDockWindow(mDisplayName.c_str(), dockspace_id);
 }
