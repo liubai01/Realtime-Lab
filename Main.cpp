@@ -30,10 +30,11 @@ public:
         //tower->AddComponent(meshComponent);
 
         // uv sphere
-        std::shared_ptr<BaseObject> uvsphere = mNowScene->CreateObject("UV sphere");
+        std::shared_ptr<BaseObject> uvsphere = mNowScene->CreateObject("UV sphere (textured)");
         std::shared_ptr<CoreMeshComponent> meshComponent;
 
-        uvsphere->mTransform.SetScale(4.0f, 4.0f, 4.0f);
+        uvsphere->mTransform.SetScale(3.0f, 3.0f, 3.0f);
+        uvsphere->mTransform.SetPos(-1.0f, 0.0f, -1.0f);
 
         meshComponent = mMeshLoader->MakeComponent(mResourceManager->LoadByURL<BaseResourceMesh>("models\\uvsphere.obj"));
         uvsphere->AddComponent(meshComponent);
@@ -50,6 +51,18 @@ public:
         rustedironMat->SetNormalTextured(normalTexture);
         meshComponent->mMat[0] = rustedironMat;
         
+        std::shared_ptr<BaseObject> uvsphere2 = mNowScene->CreateObject("UV sphere (plain)");
+        std::shared_ptr<CoreMeshComponent> meshComponent2;
+
+        uvsphere2->mTransform.SetScale(3.0f, 3.0f, 3.0f);
+        uvsphere2->mTransform.SetPos(4.0f, 0.0f, 4.0f);
+
+        meshComponent2 = mMeshLoader->MakeComponent(mResourceManager->LoadByURL<BaseResourceMesh>("models\\uvsphere.obj"));
+        uvsphere2->AddComponent(meshComponent2);
+        CoreResourceMaterial* planewhiteMat = mResourceManager->LoadByURL<CoreResourceMaterial>("materials\\planewhite.mat");
+        meshComponent2->mMat[0] = planewhiteMat;
+        
+
         // light GO
         std::shared_ptr<BaseObject> light = mNowScene->CreateObject("Directional Light");
         std::shared_ptr<CoreLightComponent> lightComponent = mLightManager->MakeLightComponent();
