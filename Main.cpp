@@ -10,6 +10,7 @@ class MyApp : public CoreApp {
 public:
     MyApp(HINSTANCE hInstance, BaseProject* proj) : CoreApp(hInstance, proj) {};
     
+    std::shared_ptr<BaseObject> uvsphere;
     // TBD: move those logic into scene start & update
     //      for the sake of scene switch
     void Start() {
@@ -30,7 +31,7 @@ public:
         //tower->AddComponent(meshComponent);
 
         // uv sphere
-        std::shared_ptr<BaseObject> uvsphere = mNowScene->CreateObject("UV sphere (textured)");
+        uvsphere = mNowScene->CreateObject("UV sphere (textured)");
         std::shared_ptr<CoreMeshComponent> meshComponent;
 
         uvsphere->mTransform.SetScale(3.0f, 3.0f, 3.0f);
@@ -50,6 +51,7 @@ public:
         rustedironMat->SetRoughnessTextured(roughnessTexture);
         rustedironMat->SetNormalTextured(normalTexture);
         meshComponent->mMat[0] = rustedironMat;
+        uvsphere->mTransform.SetRot(XM_PI * 0.15f, 0.0f, 0.0f);
         
         std::shared_ptr<BaseObject> uvsphere2 = mNowScene->CreateObject("UV sphere (plain)");
         std::shared_ptr<CoreMeshComponent> meshComponent2;
@@ -98,16 +100,11 @@ public:
         float z = sinf(mPhi) * sinf(mTheta);
         float y = cosf(mPhi);
 
-        //ImGui::Begin("Normal strength");
-        //ImGui::DragFloat("normalMap", &meshComponent2->mMat[0]->mBuffer.mData.NormalStrength, 0.01f, 0.0f, 1.0f, "%.02f");
-        //ImGui::End(); // end of docker space
-
-        //mLightManager->SetLightDir(x, y, z);
-
-        //mMainCamera->SetPos(mRadius * x, mRadius * y, mRadius * z);
-
-        //shared_ptr<BaseObject> cubeObj = GetObject("Cube Red");
-        //cubeObj->mTransform.SetRot(timer, timer * 0.5f, timer);
+        uvsphere->mTransform.SetRot(
+            uvsphere->mTransform.mRotation.x, 
+            mTheta, 
+            uvsphere->mTransform.mRotation.z
+        );
     }
 };
 
