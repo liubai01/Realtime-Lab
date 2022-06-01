@@ -15,8 +15,10 @@ CoreResourceMaterial::CoreResourceMaterial(ID3D12Device* device, BaseAssetNode* 
 
 	mIsRuntimeResource = true;
 
-	mDiffuseColorTextureUUID = "<empty>";
+	mBaseColorTextureUUID = "<empty>";
 	mNormalMapTextureUUID = "<empty>";
+	mMetallicTextureUUID = "<empty>";
+	mRoughnessTextureUUID = "<empty>";
 	
 	Deserialize(j);
 }
@@ -24,58 +26,60 @@ CoreResourceMaterial::CoreResourceMaterial(ID3D12Device* device, BaseAssetNode* 
 json CoreResourceMaterial::Serialize()
 {
 	json j = json{
-		{"Kd", {
-			mStagedBuffer->mBuffer.mData.Kd.x, 
-			mStagedBuffer->mBuffer.mData.Kd.y, 
-			mStagedBuffer->mBuffer.mData.Kd.z, 
-			mStagedBuffer->mBuffer.mData.Kd.w
-			}
-		},
-		{"Ks", {
-			mStagedBuffer->mBuffer.mData.Ks.x, 
-			mStagedBuffer->mBuffer.mData.Ks.y, 
-			mStagedBuffer->mBuffer.mData.Ks.z, 
-			mStagedBuffer->mBuffer.mData.Ks.w
-			}
-		},
-		{"Ns", mStagedBuffer->mBuffer.mData.Ns},
+		// Base Color
 		{"isBaseColorTextured", static_cast<int>(mStagedBuffer->mBuffer.mData.isBaseColorTextured)},
+		{"baseColor", {
+			mStagedBuffer->mBuffer.mData.baseColor.x, 
+			mStagedBuffer->mBuffer.mData.baseColor.y,
+			mStagedBuffer->mBuffer.mData.baseColor.z,
+			mStagedBuffer->mBuffer.mData.baseColor.w
+			}
+		},
+		{"baseColorTextureUUID", mBaseColorTextureUUID},
 
-		{"BaseColorTextureUUID", mDiffuseColorTextureUUID},
+		// Roughness
+		{"isRoughnessTextured", static_cast<int>(mStagedBuffer->mBuffer.mData.isBaseColorTextured)},
+		{"roughness", mStagedBuffer->mBuffer.mData.roughness},
+		{"roughnessTextureUUID", mRoughnessTextureUUID},
+
+		// Metallic
+		{"isMetallicTextured", static_cast<int>(mStagedBuffer->mBuffer.mData.isMetallicTextured)},
+		{"metallic", mStagedBuffer->mBuffer.mData.metallic},
+		{"metallicTextureUUID", mMetallicTextureUUID},
+
+		// Normal
 		{"isNormalTextured", static_cast<int>(mStagedBuffer->mBuffer.mData.isNormalTextured)},
-
-		{"NormalStrength", mStagedBuffer->mBuffer.mData.NormalStrength},
-		{"NormalTextureUUID", mNormalMapTextureUUID}
+		{"normalStrength", mStagedBuffer->mBuffer.mData.normalStrength},
+		{"normalTextureUUID", mNormalMapTextureUUID}
 	};
 
 	return j;
 }
 
-
 void CoreResourceMaterial::Deserialize(const json& j)
 {
-	// Diffuse Color Constant
-	j.at("Kd")[0].get_to(mStagedBuffer->mBuffer.mData.Kd.x);
-	j.at("Kd")[1].get_to(mStagedBuffer->mBuffer.mData.Kd.y);
-	j.at("Kd")[2].get_to(mStagedBuffer->mBuffer.mData.Kd.z);
-	j.at("Kd")[3].get_to(mStagedBuffer->mBuffer.mData.Kd.w);
-
-	// Specular Color Constant
-	j.at("Ks")[0].get_to(mStagedBuffer->mBuffer.mData.Ks.x);
-	j.at("Ks")[1].get_to(mStagedBuffer->mBuffer.mData.Ks.y);
-	j.at("Ks")[2].get_to(mStagedBuffer->mBuffer.mData.Ks.z);
-	j.at("Ks")[3].get_to(mStagedBuffer->mBuffer.mData.Ks.w);
-
-	// Shiniess
-	j.at("Ns").get_to(mStagedBuffer->mBuffer.mData.Ns);
-
+	// Base Color
 	mStagedBuffer->mBuffer.mData.isBaseColorTextured = j.at("isBaseColorTextured").get<int>() == 1;
-	mDiffuseColorTextureUUID = j.at("BaseColorTextureUUID").get<std::string>();
+	mBaseColorTextureUUID = j.at("baseColorTextureUUID").get<std::string>();
+	j.at("baseColor")[0].get_to(mStagedBuffer->mBuffer.mData.baseColor.x);
+	j.at("baseColor")[1].get_to(mStagedBuffer->mBuffer.mData.baseColor.y);
+	j.at("baseColor")[2].get_to(mStagedBuffer->mBuffer.mData.baseColor.z);
+	j.at("baseColor")[3].get_to(mStagedBuffer->mBuffer.mData.baseColor.w);
 
+	// Roughness
+	mStagedBuffer->mBuffer.mData.isRoughnessTextured = j.at("isRoughnessTextured").get<int>() == 1;
+	mRoughnessTextureUUID = j.at("roughnessTextureUUID").get<std::string>();
+	j.at("roughness").get_to(mStagedBuffer->mBuffer.mData.roughness);
+
+	// Metallic
+	mStagedBuffer->mBuffer.mData.isMetallicTextured = j.at("isMetallicTextured").get<int>() == 1;
+	mMetallicTextureUUID = j.at("metallicTextureUUID").get<std::string>();
+	j.at("metallic").get_to(mStagedBuffer->mBuffer.mData.metallic);
+	
+	// Normal
 	mStagedBuffer->mBuffer.mData.isNormalTextured = j.at("isNormalTextured").get<int>() == 1;
-	mNormalMapTextureUUID = j.at("NormalTextureUUID").get<std::string>();
-
-	j.at("NormalStrength").get_to(mStagedBuffer->mBuffer.mData.NormalStrength);
+	mNormalMapTextureUUID = j.at("normalTextureUUID").get<std::string>();
+	j.at("normalStrength").get_to(mStagedBuffer->mBuffer.mData.normalStrength);
 }
 
 CoreResourceMaterial::~CoreResourceMaterial()
@@ -94,17 +98,29 @@ void CoreResourceMaterial::RegisterMainHandle(BaseMainHeap* heap)
 { 
 	mStagedBuffer->RegisterMainHandle(heap);
 	mMainHandle = *mStagedBuffer->mBuffer.GetHandle();
-};
+}
 void CoreResourceMaterial::RegisterRuntimeHandle(BaseRuntimeHeap* heap)
 {
 	mStagedBuffer->RegisterRuntimeHandle(heap);
 	mRuntimeHandle = mStagedBuffer->GetRuntimeHandle();
-};
+}
 
-void CoreResourceMaterial::SetDiffuseColorTextured(BaseResourceImage* diffuseColorTexture)
+void CoreResourceMaterial::SetMetallicTextured(BaseResourceImage* metallicTexture)
+{
+	mStagedBuffer->mBuffer.mData.isMetallicTextured = true;
+	mMetallicTextureUUID = metallicTexture->mUUIDAsset;
+}
+
+void CoreResourceMaterial::SetRoughnessTextured(BaseResourceImage* roughnessTexture)
+{
+	mStagedBuffer->mBuffer.mData.isRoughnessTextured = true;
+	mRoughnessTextureUUID = roughnessTexture->mUUIDAsset;
+}
+
+void CoreResourceMaterial::SetBaseColorTextured(BaseResourceImage* diffuseColorTexture)
 {
 	mStagedBuffer->mBuffer.mData.isBaseColorTextured = true;
-	mDiffuseColorTextureUUID = diffuseColorTexture->mUUIDAsset;
+	mBaseColorTextureUUID = diffuseColorTexture->mUUIDAsset;
 }
 
 void CoreResourceMaterial::SetNormalTextured(BaseResourceImage* normalMapTexture)
@@ -115,7 +131,17 @@ void CoreResourceMaterial::SetNormalTextured(BaseResourceImage* normalMapTexture
 
 void CoreResourceMaterial::SetNormalStrength(float val)
 {
-	mStagedBuffer->mBuffer.mData.NormalStrength = val;
+	mStagedBuffer->mBuffer.mData.normalStrength = val;
+}
+
+void CoreResourceMaterial::SetRoughness(float val)
+{
+	mStagedBuffer->mBuffer.mData.roughness = val;
+}
+
+void CoreResourceMaterial::SetMetallic(float val)
+{
+	mStagedBuffer->mBuffer.mData.metallic = val;
 }
 
 void CoreResourceMaterial::ReleaseMainHandle(BaseMainHeap* heap)

@@ -17,15 +17,22 @@ public:
 	//BaseResourceImage* mDiffuseColorTexture;
 	//BaseResourceImage* mNormalMapTexture;
 
-	std::string mDiffuseColorTextureUUID;
+	std::string mBaseColorTextureUUID;
 	std::string mNormalMapTextureUUID;
+	std::string mMetallicTextureUUID;
+	std::string mRoughnessTextureUUID;
 
 	CoreResourceMaterial(ID3D12Device* device, BaseAssetNode* assetNode);
 	~CoreResourceMaterial();
 
-	void SetDiffuseColorTextured(BaseResourceImage* diffuseColorTexture);
+	void SetBaseColorTextured(BaseResourceImage* diffuseColorTexture);
+	void SetMetallicTextured(BaseResourceImage* metallicTexture);
+	void SetRoughnessTextured(BaseResourceImage* roughnessTexture);
 	void SetNormalTextured(BaseResourceImage* normalMapTexture);
+
 	void SetNormalStrength(float val);
+	void SetRoughness(float val);
+	void SetMetallic(float val);
 
 	void ReleaseMainHandle(BaseMainHeap* heap);
 
@@ -35,12 +42,22 @@ public:
 	static void CreateEmpty(const std::string& path)
 	{
 		json j = json{ 
-			{"Kd", {0.8f, 0.8f, 0.8f, 1.0f}},
-			{"Ks", {0.5f, 0.5f, 0.5f, 1.0f}},
-			{"Ns", 324.0f},
+			// base color
 			{"isBaseColorTextured", 0},
+			{"baseColor", {0.8f, 0.8f, 0.8f, 1.0f}},
+			{"baseColorTextureUUID", "<empty>"},
+			// normal
 			{"isNormalTextured", 0},
-			{"NormalStrength", 1.0f}
+			{"normalTextureUUID", "<empty>"},
+			{"normalStrength", 1.0f},
+			// metallic
+			{"isMetallicTextured", 0},
+			{"metallic", 1.0f},
+			{"metallicTextureUUID", "<empty>"},
+			// roughness
+			{"isRoughnessTextured", 0},
+			{"roughness", 1.0f},
+			{"roughnessTextureUUID", "<empty>"},
 		};
 
 		std::ofstream o(path);

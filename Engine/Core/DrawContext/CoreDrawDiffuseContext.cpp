@@ -12,14 +12,19 @@ CoreDrawDiffuseContext::CoreDrawDiffuseContext(ID3D12Device* device, BaseAssetMa
     // 1, b1: camera buffer
     // 2, b2: matereial buffer
     // 3, b3: light buffer
-    // 4, t0: diffuse color texture
+    //
+    // 4, t0: base color texture
     // 5, t1: normal map texture
+    // 6, t2: metallic texture
+    // 7, t3: roughness texture
     for (int i = 0; i < 4; ++i)
     {
         AppendCBVDescTable();
     }
     AppendSRVDescTable(); // base color texture
     AppendSRVDescTable(); // normal texture
+    AppendSRVDescTable(); // metallic texture
+    AppendSRVDescTable(); // roughness texture
 }
 
 void CoreDrawDiffuseContext::InitPSO()

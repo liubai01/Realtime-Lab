@@ -1,0 +1,19 @@
+{
+    "baseColor": [
+        0.800000011920929,
+        0.800000011920929,
+        0.800000011920929,
+        1.0
+    ],
+    "baseColorTextureUUID": "<empty>",
+    "isBaseColorTextured": 0,
+    "isMetallicTextured": 0,
+    "isNormalTextured": 0,
+    "isRoughnessTextured": 0,
+    "metallic": 1.0,
+    "metallicTextureUUID": "<empty>",
+    "normalStrength": 1.0,
+    "normalTextureUUID": "<empty>",
+    "roughness": 1.0,
+    "roughnessTextureUUID": "<empty>"
+}

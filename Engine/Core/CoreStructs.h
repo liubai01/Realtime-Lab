@@ -11,10 +11,12 @@ struct CoreDirectLightConsts {
 };
 
 struct CoreMaterialConsts {
-	XMFLOAT4 Kd = { 0.8f, 0.8f, 0.8f, 1.0f }; // Diffuse Color Constant
-	XMFLOAT4 Ks = { 0.5f, 0.5f, 0.5f, 1.0f }; // Specular Color Constant
-	float Ns = 323.999994f; // Shiniess
 	int isBaseColorTextured = false;
 	int isNormalTextured = false;
-	float NormalStrength = 1.0f;
+	int isMetallicTextured = false;
+	int isRoughnessTextured = false;
+	XMFLOAT4 baseColor = { 0.8f, 0.8f, 0.8f, 1.0f }; // Base Color Constant
+	float normalStrength = 1.0f;
+	float metallic = 1.0f;
+	float roughness = 1.0f;
 };

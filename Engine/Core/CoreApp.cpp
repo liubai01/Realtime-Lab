@@ -268,7 +268,7 @@ void CoreApp::RenderObjects()
 
                         if (mat->mStagedBuffer->mBuffer.mData.isBaseColorTextured)
                         {
-                            BaseAssetNode* node = mProject->mAssetManager->LoadAssetByUUID(mat->mDiffuseColorTextureUUID);
+                            BaseAssetNode* node = mProject->mAssetManager->LoadAssetByUUID(mat->mBaseColorTextureUUID);
                             BaseResourceImage* img = mResourceManager->LoadByURL<BaseResourceImage>(node->GetURL());
 
                             commandList->SetGraphicsRootDescriptorTable(4, img->mRuntimeHandle.GetGPUHandle());
@@ -281,6 +281,23 @@ void CoreApp::RenderObjects()
 
                             commandList->SetGraphicsRootDescriptorTable(5, img->mRuntimeHandle.GetGPUHandle());
                         }
+
+                        if (mat->mStagedBuffer->mBuffer.mData.isMetallicTextured)
+                        {
+                            BaseAssetNode* node = mProject->mAssetManager->LoadAssetByUUID(mat->mMetallicTextureUUID);
+                            BaseResourceImage* img = mResourceManager->LoadByURL<BaseResourceImage>(node->GetURL());
+
+                            commandList->SetGraphicsRootDescriptorTable(6, img->mRuntimeHandle.GetGPUHandle());
+                        }
+
+                        if (mat->mStagedBuffer->mBuffer.mData.isRoughnessTextured)
+                        {
+                            BaseAssetNode* node = mProject->mAssetManager->LoadAssetByUUID(mat->mRoughnessTextureUUID);
+                            BaseResourceImage* img = mResourceManager->LoadByURL<BaseResourceImage>(node->GetURL());
+
+                            commandList->SetGraphicsRootDescriptorTable(7, img->mRuntimeHandle.GetGPUHandle());
+                        }
+
                     } else {
                         CoreResourceMaterial* defaultMat = mResourceManager->LoadByURL<CoreResourceMaterial>("EditorAsset\\Default.mat");
                         commandList->SetGraphicsRootDescriptorTable(2, defaultMat->mRuntimeHandle.GetGPUHandle());

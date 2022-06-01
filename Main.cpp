@@ -14,22 +14,41 @@ public:
     //      for the sake of scene switch
     void Start() {
         // textured tower 
-        std::shared_ptr<BaseObject> tower = mNowScene->CreateObject("Wood Tower");
+        //std::shared_ptr<BaseObject> tower = mNowScene->CreateObject("Wood Tower");
+        //std::shared_ptr<CoreMeshComponent> meshComponent;
+
+        //tower->mTransform.SetPos(0.0f, -3.0f, 0.0f);
+
+        //meshComponent = mMeshLoader->MakeComponent(mResourceManager->LoadByURL<BaseResourceMesh>("models\\WoodTower.obj"));
+
+        //BaseResourceImage* colorTexture = mResourceManager->LoadByURL<BaseResourceImage>("Wood_Tower_Col.jpg");
+        //BaseResourceImage* normalTexture = mResourceManager->LoadByURL<BaseResourceImage>("Wood_Tower_Nor.jpg");
+
+        //CoreResourceMaterial* towerMat = mResourceManager->LoadByURL<CoreResourceMaterial>("matereials\\Tower.mat");
+        //meshComponent->mMat[0] = towerMat;
+
+        //tower->AddComponent(meshComponent);
+
+        // uv sphere
+        std::shared_ptr<BaseObject> uvsphere = mNowScene->CreateObject("UV sphere");
         std::shared_ptr<CoreMeshComponent> meshComponent;
 
-        tower->mTransform.SetPos(0.0f, -3.0f, 0.0f);
+        uvsphere->mTransform.SetScale(4.0f, 4.0f, 4.0f);
 
-        meshComponent = mMeshLoader->MakeComponent(mResourceManager->LoadByURL<BaseResourceMesh>("models\\WoodTower.obj"));
+        meshComponent = mMeshLoader->MakeComponent(mResourceManager->LoadByURL<BaseResourceMesh>("models\\uvsphere.obj"));
+        uvsphere->AddComponent(meshComponent);
 
-        BaseResourceImage* colorTexture = mResourceManager->LoadByURL<BaseResourceImage>("Wood_Tower_Col.jpg");
-        BaseResourceImage* normalTexture = mResourceManager->LoadByURL<BaseResourceImage>("Wood_Tower_Nor.jpg");
+        CoreResourceMaterial* rustedironMat = mResourceManager->LoadByURL<CoreResourceMaterial>("materials\\rustediron.mat");
+        BaseResourceImage* colorTexture = mResourceManager->LoadByURL<BaseResourceImage>("materials\\rustediron2_basecolor.png");
+        BaseResourceImage* metallicTexture = mResourceManager->LoadByURL<BaseResourceImage>("materials\\rustediron2_metallic.png");
+        BaseResourceImage* roughnessTexture = mResourceManager->LoadByURL<BaseResourceImage>("materials\\rustediron2_roughness.png");
+        BaseResourceImage* normalTexture = mResourceManager->LoadByURL<BaseResourceImage>("materials\\rustediron2_normal.png");
 
-        CoreResourceMaterial* towerMat = mResourceManager->LoadByURL<CoreResourceMaterial>("matereials\\Tower.mat");
-        meshComponent->mMat[0] = towerMat;
-
-        //json j = meshComponent->Serialize();
-        //dout::printf("Mesh Component %s\n", j.dump().c_str());
-        tower->AddComponent(meshComponent);
+        rustedironMat->SetBaseColorTextured(colorTexture);
+        rustedironMat->SetMetallicTextured(metallicTexture);
+        rustedironMat->SetRoughnessTextured(roughnessTexture);
+        rustedironMat->SetNormalTextured(normalTexture);
+        meshComponent->mMat[0] = rustedironMat;
         
         // light GO
         std::shared_ptr<BaseObject> light = mNowScene->CreateObject("Directional Light");
@@ -42,9 +61,11 @@ public:
         lightdirarrow->AddComponent(meshComponentArrow);
         lightdirarrow->SetParent(light.get());
 
-        light->mTransform.SetPos(3.0f, 3.0f, -6.0f);
+        light->mTransform.SetPos(2.0f, 6.0f, -6.0f);
         lightdirarrow->mTransform.SetRot(0.0f, DirectX::XM_PI / 2.0f, 0.0f);
         lightdirarrow->mTransform.SetScale(0.1f, 0.1f, 0.1f);
+
+        mResourceManager->CreateMaterial("Default.mat");
 
         mMainCamera->SetPos(10.0f, 10.0f, -10.0f);
     }
