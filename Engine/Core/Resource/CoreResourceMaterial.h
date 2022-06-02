@@ -14,9 +14,6 @@ public:
 
 	std::unique_ptr<BaseStagedBuffer<CoreMaterialConsts>> mStagedBuffer;
 
-	//BaseResourceImage* mDiffuseColorTexture;
-	//BaseResourceImage* mNormalMapTexture;
-
 	std::string mBaseColorTextureUUID;
 	std::string mNormalMapTextureUUID;
 	std::string mMetallicTextureUUID;

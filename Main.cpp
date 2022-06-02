@@ -34,7 +34,7 @@ public:
         uvsphere = mNowScene->CreateObject("UV sphere (textured)");
         std::shared_ptr<CoreMeshComponent> meshComponent;
 
-        uvsphere->mTransform.SetScale(3.0f, 3.0f, 3.0f);
+        uvsphere->mTransform.SetScale(5.0f, 5.0f, 5.0f);
         uvsphere->mTransform.SetPos(-1.0f, 0.0f, -1.0f);
 
         meshComponent = mMeshLoader->MakeComponent(mResourceManager->LoadByURL<BaseResourceMesh>("models\\uvsphere.obj"));

@@ -15,6 +15,7 @@ struct CoreMaterialConsts {
 	int isNormalTextured = false;
 	int isMetallicTextured = false;
 	int isRoughnessTextured = false;
+
 	XMFLOAT4 baseColor = { 0.8f, 0.8f, 0.8f, 1.0f }; // Base Color Constant
 	float normalStrength = 1.0f;
 	float metallic = 1.0f;

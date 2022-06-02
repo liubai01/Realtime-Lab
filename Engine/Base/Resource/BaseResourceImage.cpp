@@ -13,13 +13,6 @@ BaseResourceImage::BaseResourceImage(ID3D12Device* device, BaseAssetNode* assetN
 
     mScratchImage = std::make_unique<DirectX::ScratchImage>();
 
-    bool iswic2 = false;
-    auto pWIC = DirectX::GetWICFactory(iswic2);
-    if (!pWIC)
-    {
-        dout::printf("[BaseResourceImage] Opps!\n");
-    }
-
     HRESULT hr = LoadFromWICFile(widepath.c_str(), DirectX::WIC_FLAGS_NONE, nullptr, *mScratchImage);
     ThrowIfFailed(hr);
 

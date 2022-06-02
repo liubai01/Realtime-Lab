@@ -8,9 +8,9 @@ This is an open-source toy renderer based on DirectX12 in an early development s
 
 ## Introduction
 
-Current project implements a simple editor that could transform models and shaded in Phong models. More features are in development.
+Current project implements a basic PBR shading algorithm. More features are in development.
 
-![](docs/figs/alphav001_screenshot.jpg)
+![](https://i.ibb.co/306JJ4R/RL-PBR.jpg)
 
 ### Quick-start
 
