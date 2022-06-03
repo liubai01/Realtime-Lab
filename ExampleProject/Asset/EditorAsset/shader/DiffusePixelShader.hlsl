@@ -150,7 +150,7 @@ float4 main(VertexOut pin) : SV_TARGET
 	// ks = F and is included in BRDFCookTorrance
 	// kd = 1 - ks = 1 - F
 
-	float4 ret = BRDFCookTorrance + (1 - F) * BRDFLambert;
+	float4 ret = BRDFCookTorrance + (1 - F) * (1 - metallicCoeff) * BRDFLambert;
 	ret = ret * NdotL * id + ia * baseColorCoeff;
 
 	// Gamma encoding

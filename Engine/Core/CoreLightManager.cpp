@@ -4,8 +4,8 @@
 CoreLightManager::CoreLightManager(ID3D12Device* device) : mLightData(device)
 {
 	// Default light setup
-	mLightData.mBuffer.mData.Ia = { 0.1f, 0.1f, 0.1f, 1.0f };
-	mLightData.mBuffer.mData.Id = { 1.0f, 1.0f, 1.0f, 1.0f };
+	mLightData.mBuffer.mData.Ia = { 0.2f, 0.2f, 0.2f, 1.0f };
+	mLightData.mBuffer.mData.Id = { 1.2f, 1.2f, 1.2f, 1.0f };
 	mLightData.mBuffer.mData.LightDir = { 0.577f, 0.577f, 0.577f, 0.0f };
 }
 
