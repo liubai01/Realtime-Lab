@@ -279,6 +279,9 @@
     <ClCompile Include="Engine\Core\GUI\CoreMaterialWidget.cpp">
       <Filter>Source Files\Core\GUI</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\Core\GUI\CoreLoggerWidget.cpp">
+      <Filter>Source Files\Core\GUI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -772,6 +775,9 @@
     </ClInclude>
     <ClInclude Include="Engine\ThirdParty\spdlog\version.h">
       <Filter>Header Files\ThirdParty\spdlog</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Core\GUI\CoreLoggerWidget.h">
+      <Filter>Header Files\Core\GUI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

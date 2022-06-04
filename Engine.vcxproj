@@ -191,6 +191,7 @@
     <ClCompile Include="Engine\Core\GUI\CoreGUIManager.cpp" />
     <ClCompile Include="Engine\Core\GUI\CoreHierarchyWidget.cpp" />
     <ClCompile Include="Engine\Core\GUI\CoreInspectorWidget.cpp" />
+    <ClCompile Include="Engine\Core\GUI\CoreLoggerWidget.cpp" />
     <ClCompile Include="Engine\Core\GUI\CoreMaterialWidget.cpp" />
     <ClCompile Include="Engine\Core\GUI\CoreSceneWidget.cpp" />
     <ClCompile Include="Engine\Core\Resource\CoreResourceManager.cpp" />
@@ -253,6 +254,7 @@
     <ClInclude Include="Engine\Core\GUI\CoreGUIManager.h" />
     <ClInclude Include="Engine\Core\GUI\CoreHierarchyWidget.h" />
     <ClInclude Include="Engine\Core\GUI\CoreInspectorWidget.h" />
+    <ClInclude Include="Engine\Core\GUI\CoreLoggerWidget.h" />
     <ClInclude Include="Engine\Core\GUI\CoreMaterialWidget.h" />
     <ClInclude Include="Engine\Core\GUI\CoreSceneWidget.h" />
     <ClInclude Include="Engine\Core\Resource\CoreResourceManager.h" />

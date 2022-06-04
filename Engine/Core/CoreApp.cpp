@@ -96,7 +96,6 @@ void CoreApp::Render()
 void CoreApp::BeforeUpdate()
 {
     mGUIManager->Update();
-    //ImGui::ShowDemoWindow();
 }
 
 void CoreApp::UploadGeometry()

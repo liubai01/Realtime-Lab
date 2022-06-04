@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "common.h"
+#include "../common.h"
 #include <string>
 
 namespace spdlog {

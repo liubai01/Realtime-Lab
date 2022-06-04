@@ -3,6 +3,7 @@
 #include "CoreInspectorWidget.h"
 #include "CoreAssetWidget.h"
 #include "CoreMaterialWidget.h"
+#include "CoreLoggerWidget.h"
 #include "../../ThirdParty/ImGUI/imgui_internal.h"
 #include "../../ThirdParty/ImGUI/imgui_impl_dx12.h"
 
@@ -16,7 +17,9 @@ CoreGUIManager::CoreGUIManager(BaseApp* app, CoreResourceManager* resourceManage
     mWidgets.push_back(std::make_unique<CoreHierarchyWidget>(mApp->mGOManager, &mNowSelectedObject));
     mWidgets.push_back(std::make_unique<CoreSceneWidget>(mApp->mMainCamera));
     mWidgets.push_back(std::make_unique<CoreInspectorWidget>(&mLastActiveObject, resourceManager, app->mProject->mAssetManager));
+    
     mWidgets.push_back(std::move(matWidget));
+    mWidgets.push_back(std::make_unique<CoreLoggerWidget>());
     
     mFirstLoop = true;
 

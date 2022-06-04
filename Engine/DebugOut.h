@@ -7,6 +7,10 @@
 #include <debugapi.h>
 #include <comdef.h>
 
+#include "../Engine/ThirdParty/spdlog/spdlog.h"
+#include "../Engine/ThirdParty/spdlog/sinks/basic_file_sink.h"
+#include "../Engine/ThirdParty/spdlog/sinks/msvc_sink.h"
+
 namespace dout {
   // refer to https://stackoverflow.com/questions/2342162/stdstring-formatting-like-sprintf
   template<typename ... Args>
@@ -22,11 +26,14 @@ namespace dout {
     return std::string(buf.get(), buf.get() + size - 1); // We don't want the '\0' inside
   }
 
+  static auto sink = std::make_shared<spdlog::sinks::msvc_sink_mt>();
+  static auto msvc_logger = std::make_shared<spdlog::logger>("msvc_logger", sink);
+
   template<typename ... Args>
   void printf(const std::string& format, Args ... args)
   {
     std::string ret = string_format(format, args...);
-    OutputDebugStringA(ret.c_str());
+    msvc_logger->info(ret);
   }
 
   class DxException
