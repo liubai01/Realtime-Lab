@@ -280,6 +280,7 @@ void BaseApp::InitImGUI()
   ImGuiIO& io = ImGui::GetIO();
   io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
   io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+  io.IniFilename = NULL;
 
   SetStyleColor();
   ImGui_ImplWin32_Init(mHwnd);
