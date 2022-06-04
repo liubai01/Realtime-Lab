@@ -11,7 +11,7 @@ void CoreLoggerWidget::Update()
 {
     ImGui::Begin(mDisplayName.c_str());
 
-    // TBD
+    ImGui::Text("Hello");
 
     ImGui::End(); // end of Scene
 }

@@ -81,7 +81,7 @@ public:
         lightdirarrow->mTransform.SetScale(0.1f, 0.1f, 0.1f);
     
 
-        mMainCamera->SetPos(10.0f, 10.0f, -10.0f);
+        mNowScene->mEditorCamera->SetPos(10.0f, 10.0f, -10.0f);
     }
 
     void Update()

@@ -30,7 +30,7 @@ CoreApp::CoreApp(HINSTANCE hInstance, BaseProject* proj) : BaseApp(hInstance, pr
     mFullScreenPlane->mID = "<plane>";
     mFullScreenPlane->AddGeometry(planeGeo);
 
-    mMainCamera->SetRenderTexture(mSceneRenderTexture);
+    mNowScene->mEditorCamera->SetRenderTexture(mSceneRenderTexture);
 
     // --- Draw Contexts ---
 
@@ -72,8 +72,8 @@ void CoreApp::Render()
     // Upload transform to GPU for each game object
     mGOManager->DispatchTransformUpload(mRuntimeHeap);
 
-    // Upload information of main camera (TBD: move to GO manager)
-    mMainCamera->RegisterRuntimeHandle(mRuntimeHeap);
+    // Upload information of scene
+    mNowScene->RegisterRuntimeHandle(mRuntimeHeap);
 
     // Upload resources into GPU
     mResourceManager->RegisterRuntimeHeap(mRuntimeHeap);
@@ -96,6 +96,7 @@ void CoreApp::Render()
 void CoreApp::BeforeUpdate()
 {
     mGUIManager->Update();
+    //ImGui::ShowDemoWindow();
 }
 
 void CoreApp::UploadGeometry()
@@ -140,8 +141,8 @@ void CoreApp::RenderBlurred()
 
     commandList->SetGraphicsRootSignature(mBlurDrawContext->GetRootSig());
 
-    commandList->RSSetViewports(1, &mMainCamera->mViewport);
-    commandList->RSSetScissorRects(1, &mMainCamera->mScissorRect);
+    commandList->RSSetViewports(1, &mNowScene->mEditorCamera->mViewport);
+    commandList->RSSetScissorRects(1, &mNowScene->mEditorCamera->mScissorRect);
 
     D3D12_CPU_DESCRIPTOR_HANDLE rtv = mSceneRenderTexture->mRtvDescriptor;
 
@@ -152,7 +153,7 @@ void CoreApp::RenderBlurred()
     ID3D12DescriptorHeap* descriptorHeaps[] = { mRuntimeHeap->mDescHeap.Get() };
     commandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
     commandList->SetGraphicsRootDescriptorTable(0, mEdgeRenderTexture->mSRVHandle.GetGPUHandle());
-    commandList->SetGraphicsRootDescriptorTable(1, mMainCamera->GetRuntimeHandle().GetGPUHandle());
+    commandList->SetGraphicsRootDescriptorTable(1, mNowScene->mEditorCamera->GetRuntimeHandle().GetGPUHandle());
 
     mFullScreenPlane->Render(commandList);
     
@@ -165,16 +166,16 @@ void CoreApp::RenderEdgeLightPre()
     mEdgeLightDrawContext->ResetCommandList();
     ID3D12GraphicsCommandList* commandList = mEdgeLightDrawContext->mCommandList.Get();
 
-    mMainCamera->SetRenderTexture(mEdgeRenderTexture);
-    mMainCamera->SetDepthWrite(false);
-    mMainCamera->BeginScene(commandList);
+    mNowScene->mEditorCamera->SetRenderTexture(mEdgeRenderTexture);
+    mNowScene->mEditorCamera->SetDepthWrite(false);
+    mNowScene->mEditorCamera->BeginScene(commandList);
 
     commandList->SetGraphicsRootSignature(mEdgeLightDrawContext->GetRootSig());
 
     ID3D12DescriptorHeap* descriptorHeaps[] = { mRuntimeHeap->mDescHeap.Get() };
     commandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 
-    commandList->SetGraphicsRootDescriptorTable(1, mMainCamera->GetRuntimeHandle().GetGPUHandle());
+    commandList->SetGraphicsRootDescriptorTable(1, mNowScene->mEditorCamera->GetRuntimeHandle().GetGPUHandle());
 
     for (auto& elem : mGOManager->mObjs)
     {
@@ -195,7 +196,7 @@ void CoreApp::RenderEdgeLightPre()
         }
     }
 
-    mMainCamera->EndScene(commandList);
+    mNowScene->mEditorCamera->EndScene(commandList);
     Enqueue(mEdgeLightDrawContext->mCommandList.Get());
 }
 
@@ -233,16 +234,16 @@ void CoreApp::RenderObjects()
     mDrawContext->ResetCommandList();
     ID3D12GraphicsCommandList* commandList = mDrawContext->mCommandList.Get();
 
-    mMainCamera->SetRenderTexture(mSceneRenderTexture);
-    mMainCamera->SetDepthWrite(true);
-    mMainCamera->BeginScene(commandList);
+    mNowScene->mEditorCamera->SetRenderTexture(mSceneRenderTexture);
+    mNowScene->mEditorCamera->SetDepthWrite(true);
+    mNowScene->mEditorCamera->BeginScene(commandList);
 
     commandList->SetGraphicsRootSignature(mDrawContext->GetRootSig());
 
     ID3D12DescriptorHeap* descriptorHeaps[] = { mRuntimeHeap->mDescHeap.Get() };
     commandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
     
-    commandList->SetGraphicsRootDescriptorTable(1, mMainCamera->GetRuntimeHandle().GetGPUHandle());
+    commandList->SetGraphicsRootDescriptorTable(1, mNowScene->mEditorCamera->GetRuntimeHandle().GetGPUHandle());
     commandList->SetGraphicsRootDescriptorTable(3, mLightManager->mLightData.GetRuntimeHandle().GetGPUHandle());
 
     for (auto& elem : mGOManager->mObjs)
@@ -319,6 +320,6 @@ void CoreApp::RenderObjects()
         }
     }
 
-    mMainCamera->EndScene(commandList);
+    mNowScene->mEditorCamera->EndScene(commandList);
     Enqueue(mDrawContext->mCommandList.Get());
 }

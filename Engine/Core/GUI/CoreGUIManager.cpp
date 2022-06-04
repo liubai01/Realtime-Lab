@@ -15,7 +15,7 @@ CoreGUIManager::CoreGUIManager(BaseApp* app, CoreResourceManager* resourceManage
 
     mWidgets.push_back(std::make_unique<CoreAssetWidget>(mApp->mProject->mAssetManager, resourceManager, matWidget.get()));
     mWidgets.push_back(std::make_unique<CoreHierarchyWidget>(mApp->mGOManager, &mNowSelectedObject));
-    mWidgets.push_back(std::make_unique<CoreSceneWidget>(mApp->mMainCamera));
+    mWidgets.push_back(std::make_unique<CoreSceneWidget>(mApp->mNowScene->mEditorCamera.get()));
     mWidgets.push_back(std::make_unique<CoreInspectorWidget>(&mLastActiveObject, resourceManager, app->mProject->mAssetManager));
     
     mWidgets.push_back(std::move(matWidget));

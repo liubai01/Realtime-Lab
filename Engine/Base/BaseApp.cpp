@@ -59,8 +59,6 @@ BaseApp::BaseApp(HINSTANCE hInstance, BaseProject* proj)
         debugController->EnableDebugLayer();
     }
 #endif
-
-
     mTimer = clock();
 
     // Initialize the objects required for dumping in Shader, Geometry, etc.
@@ -77,10 +75,8 @@ BaseApp::BaseApp(HINSTANCE hInstance, BaseProject* proj)
 
     InitImGUI();
 
-    mMainCamera = new BaseCamera(mDevice.Get(), static_cast<float>(mWidth), static_cast<float>(mHeight));
-    mMainCamera->RegisterMainHandle(mMainHeap);
-
-    mNowScene = new BaseScene(mGOManager);
+    mNowScene = new BaseScene(mDevice.Get(), mGOManager);
+    mNowScene->RegisterMainHandle(mMainHeap);
 
     mApp = this;
 }
@@ -92,7 +88,6 @@ BaseApp::~BaseApp()
     ImGui::DestroyContext();
 
     delete mNowScene;
-    delete mMainCamera;
     delete mGOManager;
 
     // The heap should be freed at last.
@@ -139,7 +134,7 @@ void BaseApp::Run()
     ImGui_ImplDX12_NewFrame();
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
-
+    
     BeforeUpdate();
     Update();
     Render();

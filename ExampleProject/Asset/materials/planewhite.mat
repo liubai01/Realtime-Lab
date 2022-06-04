@@ -10,10 +10,10 @@
     "isMetallicTextured": 0,
     "isNormalTextured": 0,
     "isRoughnessTextured": 0,
-    "metallic": 1.0,
+    "metallic": 0.4,
     "metallicTextureUUID": "<empty>",
     "normalStrength": 1.0,
     "normalTextureUUID": "<empty>",
-    "roughness": 1.0,
+    "roughness": 0.2,
     "roughnessTextureUUID": "<empty>"
 }

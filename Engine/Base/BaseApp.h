@@ -85,7 +85,6 @@ public:
 	ComPtr<ID3D12CommandQueue> mCommandQueue;
 
 	BaseProject* mProject;
-	BaseCamera* mMainCamera;
 
 	BaseScene* mNowScene;
 	BaseGameObjectManager* mGOManager;
