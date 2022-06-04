@@ -6,6 +6,10 @@
 #include "Engine/Base/Resource/BaseResourceImage.h"
 #include "Engine/Base/BaseProject.h"
 
+#include "Engine/ThirdParty/spdlog/spdlog.h"
+#include "Engine/ThirdParty/spdlog/sinks/basic_file_sink.h"
+#include "Engine/ThirdParty/spdlog/sinks/msvc_sink.h"
+
 class MyApp : public CoreApp {
 public:
     MyApp(HINSTANCE hInstance, BaseProject* proj) : CoreApp(hInstance, proj) {};
