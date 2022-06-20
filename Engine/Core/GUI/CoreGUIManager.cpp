@@ -31,7 +31,7 @@ CoreGUIManager::CoreGUIManager(BaseApp* app, CoreResourceManager* resourceManage
 
     ImGuiIO& io = ImGui::GetIO();
     BaseAssetNode* fontNode = app->mProject->mAssetManager->LoadAsset("EditorAsset\\Cousine-Regular.ttf");
-    io.Fonts->AddFontFromFileTTF(fontNode->mFullPath.c_str(), 16);
+    io.Fonts->AddFontFromFileTTF(fontNode->mFullPath.c_str(), 14);
 }
 
 void CoreGUIManager::Start()

@@ -100,6 +100,24 @@
     <Filter Include="Header Files\ThirdParty\spdlog">
       <UniqueIdentifier>{e6799ebe-b068-40f4-925f-90965ff6045e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\ThirdParty\RecastDetour">
+      <UniqueIdentifier>{c9e96e2a-761f-417a-b00c-390f4733c236}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ThirdParty\RecastDetour\Recast">
+      <UniqueIdentifier>{3e2d5bee-0090-4178-90c6-4883d7e88868}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ThirdParty\RecastDetour">
+      <UniqueIdentifier>{2242ef53-0e0d-44a2-9301-695f68c01b5e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ThirdParty\RecastDetour\Recast">
+      <UniqueIdentifier>{f36a7991-2344-4bb3-b159-0e7e93201a68}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core\Navigation">
+      <UniqueIdentifier>{ee835b4c-f63a-4b77-b3da-ad3cba817706}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core\Navigation">
+      <UniqueIdentifier>{0ff27ca3-e000-4924-804c-b4dc09f967ee}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -281,6 +299,42 @@
     </ClCompile>
     <ClCompile Include="Engine\Core\GUI\CoreLoggerWidget.cpp">
       <Filter>Source Files\Core\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\ThirdParty\RecastDetour\Recast\Source\Recast.cpp">
+      <Filter>Source Files\ThirdParty\RecastDetour\Recast</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\ThirdParty\RecastDetour\Recast\Source\RecastAlloc.cpp">
+      <Filter>Source Files\ThirdParty\RecastDetour\Recast</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\ThirdParty\RecastDetour\Recast\Source\RecastArea.cpp">
+      <Filter>Source Files\ThirdParty\RecastDetour\Recast</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\ThirdParty\RecastDetour\Recast\Source\RecastAssert.cpp">
+      <Filter>Source Files\ThirdParty\RecastDetour\Recast</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\ThirdParty\RecastDetour\Recast\Source\RecastContour.cpp">
+      <Filter>Source Files\ThirdParty\RecastDetour\Recast</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\ThirdParty\RecastDetour\Recast\Source\RecastFilter.cpp">
+      <Filter>Source Files\ThirdParty\RecastDetour\Recast</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\ThirdParty\RecastDetour\Recast\Source\RecastLayers.cpp">
+      <Filter>Source Files\ThirdParty\RecastDetour\Recast</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\ThirdParty\RecastDetour\Recast\Source\RecastMesh.cpp">
+      <Filter>Source Files\ThirdParty\RecastDetour\Recast</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\ThirdParty\RecastDetour\Recast\Source\RecastMeshDetail.cpp">
+      <Filter>Source Files\ThirdParty\RecastDetour\Recast</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\ThirdParty\RecastDetour\Recast\Source\RecastRasterization.cpp">
+      <Filter>Source Files\ThirdParty\RecastDetour\Recast</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\ThirdParty\RecastDetour\Recast\Source\RecastRegion.cpp">
+      <Filter>Source Files\ThirdParty\RecastDetour\Recast</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Core\Navigation\CoreNavigationSystem.cpp">
+      <Filter>Source Files\Core\Navigation</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -778,6 +832,18 @@
     </ClInclude>
     <ClInclude Include="Engine\Core\GUI\CoreLoggerWidget.h">
       <Filter>Header Files\Core\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ThirdParty\RecastDetour\Recast\Include\Recast.h">
+      <Filter>Header Files\ThirdParty\RecastDetour\Recast</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ThirdParty\RecastDetour\Recast\Include\RecastAlloc.h">
+      <Filter>Header Files\ThirdParty\RecastDetour\Recast</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ThirdParty\RecastDetour\Recast\Include\RecastAssert.h">
+      <Filter>Header Files\ThirdParty\RecastDetour\Recast</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Core\Navigation\CoreNavigationSystem.h">
+      <Filter>Header Files\Core\Navigation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

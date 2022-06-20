@@ -194,6 +194,7 @@
     <ClCompile Include="Engine\Core\GUI\CoreLoggerWidget.cpp" />
     <ClCompile Include="Engine\Core\GUI\CoreMaterialWidget.cpp" />
     <ClCompile Include="Engine\Core\GUI\CoreSceneWidget.cpp" />
+    <ClCompile Include="Engine\Core\Navigation\CoreNavigationSystem.cpp" />
     <ClCompile Include="Engine\Core\Resource\CoreResourceManager.cpp" />
     <ClCompile Include="Engine\Core\Resource\CoreResourceMaterial.cpp" />
     <ClCompile Include="Engine\DebugOut.cpp" />
@@ -204,6 +205,17 @@
     <ClCompile Include="Engine\ThirdParty\ImGUI\imgui_impl_win32.cpp" />
     <ClCompile Include="Engine\ThirdParty\ImGUI\imgui_tables.cpp" />
     <ClCompile Include="Engine\ThirdParty\ImGUI\imgui_widgets.cpp" />
+    <ClCompile Include="Engine\ThirdParty\RecastDetour\Recast\Source\Recast.cpp" />
+    <ClCompile Include="Engine\ThirdParty\RecastDetour\Recast\Source\RecastAlloc.cpp" />
+    <ClCompile Include="Engine\ThirdParty\RecastDetour\Recast\Source\RecastArea.cpp" />
+    <ClCompile Include="Engine\ThirdParty\RecastDetour\Recast\Source\RecastAssert.cpp" />
+    <ClCompile Include="Engine\ThirdParty\RecastDetour\Recast\Source\RecastContour.cpp" />
+    <ClCompile Include="Engine\ThirdParty\RecastDetour\Recast\Source\RecastFilter.cpp" />
+    <ClCompile Include="Engine\ThirdParty\RecastDetour\Recast\Source\RecastLayers.cpp" />
+    <ClCompile Include="Engine\ThirdParty\RecastDetour\Recast\Source\RecastMesh.cpp" />
+    <ClCompile Include="Engine\ThirdParty\RecastDetour\Recast\Source\RecastMeshDetail.cpp" />
+    <ClCompile Include="Engine\ThirdParty\RecastDetour\Recast\Source\RecastRasterization.cpp" />
+    <ClCompile Include="Engine\ThirdParty\RecastDetour\Recast\Source\RecastRegion.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -257,6 +269,7 @@
     <ClInclude Include="Engine\Core\GUI\CoreLoggerWidget.h" />
     <ClInclude Include="Engine\Core\GUI\CoreMaterialWidget.h" />
     <ClInclude Include="Engine\Core\GUI\CoreSceneWidget.h" />
+    <ClInclude Include="Engine\Core\Navigation\CoreNavigationSystem.h" />
     <ClInclude Include="Engine\Core\Resource\CoreResourceManager.h" />
     <ClInclude Include="Engine\Core\Resource\CoreResourceMaterial.h" />
     <ClInclude Include="Engine\DebugOut.h" />
@@ -271,6 +284,9 @@
     <ClInclude Include="Engine\ThirdParty\ImGUI\imstb_textedit.h" />
     <ClInclude Include="Engine\ThirdParty\ImGUI\imstb_truetype.h" />
     <ClInclude Include="Engine\ThirdParty\json.h" />
+    <ClInclude Include="Engine\ThirdParty\RecastDetour\Recast\Include\Recast.h" />
+    <ClInclude Include="Engine\ThirdParty\RecastDetour\Recast\Include\RecastAlloc.h" />
+    <ClInclude Include="Engine\ThirdParty\RecastDetour\Recast\Include\RecastAssert.h" />
     <ClInclude Include="Engine\ThirdParty\spdlog\async.h" />
     <ClInclude Include="Engine\ThirdParty\spdlog\async_logger-inl.h" />
     <ClInclude Include="Engine\ThirdParty\spdlog\async_logger.h" />
